@@ -44,11 +44,9 @@ models/transformer_best/*
 *.joblib
 *.onnx
 
-# Node / Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.env.local
-frontend/.env.*.local
+# MLflow local tracking
+mlruns/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

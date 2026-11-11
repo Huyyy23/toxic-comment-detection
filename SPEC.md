@@ -1,28 +1,28 @@
-# Vietnamese Toxic Comment Detection System — Specification (SPEC.md)
+# Vietnamese Toxic Comment Detection — Specification (SPEC.md)
 
-Tài liệu đặc tả chi tiết và chuẩn mực: **[`docs/spec.md`](docs/spec.md)**  
-Tài liệu quyết định kiến trúc: **[`docs/decisions.md`](docs/decisions.md)**  
-Kế hoạch triển khai & phân rã: **[`tasks/plan.md`](tasks/plan.md)** và **[`tasks/todo.md`](tasks/todo.md)**
+Tài liệu đặc tả chi tiết: [`docs/spec.md`](docs/spec.md)  
+Kế hoạch thực nghiệm: [`docs/plans/ml-experiments.md`](docs/plans/ml-experiments.md)  
+Kế hoạch triển khai: [`docs/plans/implementation-plan.md`](docs/plans/implementation-plan.md)  
+Phân rã task chi tiết: [`docs/plans/task-breakdown.md`](docs/plans/task-breakdown.md)  
+Quyết định kiến trúc: [`docs/decisions.md`](docs/decisions.md)  
+Kế hoạch triển khai API tối giản: [`docs/deployment-plan.md`](docs/deployment-plan.md)  
+Yêu cầu dữ liệu: [`docs/dataset-requirements.md`](docs/dataset-requirements.md)
 
 ---
 
-## Tóm tắt Quyết định & Giao thức Khoa học (Approved Principles)
+## Tóm tắt
 
-1. **Giao thức Đánh giá (Evaluation Protocol)**:
-   - **Validation Set**: Dùng để tuning siêu tham số, early stopping, và lựa chọn mô hình.
-   - **Locked Test Set**: Khóa hoàn toàn trong quá trình phát triển; chỉ mở ra đánh giá đối kháng cuối cùng đúng một lần. Tuyệt đối không dùng kết quả test để tối ưu mô hình.
-2. **Label Taxonomy**: Phân loại **3 lớp chuẩn**: `0: CLEAN`, `1: OFFENSIVE`, `2: HATE`. Không tự động chuyển về Binary.
-3. **Hợp đồng Xác suất (Probability Contract)**:
-   - Logistic Regression dùng `predict_proba`.
-   - LinearSVC bắt buộc dùng `CalibratedClassifierCV` (Platt scaling) để sinh xác suất hiệu chuẩn thực sự.
-   - Tổng xác suất 3 lớp $\approx 1.0$. Không giả mạo confidence.
-4. **Siêu tham số Tạm thời (`[PROVISIONAL]`)**:
-   - `max_length`, `batch_size`, learning rate, VRAM budget được gắn cờ tạm thời; chỉ chốt chính thức sau EDA và benchmark thực tế.
-5. **Inference & Tách biệt Kiểm thử Tích hợp**:
-   - `T4.2`: Baseline Integration Test (kiểm thử Baseline sớm, unblock Web MVP).
-   - `T4.3`: Transformer Integration Test (kiểm thử Transformer sau huấn luyện trên RTX 4060).
-   - `T4.4`: Conditional ONNX Benchmark (chỉ chuyển đổi khi có lợi ích thực tế).
-6. **Quy trình Artifacts cho Docker Space**:
-   - Version hóa qua Hugging Face Model Hub (pinned tag/revision); tự động fallback sang Baseline `.joblib` đóng gói sẵn nếu thiếu weights, ngăn ngừa container crash.
-7. **Đánh giá Khách quan (Objective Acceptance)**:
-   - Thay yêu cầu "Transformer bắt buộc vượt Baseline" bằng tiêu chí so sánh đối đầu khách quan, báo cáo trung thực số liệu và phân tích trade-offs.
+Đồ án **Vietnamese Toxic Comment Detection** được định hướng lại thành một **đồ án nghiên cứu Machine Learning có độ khó cao**, theo nguyên tắc **ML-first, API-minimal, reproducibility-first**.
+
+- **Không phải** ứng dụng web kiểm duyệt bình luận full-stack.
+- **Là** quá trình xây dựng, huấn luyện, so sánh, tối ưu và cải thiện nhiều mô hình phân loại văn bản tiếng Việt (3 lớp: CLEAN / OFFENSIVE / HATE), có bằng chứng thực nghiệm, ghi log đầy đủ qua **MLflow local**, và triển khai bằng **FastAPI REST API tối giản** (3 endpoint: `POST /predict`, `GET /health`, `GET /model-info`).
+
+**Phương pháp nghiên cứu chính thức:** **Hướng 2** — Xây dựng mô hình A (baseline), đánh giá hạn chế, cải thiện thành mô hình B (Transformer), tiếp tục C (Ensemble/Stacking) **không bắt buộc**, chỉ nếu có bằng chứng thực nghiệm. Không tự khẳng định mô hình sau tốt hơn trước khi có kết quả thực nghiệm.
+
+**4 quyết định đã khóa và đã thực hiện trong phiên này:**
+1. **Xóa hoàn toàn `frontend/` (React + Vite)** — đã xóa thư mục, cập nhật `setup.cfg`, `tests/test_smoke.py`, `.gitignore`.
+2. **Docker giữ nếu hosting yêu cầu** — không bắt buộc; FastAPI có thể chạy local trực tiếp.
+3. **MLflow local** — đã thiết lập `src/tracking/mlflow_tracker.py` (file store), chưa cài package `mlflow` (sẽ cài ở phiên implementation).
+4. **Ensemble/Stacking không bắt buộc** — chỉ thực hiện nếu cải thiện Macro-F1 ≥ 1% so với mô hình đơn tốt nhất; Soft Voting là phương án thay thế.
+
+Phiên này đã thực hiện: xóa `frontend/`, thiết lập MLflow local code. Không train, không deploy.

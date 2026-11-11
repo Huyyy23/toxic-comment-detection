@@ -1,36 +1,50 @@
 # Danh sách Câu hỏi Mở & Trạng thái Xác minh (Open Questions & Verification Ledger)
 
-Trạng thái: **SYNCHRONIZED WITH APPROVED SPEC**  
+Trạng thái: **DRAFT — PENDING USER REVIEW**  
 Ngày cập nhật: 2026-11-11  
-Dự án: **Vietnamese Toxic Comment Detection System**
+Dự án: **Vietnamese Toxic Comment Detection**  
+Phương pháp: **ML-first, API-minimal**
 
 ---
 
 ## 1. Các Quyết định Đã được Phê duyệt (Confirmed & Closed)
 
 | ID | Vấn đề | Quyết định đã phê duyệt |
-| :--- | :--- | :--- |
-| **DD-01** | **Chiến lược Dataset** | **Confirmed**: Tải cả `ViCTSD` và `UIT-ViHSD` để chạy EDA so sánh. Ưu tiên `UIT-ViHSD` làm tập chính, chốt chính thức sau EDA. |
-| **DD-02** | **Không gian Nhãn (Label Taxonomy)** | **Confirmed**: Sử dụng phân loại **3 lớp CLEAN / OFFENSIVE / HATE**. Không gộp về Binary. |
-| **DD-03** | **Kiến trúc Web & Triển khai** | **Confirmed**: Ứng dụng **Docker container** kết hợp **React (Frontend) + FastAPI (Backend)**, deploy lên **Hugging Face Spaces**. |
-| **DD-04** | **Phần cứng Huấn luyện Transformer** | **Confirmed**: Ưu tiên huấn luyện trên **Local GPU NVIDIA GeForce RTX 4060 8GB** (Google Colab/Kaggle là backup). |
-| **DD-05** | **Kiến trúc Inference Engine** | **Confirmed**: Đa backend (`SklearnBackend`, `PyTorchBackend`, `ONNXBackend` tùy chọn dựa trên benchmark). Không ép buộc ONNX từ đầu. |
-| **DD-06** | **Tính công bằng trong Thực nghiệm** | **Confirmed**: Mô hình truyền thống và Transformer bắt buộc dùng chung 1 tập test chuẩn và nhãn 3 lớp đồng nhất. |
+|---|---|---|
+| **DD-01** | **Chiến lược Dataset** | Tải cả `ViCTSD` và `UIT-ViHSD` cho EDA so sánh. Ưu tiên `UIT-ViHSD` làm tập chính, chốt chính thức sau EDA (EXP-001). |
+| **DD-02** | **Không gian Nhãn** | Sử dụng phân loại **3 lớp CLEAN / OFFENSIVE / HATE**. Không gộp về Binary. |
+| **DD-03** | **Hướng nghiên cứu chính** | **Hướng 2** (baseline → Transformer → Ensemble nếu có bằng chứng). Hướng 1 giữ lại như đối sánh khách quan trên Test đã khóa. |
+| **DD-04** | **Phần cứng Huấn luyện Transformer** | Ưu tiên GPU local RTX 4060 8GB; Colab/Kaggle T4 làm backup. |
+| **DD-05** | **Kiến trúc Inference** | FastAPI REST API tối giản (3 endpoint). Không bắt buộc frontend. Swagger UI tại `/docs`. |
+| **DD-06** | **Tính công bằng Thực nghiệm** | Traditional ML và Transformer dùng chung 1 tập test chuẩn, nhãn 3 lớp đồng nhất. |
+| **DD-07** | **Tracking** | MLflow local là công cụ tracking chính. Optuna tùy chọn cho HPO. |
+| **DD-08** | **Frontend** | Đã xóa hoàn toàn thư mục `frontend/` (React + Vite) trong phiên này. |
+| **DD-09** | **Docker** | Giữ nếu hosting yêu cầu (HF Spaces Docker, Render Docker). Không bắt buộc trong phiên này. |
+| **DD-10** | **Ensemble/Stacking** | Không bắt buộc. Chỉ thực hiện nếu cải thiện Macro-F1 ≥ 1% so với mô hình đơn tốt nhất; Soft Voting là phương án thay thế. |
 
 ---
 
-## 2. Các Hạng mục Xác minh Kỹ thuật Cần Thực hiện (Pending Technical Verifications)
+## 2. Các Hạng mục Xác minh Kỹ thuật Cần Thực hiện (Pending)
 
-### TV-01: Xác minh Điều kiện Triển khai Hugging Face Docker Space (Thực hiện tại M0)
-- **Mục tiêu**: Kiểm tra xem tài khoản Hugging Face của người dùng có đủ điều kiện tạo và chạy Docker Space miễn phí mà không bị chặn xác thực danh tính/thẻ tín dụng hay không.
-- **Tiêu chuẩn kiểm tra**:
-  - Có Hugging Face User Access Token (với quyền Write).
-  - Khởi tạo thử nghiệm hoặc kiểm tra API endpoint của Hugging Face Spaces.
-- **Phương án xử lý nếu không đủ điều kiện (Blocker Fallback)**:
-  - Ghi nhận blocker vào `docs/plans/deployment.md`.
-  - Giữ nguyên kiến trúc Docker và đề xuất phương án hosting thay thế (Render Free Docker Web Service, Fly.io hoặc chạy local container) cho người dùng phê duyệt, không tự ý đổi nền tảng.
+### TV-01: Xác minh Điều kiện Triển khai Hugging Face (M6)
+- **Mục tiêu**: Kiểm tra tài khoản HF có đủ điều kiện tạo Space miễn phí không bị chặn xác thực/thẻ tín dụng.
+- **Tiêu chuẩn**: Có HF Token (quyền write); kiểm tra API endpoint HF Spaces.
+- **Phương án dự phòng**: Render Free Docker, Railway, hoặc container Docker local.
 
-### TV-02: Quyết định Phụ thuộc Dataset (Thực hiện tại M1 sau khi tải dữ liệu)
-- **Tỉ lệ phân bố 3 lớp**: Đo đếm số lượng và % của `CLEAN`, `OFFENSIVE`, `HATE` trong `UIT-ViHSD`. Tính toán ma trận trọng số `class_weight` cho hàm mất mát.
-- **Phân bố độ dài chuỗi**: Đo độ dài từ/ký tự ở phân vị 95% để thiết lập `max_length` cho tokenizer (dự kiến 128 hoặc 192 tokens để tiết kiệm VRAM trên RTX 4060).
-- **Đặc trưng ngôn ngữ tiếng Việt**: Thống kê mức độ teencode, từ lóng, icon để xây dựng từ điển chuẩn hóa trong `src/data/preprocessor.py`.
+### TV-02: Quyết định Phụ thuộc Dataset (M1, sau EXP-001)
+- **Tỉ lệ phân bố 3 lớp**: Đếm số lượng và % `CLEAN` / `OFFENSIVE` / `HATE` trong `UIT-ViHSD`; tính `class_weight`.
+- **Phân bố độ dài chuỗi**: Đo độ dài từ/ký tự ở phân vị 95% để chốt `max_length` (dự kiến 128 hoặc 192 để tiết kiệm VRAM).
+- **Đặc trưng ngôn ngữ tiếng Việt**: Thống kê teencode, từ lóng, icon để xây dựng từ điển chuẩn hóa.
+
+### TV-03: (ĐÃ QUYẾT ĐỊNH — DD-08) Xóa hoàn toàn frontend
+- **Quyết định**: Loại bỏ hoàn toàn `frontend/`. Đã thực hiện xóa thư mục trong phiên này.
+- **Hành động**: Không còn cần xóa code; chỉ cần xác nhận `pytest` vẫn pass sau khi xóa.
+
+### TV-04: (ĐÃ QUYẾT ĐỊNH — DD-09) Docker giữ nếu hosting yêu cầu
+- **Quyết định**: Không bắt buộc Docker. Giữ `Dockerfile`/`docker-compose.yml` chỉ nếu nền tảng hosting yêu cầu container.
+
+### TV-05: (ĐÃ QUYẾT ĐỊNH — DD-07) MLflow local
+- **Quyết định**: Sử dụng MLflow local (file store). Không triển khai MLflow server trong phiên này.
+
+### TV-06: (ĐÃ QUYẾT ĐỊNH — DD-10) Ensemble/Stacking không bắt buộc
+- **Quyết định**: Không bắt buộc. Chỉ thực hiện nếu có bằng chứng thực nghiệm. Soft Voting là phương án thay thế; nếu không cải thiện, giữ mô hình đơn tốt nhất.
