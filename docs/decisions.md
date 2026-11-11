@@ -1,59 +1,87 @@
 # Báo cáo Quyết định Kiến trúc & Phân tích Đánh đổi (Architecture Decisions & Trade-offs)
 
-Trạng thái: **APPROVED & SYNCHRONIZED**  
+Trạng thái: **DRAFT — PENDING USER REVIEW**  
 Ngày cập nhật: 2026-11-11  
-Dự án: **Vietnamese Toxic Comment Detection System**
+Dự án: **Vietnamese Toxic Comment Detection**  
+Phương pháp: **ML-first, API-minimal, reproducibility-first**
 
 ---
 
-## ADR-01: Lựa chọn Giao diện & Kiến trúc Web (Docker với React + FastAPI)
+## ADR-01: Hướng nghiên cứu chính — Hướng 2 (Model A → B → C)
 
-- **Quyết định**: Triển khai theo mô hình tách biệt Frontend (React) và Backend (FastAPI), đóng gói chung trong Multi-stage Docker container chạy trên Hugging Face Spaces.
-- **Lý do**: Đảm bảo phân tách trách nhiệm (Separation of Concerns), cung cấp REST API chuẩn mực (`backend/schemas.py`), cho phép giao diện người dùng hiển thị trực quan các phân bố xác suất và biểu đồ mà không bị phụ thuộc vào widget của Streamlit.
+- **Quyết định**: Chọn **Hướng 2** (baseline A → đánh giá hạn chế → cải thiện thành Transformer B → cải thiện thành Ensemble/Stacking C nếu có bằng chứng) làm phương pháp nghiên cứu chính.
+- **Lý do**: Phù hợp mục tiêu chứng minh quá trình cải tiến, khuyến khích error analysis, dễ建构 câu chuyện nghiên cứu xuyên suốt báo cáo, có thể kết hợp traditional ML → Transformer → Ensemble.
+- **Hướng 1** (thiết kế N mô hình, so sánh, chọn tốt nhất) được giữ lại như **khía cạnh đối sánh khách quan trên tập test đã khóa**, không làm hai quy trình training độc lập.
+- **Ràng buộc**: Không tự khẳng định mô hình sau tốt hơn trước khi có kết quả thực nghiệm. Mỗi vòng có giả thuyết, baseline, metric và tiêu chí quyết định rõ ràng.
 
 ---
 
 ## ADR-02: Phân loại Nhãn & Giao thức Đánh giá Khoa học
 
-- **Không gian Nhãn**: **3 lớp CLEAN (0) / OFFENSIVE (1) / HATE (2)**. Tuyệt đối không tự động gộp về Binary.
-- **Nguyên tắc Khóa Tập Test (Locked Test Set Protocol)**:
-  - **Tập Train (70%)**: Huấn luyện trọng số mô hình.
-  - **Tập Validation (15%)**: Điều chỉnh siêu tham số (hyperparameters), early stopping, và lựa chọn mô hình (model selection).
-  - **Tập Test (15%)**: **Bị khóa (Locked/Sealed)** trong suốt quá trình phát triển. Chỉ mở ra đúng một lần để đối sánh khách quan giữa Best Baseline và Best Transformer. Tuyệt đối không dùng kết quả test set để tối ưu ngược lại mô hình.
-- **Tiêu chí So sánh Khách quan**: Không đặt giả định hay yêu cầu Transformer bắt buộc phải vượt Baseline; mục tiêu khoa học là ghi nhận trung thực toàn bộ chỉ số (Macro-F1, Per-class F1, Latency, Resource footprint) và phân tích các đánh đổi (trade-offs).
+- **Không gian Nhãn**: **3 lớp CLEAN (0) / OFFENSIVE (1) / HATE (2)**. Tuyệt đối không tự động gộp về nhị phân trừ khi có lý do kỹ thuật và bằng chứng rõ ràng, ghi nhận trong SPEC.
+- **Nguyên tắc Khóa Tập Test**:
+  - **Train (70%)**: Huấn luyện trọng số.
+  - **Validation (15%)**: Tuning hyperparameters, early stopping, model selection, calibration.
+  - **Test (15%)**: **Bị khóa hoàn toàn**; chỉ mở đúng một lần tại EXP-009 để đánh giá cuối cùng. Tuyệt đối không dùng kết quả Test để tối ưu ngược lại mô hình.
+- **Tiêu chí So sánh Khách quan**: Không đặt yêu cầu Transformer bắt buộc vượt Baseline; báo cáo trung tính toàn bộ chỉ số và phân tích trade-offs.
 
 ---
 
-## ADR-03: Hợp đồng Xác suất & Hiệu chuẩn Mô hình (Probability Calibration)
+## ADR-03: Hợp đồng Xác suất & Hiệu chuẩn Mô hình
 
-- **Vấn đề**: `LogisticRegression` tự nhiên hỗ trợ `.predict_proba()`. Tuy nhiên, `LinearSVC` chỉ sinh ra khoảng cách siêu phẳng (uncalibrated margins qua `decision_function()`), không phải xác suất và không cộng lại bằng 1.0.
+- **Vấn đề**: `LogisticRegression` hỗ trợ `.predict_proba()` tự nhiên. `LinearSVC` chỉ sinh `decision_function()` (uncalibrated margins), không phải xác suất.
 - **Quyết định**:
-  - Không tự viết hàm softmax tùy tiện trên decision scores để giả tạo confidence.
-  - Khi sử dụng LinearSVC, **bắt buộc bọc bằng `CalibratedClassifierCV(estimator=LinearSVC(...), cv=5, method='sigmoid')`** (Platt scaling) trên tập huấn luyện để tạo ra xác suất hiệu chuẩn thực sự.
-  - Hợp đồng API bắt buộc: $\sum P(\text{class}) \approx 1.0$, `confidence` là xác suất của lớp chiến thắng.
+  - Không tự viết softmax trên decision scores để giả tạo confidence.
+  - Khi dùng LinearSVC, bắt buộc `CalibratedClassifierCV(estimator=LinearSVC(...), cv=5, method='sigmoid')` (Platt scaling).
+  - Hợp đồng API: $\sum P(\text{class}) \approx 1.0$, `confidence` là xác suất của lớp chiến thắng.
 
 ---
 
-## ADR-04: Quản lý Siêu tham số Chưa kiểm chứng (`[PROVISIONAL]`)
+## ADR-04: Siêu tham số `[PROVISIONAL]`
 
-- **Quyết định**: Mọi giá trị tham số cấu hình hiện tại trong `configs/` (như `max_length = 160`, `batch_size = 16`, `learning_rate = 2e-5`, `VRAM budget < 7.0GB`, TF-IDF `max_features = 10000`) đều được đánh dấu là **`[PROVISIONAL / TẠM THỜI]`**.
-- Các giá trị này chỉ được quyết định chính thức sau khi có kết quả phân tích phân vị 95% độ dài chuỗi ở EDA (M1) và kiểm tra bộ nhớ VRAM thực tế trên GPU RTX 4060.
-
----
-
-## ADR-05: Chiến lược Tách biệt Kiểm thử Tích hợp (Decoupled Integration Tests)
-
-- **Quyết định**: Tách kiểm thử tích hợp thành 2 bước độc lập:
-  1. `T4.2: Baseline Integration Test`: Kiểm thử tích hợp Baseline model với `BasePredictor` và API sớm, unblock việc phát triển Web React + FastAPI (M5) ngay lập tức.
-  2. `T4.3: Transformer Integration Test`: Sau khi huấn luyện Transformer trên RTX 4060 (M3), kiểm thử tích hợp checkpoint vào `PyTorchBackend` và so sánh trực tiếp với Baseline.
-  3. `T4.4: Conditional ONNX Benchmark`: Đo đạc benchmark CPU PyTorch vs ONNX INT8, chỉ chuyển đổi khi chứng minh được giảm latency $\ge 25\%$.
+- Mọi giá trị trong `configs/` (`max_length=160`, `batch_size=16`, `learning_rate=2e-5`, `VRAM budget < 7.0GB`, TF-IDF `max_features=10000`) là tạm thời.
+- Chốt chính thức sau EDA (M1) và hardware profiling thực tế.
 
 ---
 
-## ADR-06: Quy trình Giao nhận & Version hóa Artifacts cho Production Docker
+## ADR-05: Kiến trúc Inference — FastAPI tối giản (3 endpoint), không frontend
 
-- **Bối cảnh**: Không thể lưu checkpoint nặng hàng trăm MB trên Git repository thông thường. Nếu container khởi động mà không có model weights thì ứng dụng sẽ bị crash.
-- **Quyết định**:
-  - Xây dựng công cụ `src/tools/download_artifacts.py` kiểm tra artifact theo thứ tự: Local -> Tải từ Hugging Face Hub (pinned revision `v1.0.0`) -> Fallback sang Baseline model `.joblib` đóng gói sẵn (<15MB).
-  - Đảm bảo container trên Hugging Face Spaces **luôn có model hoạt động**, không bị sập container ngay cả khi chưa tải xong Transformer.
-  - Bỏ các cam kết chủ quan chưa có benchmark như "an toàn tuyệt đối về RAM" hay "health check dưới 10 giây". Thay bằng cơ chế kiểm tra trạng thái thực tế và ghi nhận log đo đạc tài nguyên.
+- **Quyết định**: Production inference chỉ cần **FastAPI REST API** với 3 endpoint:
+  - `POST /predict` — nhận văn bản, trả về nhãn + xác suất hiệu chuẩn + latency.
+  - `GET /health` — kiểm tra model_loaded, backend, artifact status, device.
+  - `GET /model-info` — metadata mô hình, label taxonomy, calibration method, artifact version.
+- Swagger UI tại `/docs` dùng để kiểm thử và demo.
+- **Không bắt buộc frontend riêng.** Không React, không Vite, không CSS/UI framework, không dashboard, không auth/JWT, không user database.
+
+---
+
+## ADR-06: Xóa hoàn toàn frontend (đã thực hiện)
+
+- **Quyết định**: Đã xóa hoàn toàn thư mục `frontend/` (React + Vite) khỏi dự án. Dự án không còn phát triển giao diện web kiểm duyệt bình luận.
+- **Lý do**: Dự án được định hướng lại thành đồ án nghiên cứu ML, không phải phát triển full-stack. Frontend không phục vụ mục tiêu ML-first và tạo ra độ phức tạp không cần thiết.
+- **Hành động trong phiên này**: Đã xóa thư mục `frontend/` và các file liên quan (`package.json`). Đã cập nhật `setup.cfg`, `tests/test_smoke.py`, `.gitignore` để loại bỏ tham chiếu đến frontend.
+- **Rủi ro**: Nếu inference engine hoặc API có phụ thuộc ngầm vào frontend (ví dụ: serve static file), phải tách biệt rõ ràng. Smoke test đã pass sau khi xóa.
+
+---
+
+## ADR-07: Docker — giữ nếu hosting yêu cầu (không bắt buộc)
+
+- **Quyết định**: `Dockerfile` và `docker-compose.yml` **không bắt buộc** trong phiên này. Giữ lại chỉ nếu nền tảng hosting yêu cầu container (ví dụ Hugging Face Spaces Docker SDK, Render Docker).
+- **Lý do**: FastAPI có thể chạy trực tiếp local mà không cần Docker. Việc bắt buộc Docker tạo ra độ phức tạp triển khai không cần thiết cho giai đoạn nghiên cứu.
+- **Phương án triển khai**: FastAPI chạy local / Uvicorn, hoặc Docker nếu hosting yêu cầu. Kiến trúc API không đổi giữa hai trường hợp.
+
+---
+
+## ADR-08: MLflow local
+
+- **Quyết định**: Sử dụng **MLflow local** (file store) làm công cụ tracking chính.
+- **Lý do**: Đơn giản, không cần triển khai và duy trì MLflow server riêng. Có thể nâng lên remote server sau nếu nhóm nhiều máy cần tổng hợp runs.
+- **Mỗi run lưu**: Experiment ID, Run ID, dataset version/hash, split config, model architecture, hyperparameters, random seed, training duration, train/val metrics, environment metadata, checkpoint/artifacts, git commit (nếu có).
+
+---
+
+## ADR-09: Ensemble/Stacking không bắt buộc (conditional)
+
+- **Quyết định**: Ensemble / Stacking **không bắt buộc**. Chỉ thực hiện EXP-007 nếu có bằng chứng thực nghiệm cho thấy base models có lỗi bổ sung cho nhau và ensemble cải thiện Macro-F1 ≥ 1% so với mô hình đơn tốt nhất trên Validation.
+- **Phương án thay thế**: Soft Voting (nếu Stacking quá tốn tài nguyên). Nếu ensemble không mang lại lợi ích, giữ mô hình đơn tốt nhất.
+- **Ràng buộc**: Meta-learner không học từ Test set; out-of-fold predictions hợp lệ; không xem decision score của LinearSVC là xác suất.
