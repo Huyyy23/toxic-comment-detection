@@ -1,86 +1,37 @@
-# Danh sách Nhiệm vụ Dự án (Project Task List)
-## Vietnamese Toxic Comment Detection (3-Class: React + FastAPI in Docker)
+# Project TODO — Scratch-first v4.0
+**Plan only — 2026-11-11.** Trạng thái dưới đây chỉ phản ánh **kế hoạch mới**, không suy ra code/scaffold cũ đã bị xóa hoặc đã chạy thí nghiệm.
 
-Kế hoạch tham chiếu: [`tasks/plan.md`](plan.md) và [`docs/plans/task-breakdown.md`](../docs/plans/task-breakdown.md)
+## G0 — Data Contract (TV3 nhóm trưởng)
+- [ ] Kiểm chứng source/license/schema/label 3 lớp của UIT-ViHSD (TV1 hỗ trợ audit).
+- [ ] Check duplicate, nhãn mâu thuẫn và leakage; quyết định official split hoặc stratified 70/15/15.
+- [ ] Khóa test; lưu dataset version/hash, seed, ID→split manifest; ban hành input/output contract.
+- [ ] Cả 4 thành viên xác nhận dùng chung contract.
 
----
+## Parallel work — các nhánh độc lập sau G0
+- [ ] **TV1 EXP-01:** EDA; raw/basic/teencode + TF-IDF word/char + Logistic Regression; ≥3 official runs.
+- [ ] **TV2 EXP-02:** LinearSVC + TF-IDF, tuning C/n-grams, feature selection; ≥3 official runs. Optional RBF SVC.
+- [ ] **TV3 EXP-03:** random-init LSTM → BiLSTM → BiLSTM+Attention; ≥3 official runs.
+- [ ] **TV4 EXP-04:** random-init TextCNN one/multi-kernel, filters/dropout; ≥3 official runs.
+- [ ] Mỗi TV xuất checkpoint/config/hash/MLflow run IDs + validation predictions + Macro-F1/per-class F1.
 
-### Milestone 0: Cấu trúc Dự án, Khung Kiểm chuẩn & Xác minh HF
-- [x] **Task T0.1**: Khởi tạo cấu trúc thư mục chuẩn và các file cấu hình môi trường (`requirements.txt`, `requirements-dev.txt`, frontend `package.json`, `.gitignore`, `configs/`).
-- [x] **Task T0.2**: Thiết lập khung kiểm thử tự động `pytest` và cấu hình linting (`flake8`) cho backend kèm bài test mẫu.
-- [ ] **Task T0.3**: Xác minh điều kiện triển khai Hugging Face Docker Space (Script `src/tools/check_hf_eligibility.py` đã tạo; báo cáo ghi nhận `ATTENTION / PENDING TOKEN` do chưa có token; chưa đánh dấu hoàn tất verification).
+## Improvement and research
+- [ ] TV1: preprocessing ablation và phân tích lỗi Logistic Regression.
+- [ ] TV2: SVM feature/hyperparameter ablation và training-cost comparison.
+- [ ] TV3 EXP-05: cross-model error analysis ≥30 validation errors, hypotheses for improvement.
+- [ ] TV4: CNN kernel/dropout ablation.
+- [ ] **Conditional TV4 EXP-06:** error diversity → voting/stacking (OOF nếu dùng); hoặc ghi lý do skipped.
+- [ ] **Optional TV3 EXP-07:** pretrained PhoBERT fine-tuning **chỉ sau khi scratch BiLSTM hoàn thành**, hoặc ghi lý do skipped.
 
-#### 🏁 Checkpoint 0: Khung Dự án & Ghi nhận Trạng thái Triển khai
-- [x] Cấu trúc code Python và React sẵn sàng.
-- [x] Lệnh `pytest tests/` thực thi thành công không lỗi cú pháp (4 passed, 1 skipped).
-- [ ] Báo cáo điều kiện triển khai Hugging Face Docker Space: **PENDING TOKEN / CHƯA XÁC MINH** (Ghi nhận blocker, chờ cung cấp token ở M6).
+## Finalization
+- [ ] TV3 freeze candidate models/hyperparameters bằng validation, ghi danh sách cuối.
+- [ ] TV1 + cả nhóm EXP-08: chạy locked test final một đợt, không tune theo test.
+- [ ] Cả nhóm: reproducibility report/notebooks, 4 phần thí nghiệm cá nhân.
+- [ ] Minimal FastAPI demo `/predict`, `/health`, `/model-info`; hosting chỉ sau khi kiểm tra eligibility.
 
----
+## Coordination
+- [ ] Mỗi thành viên branch riêng, PR review; không sửa split độc lập.
+- [ ] Nếu chung GPU 8GB: schedule DL jobs, không chạy hai job lớn đồng thời.
+- [ ] Mỗi tuần review MLflow runs và artifacts, không chỉ báo cáo miệng.
 
-### Milestone 1: Pipeline Dữ liệu, EDA & Phân chia 3 Lớp
-- [ ] **Task T1.1**: Viết script `src/data/download.py` tải raw data từ Hugging Face Hub (`ViCTSD`, `UIT-ViHSD`) về `data/raw/`.
-- [ ] **Task T1.2**: Phân tích khám phá dữ liệu (EDA), thống kê phân bố 3 lớp (`CLEAN`, `OFFENSIVE`, `HATE`), độ dài câu (95th percentile để chốt `max_length`), xuất `docs/eda_report.md`.
-- [ ] **Task T1.3**: Xây dựng module tiền xử lý văn bản tiếng Việt `src/data/preprocessor.py` (chuẩn hóa Unicode NFC, khoảng trắng, teencode dictionary).
-- [ ] **Task T1.4**: Xây dựng module chia dữ liệu `src/data/splitter.py` (Stratified split 3 lớp 70/15/15, lưu `train.parquet`, `val.parquet`, và `test.parquet` [LOCKED], assert chống rò rỉ train/test).
-
-#### 🏁 Checkpoint 1: Dữ liệu Sạch & Tập Test Đã Khóa
-- [ ] Báo cáo EDA hoàn tất, xác định tỉ lệ 3 lớp và chốt thông số `max_length`.
-- [ ] Tập test chuẩn 3 lớp duy nhất được tạo ra tại `data/processed/test.parquet`, bị khóa và không có rò rỉ dữ liệu.
-
----
-
-### Milestone 2: Mô hình Cơ sở Truyền thống (Validation Tuned)
-- [ ] **Task T2.1**: Xây dựng module tính toán độ đo đa chiều 3 lớp `src/evaluation/metrics.py` (Macro-F1, Per-class F1, Confusion Matrix).
-- [ ] **Task T2.2**: Huấn luyện mô hình Baseline `src/models/baseline.py` (TF-IDF word/char + Logistic Regression / LinearSVC) trên tập Train, bọc LinearSVC bằng `CalibratedClassifierCV` (Platt scaling).
-- [ ] **Task T2.3**: Đánh giá, tinh chỉnh siêu tham số và lựa chọn mô hình Baseline tốt nhất trên **Validation set (`val.parquet`)**, lưu `models/baselines/baseline_model.joblib`. Xuất `docs/experiments/baseline_val_results.md`.
-
-#### 🏁 Checkpoint 2: Hoàn tất Baseline Trên Validation Set
-- [ ] Best Baseline model 3 lớp được lựa chọn trên Validation set và lưu trữ tại `models/baselines/`.
-- [ ] Đạt chuẩn hợp đồng xác suất hiệu chuẩn ($\sum P \approx 1.0$).
-
----
-
-### Milestone 3: Thực nghiệm Transformer trên GPU Local RTX 4060
-*(Có thể chạy song song với M4/M5)*
-- [ ] **Task T3.1**: Xây dựng pipeline fine-tuning Transformer tiếng Việt `src/models/transformer.py` (`uitnlp/visobert` / `PhoBERT`) tối ưu VRAM RTX 4060 (Mixed precision `fp16`, gradient accumulation, class-weighted loss).
-- [ ] **Task T3.2**: Huấn luyện trên RTX 4060 (Train set), lưu checkpoint tốt nhất theo **Validation Macro-F1** (Early stopping trên tập Validation). Xuất `docs/experiments/transformer_val_results.md`.
-- [ ] **Task T3.3**: Phân tích lỗi trên tập Validation (ít nhất 30 mẫu sai), lập báo cáo định tính tại `docs/experiments/error_analysis_val.md`.
-
-#### 🏁 Checkpoint 3: Hoàn tất Thực nghiệm Transformer trên Validation Set
-- [ ] Best Transformer checkpoint được lựa chọn hoàn toàn dựa trên tập Validation.
-- [ ] Hoàn thành báo cáo phân tích lỗi định tính.
-
----
-
-### Milestone 4: Inference Engine Đa Backend & Kiểm thử Tích hợp Tách biệt
-- [ ] **Task T4.1**: Xây dựng interface suy luận đa backend `src/inference/predictor.py` (`BasePredictor`, `SklearnBackend`, `PyTorchBackend`), tuân thủ schema `backend/schemas.py`.
-- [ ] **Task T4.2**: Xây dựng test suite **Baseline Integration Test** `tests/test_baseline_integration.py` (kiểm thử tích hợp Baseline sớm, unblock Web MVP).
-- [ ] **Task T4.3**: Xây dựng test suite **Transformer Integration Test** `tests/test_transformer_integration.py` (kiểm thử tích hợp Transformer checkpoint, đo latency và memory).
-- [ ] **Task T4.4**: Viết script benchmark đo đạc PyTorch CPU vs ONNX INT8 (`src/models/export_onnx.py`), chỉ kích hoạt ONNX khi chứng minh được lợi ích thực tế ($\ge 25\%$ latency reduction).
-
-#### 🏁 Checkpoint 4: Core Engine Được Kiểm thử Tích hợp Toàn diện
-- [ ] Cả hai nhóm mô hình được kiểm thử tích hợp riêng biệt qua interface thống nhất.
-- [ ] Hợp đồng xác suất được kiểm chứng tự động 100%.
-
----
-
-### Milestone 5: Xây dựng Ứng dụng Web (React + FastAPI)
-- [ ] **Task T5.1**: Xây dựng FastAPI backend `backend/main.py` với các endpoints `/api/predict`, `/api/predict-batch`, `/api/model-info`, `/api/health`.
-- [ ] **Task T5.2**: Xây dựng giao diện React cho phân tích bình luận đơn lẻ (Badge màu 3 lớp, thanh phân bố xác suất).
-- [ ] **Task T5.3**: Xây dựng giao diện React cho phân tích tệp CSV hàng loạt và trang Model Card hiển thị báo cáo khoa học.
-- [ ] **Task T5.4**: Kiểm thử End-to-End Web & API cục bộ (`tests/test_api.py`, `npm run build` xuất `dist/`).
-
-#### 🏁 Checkpoint 5: Web App Hoàn chỉnh trên Môi trường Local
-- [ ] Frontend React và Backend FastAPI kết nối hoàn hảo, phục vụ cả phân tích đơn lẻ và hàng loạt.
-
----
-
-### Milestone 6: Đánh giá Tập Test Đã Khóa, Docker & Deployment
-- [ ] **Task T6.1**: **Đánh giá đối kháng trên tập Test đã khóa** (`src/evaluation/evaluate_locked_test.py` - mở tập test đúng 1 lần, báo cáo trung thực toàn bộ chỉ số vào `docs/experiments/final_test_benchmark.md`).
-- [ ] **Task T6.2**: Xây dựng Multi-stage Dockerfile, tích hợp công cụ tải artifact `src/tools/download_artifacts.py` (có fallback), cấu hình `docker-compose.yml`, kiểm thử container cục bộ trên port 7860.
-- [ ] **Task T6.3**: Triển khai lên Hugging Face Spaces (Docker SDK) và chạy Live Smoke Test (cung cấp `HF_TOKEN`; fallback Render/Local nếu vướng thẻ tín dụng).
-- [ ] **Task T6.4**: Hoàn thiện tài liệu nghiệm thu, hướng dẫn sử dụng và `README.md`.
-
-#### 🏁 Checkpoint 6: Nghiệm thu Toàn diện Đồ án
-- [ ] Ứng dụng live công khai 24/7 trên Hugging Face Spaces (hoặc phương án dự phòng được phê duyệt).
-- [ ] Báo cáo đối sánh khách quan trên tập test đã khóa, hoàn thành 100% tiêu chí nghiệm thu.
+Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-experiments.md) · [task breakdown](../docs/plans/task-breakdown.md).
+**Chỉ sửa PLAN/SPEC lần này — không triển khai bất cứ TODO nào.**
