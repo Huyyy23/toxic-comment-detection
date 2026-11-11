@@ -1,50 +1,31 @@
-# Implementation Plan: Vietnamese Toxic Comment Detection System
+# Team Execution Plan — Vietnamese Toxic Comment Detection
 
-## Overview
-Dự án xây dựng một hệ thống Machine Learning hoàn chỉnh từ khâu nghiên cứu dữ liệu tiếng Việt, đối sánh khoa học khách quan giữa mô hình truyền thống (Traditional ML) và mô hình học sâu Transformer (PhoBERT/ViSoBERT) trên **cùng một tập test 3 lớp duy nhất (CLEAN / OFFENSIVE / HATE) bị khóa hoàn toàn trong quá trình phát triển**, đóng gói suy luận đa backend với hợp đồng xác suất hiệu chuẩn, và triển khai ứng dụng Web hiện đại (**React frontend + FastAPI backend trong Docker container**) trên Hugging Face Spaces.
+**Version 4.0.0 · 2026-11-11 · PLAN ONLY**
 
-Tài liệu chi tiết được tổ chức tại thư mục `docs/plans/`:
-- Tổng quan kế hoạch & Critical Path: [`docs/plans/implementation-plan.md`](../docs/plans/implementation-plan.md)
-- Kế hoạch Thực nghiệm Học máy & Evaluation Protocol: [`docs/plans/ml-experiments.md`](../docs/plans/ml-experiments.md)
-- Kế hoạch Triển khai, Docker & Giao nhận Artifact: [`docs/plans/deployment.md`](../docs/plans/deployment.md)
-- Chi tiết Phân rã 24 Tasks & Acceptance Criteria: [`docs/plans/task-breakdown.md`](../docs/plans/task-breakdown.md)
+## Quyết định cuối cùng
+- Đồ án Machine Learning **scratch-first** trên 3 nhãn CLEAN/OFFENSIVE/HATE.
+- 4 mô hình chính train từ đầu: **Logistic Regression (TV1), LinearSVC (TV2), LSTM→BiLSTM→Attention (TV3/lead), TextCNN (TV4)**.
+- **TV3 tùy chọn fine-tune pretrained PhoBERT** làm đối chứng, công bố rõ là pretrained benchmark, không thay thế model scratch.
+- Ensemble do TV4 dẫn dắt **chỉ khi** các dự đoán validation chứng minh việc kết hợp có triển vọng.
+- Không frontend React; FastAPI `POST /predict`, `GET /health`, `GET /model-info` làm demo tối giản.
 
----
+## Workflow song song
+1. **G0 (TV3):** kiểm tra dataset, label mapping, dedup/leakage, chốt official split hoặc 70/15/15 + seed/hash/manifest. TV1 làm EDA; TV2–TV4 code skeleton trước khi G0 xong.
+2. **G1:** 4 người training song song trên **cùng** Train/Validation; mỗi người ≥3 cấu hình thực nghiệm + MLflow runs, checkpoints, predictions.
+3. **G2:** TV1/TV2/TV4 ablation, TV3 error analysis; TV4 ensemble conditional; TV3 PhoBERT optional sau khi scratch BiLSTM xong. Freeze models theo Validation Macro-F1.
+4. **G3:** TV1 tổ chức đánh giá final locked test, TV3 review; cả nhóm báo cáo/notebook; tích hợp FastAPI minimal nếu đủ điều kiện.
 
-## Architecture Decisions & Strategy
-1. **Giao thức Đánh giá (Evaluation Protocol)**:
-   - Tập Train (70%): Huấn luyện weights.
-   - Tập Validation (15%): Tuning siêu tham số, early stopping, và lựa chọn mô hình (Model Selection).
-   - Tập Test (15% - **LOCKED**): Khóa hoàn toàn, chỉ mở ra đúng 1 lần tại `T6.1` để đối sánh khách quan.
-2. **Label Taxonomy**: Phân loại 3 lớp chuẩn: `0: CLEAN`, `1: OFFENSIVE`, `2: HATE`. Không tự chuyển về Binary.
-3. **Hợp đồng Xác suất (Probability Contract)**:
-   - Logistic Regression dùng `predict_proba`.
-   - LinearSVC bắt buộc dùng `CalibratedClassifierCV` (Platt scaling).
-   - Tổng xác suất 3 lớp $\approx 1.0$. Không giả mạo confidence.
-4. **Siêu tham số Tạm thời (`[PROVISIONAL]`)**:
-   - `max_length = 160`, `batch_size = 16`, `learning_rate = 2e-5`, `VRAM budget < 7.0GB`, TF-IDF `max_features = 10000` được đánh dấu tạm thời, chốt sau EDA và hardware profiling.
-5. **Tách biệt Kiểm thử Tích hợp**:
-   - `T4.2`: Baseline Integration Test (kiểm thử Baseline sớm, unblock Web MVP).
-   - `T4.3`: Transformer Integration Test (kiểm thử Transformer sau huấn luyện trên RTX 4060).
-   - `T4.4`: Conditional ONNX Benchmark (chỉ chuyển đổi khi có lợi ích thực tế).
-6. **Quy trình Artifacts cho Production Docker**:
-   - Version hóa qua Hugging Face Model Hub (pinned tag/revision); tự động fallback sang Baseline `.joblib` đóng gói sẵn nếu thiếu weights, ngăn ngừa container crash.
-7. **Đánh giá Khách quan (Objective Acceptance)**:
-   - Báo cáo trung thực toàn bộ chỉ số bất kể Transformer cao hơn, tương đương hay thấp hơn Baseline.
+## Lộ trình đề xuất 4 tuần
+| Tuần | TV1 | TV2 | TV3 (lead) | TV4 |
+|---|---|---|---|---|
+| 1 | EDA + LR setup | SVM setup | G0 + LSTM setup | CNN setup |
+| 2 | LR experiments | SVM experiments | LSTM/BiLSTM experiments | CNN experiments |
+| 3 | LR ablation | SVM ablation | Error analysis + optional PhoBERT | CNN ablation + optional ensemble |
+| 4 | Final test coordination | SVM report | Integrate/technical review | CNN report + API support |
 
----
+## Quy tắc nghiệm thu
+Mỗi người nộp scripts, ≥3 official variants, MLflow runs và seed/dataset hash, val Macro-F1/per-class scores, checkpoint, predictions IDs, ablation + error analysis, notebook/report. **Không dùng test để tune**. Cùng một GPU thì LSTM/TextCNN/PhoBERT chia lịch train dù code phát triển song song.
 
-## Critical Path & Execution Order
-`M0` (Setup & HF Check) ──→ `M1` (Data & EDA) ──→ `M2` (Baseline on Val) ──→ `T4.1` (Inference Interface) ──→ `T4.2` (Baseline Integration Test) ──→ `M5` (React + FastAPI Web MVP) ──→ `M3` (Transformer on RTX 4060) ──→ `T4.3` (Transformer Integration Test) ──→ `T4.4` (ONNX Benchmark) ──→ `T6.1` (Locked Test Eval) ──→ `T6.2` (Docker) ──→ `T6.3` (Deploy) ──→ `T6.4` (Acceptance)
+Chi tiết: [SPEC](../SPEC.md) · [Full spec](../docs/spec.md) · [Experiments](../docs/plans/ml-experiments.md) · [Tasks](../docs/plans/task-breakdown.md) · [TODO](todo.md).
 
----
-
-## Tasks Index (24 Tasks)
-Theo dõi chi tiết tại: **[`tasks/todo.md`](todo.md)**.
-- Milestone 0: Cấu trúc Dự án, Khung Kiểm chuẩn & Xác minh HF (`T0.1` - `T0.3`)
-- Milestone 1: Pipeline Dữ liệu, EDA & Phân chia 3 Lớp (`T1.1` - `T1.4`)
-- Milestone 2: Mô hình Cơ sở Truyền thống (Validation Tuned) (`T2.1` - `T2.3`)
-- Milestone 3: Thực nghiệm Transformer trên GPU RTX 4060 (`T3.1` - `T3.3`)
-- Milestone 4: Inference Engine Đa Backend & Kiểm thử Tích hợp Tách biệt (`T4.1` - `T4.4`)
-- Milestone 5: Xây dựng Ứng dụng Web React + FastAPI (`T5.1` - `T5.4`)
-- Milestone 6: Đánh giá Tập Test Đã Khóa, Docker & Deployment (`T6.1` - `T6.4`)
+**Đợt này chỉ sửa SPEC/PLAN; không code, train, download, sửa config, hay deploy.**
