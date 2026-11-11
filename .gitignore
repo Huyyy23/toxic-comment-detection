@@ -63,3 +63,7 @@ Thumbs.db
 .env
 hf_token.txt
 *.token
+# Project instruction files (untracked)
+AGENTS.md
+# graphify knowledge graph outputs
+graphify-out/
