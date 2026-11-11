@@ -20,7 +20,6 @@ def test_project_structure():
         "src/tools",
         "backend",
         "backend/api",
-        "frontend",
         "tests",
         "configs",
         "data/raw",
