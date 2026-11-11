@@ -1,19 +1,39 @@
 # Baseline configuration: TF-IDF + Classifier for 3-class Toxic Comment Detection
-model_type: "logistic_regression" # logistic_regression | linear_svc
+# NOTE: All hyperparameters below are [PROVISIONAL]. Final values will be tuned on the Validation set.
+
+model_type: "logistic_regression" # Options: logistic_regression | linear_svc
 random_state: 42
 
+# TF-IDF Feature Extraction [PROVISIONAL]
 tfidf:
-  ngram_range_word: [1, 2]
-  ngram_range_char: [2, 4]
-  max_features: 10000
+  ngram_range_word: [1, 2] # PROVISIONAL
+  ngram_range_char: [2, 4] # PROVISIONAL
+  max_features: 10000      # PROVISIONAL (subject to memory and vocabulary size in EDA)
   sublinear_tf: true
   min_df: 2
 
+# Classifier Parameters [PROVISIONAL]
 classifier:
-  C: 1.0
-  class_weight: "balanced"
-  max_iter: 1000
+  logistic_regression:
+    C: 1.0                 # PROVISIONAL: hyperparameter grid search on Validation set [0.1, 1.0, 10.0]
+    class_weight: "balanced"
+    max_iter: 1000
+    solver: "lbfgs"
+  linear_svc:
+    C: 1.0                 # PROVISIONAL: grid search on Validation set [0.1, 1.0, 10.0]
+    class_weight: "balanced"
+    max_iter: 2000
 
+# Probability Calibration Contract:
+# - Logistic Regression naturally supports predict_proba.
+# - LinearSVC decision_function does NOT produce calibrated probabilities.
+#   If linear_svc is selected, CalibratedClassifierCV must be used to guarantee genuine calibrated probabilities.
+calibration:
+  enabled_for_svc: true
+  method: "sigmoid" # Platt scaling
+  cv: 5 # 5-fold cross-validation on Training set (NOT on Test set)
+
+# 3-Class Label Taxonomy [CONFIRMED]
 labels:
   0: "CLEAN"
   1: "OFFENSIVE"

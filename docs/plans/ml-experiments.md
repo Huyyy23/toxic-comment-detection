@@ -9,79 +9,80 @@ Dự án: **Vietnamese Toxic Comment Detection System**
 
 ## 1. NGUYÊN TẮC THỰC NGHIỆM KHOA HỌC & ĐỐI SÁNH CÔNG BẰNG
 
-1. **Không gian Nhãn 3 Lớp Bắt buộc**:
+1. **Phân định Nghiêm ngặt Vai trò các Phân vùng Dữ liệu**:
+   - **Tập Train (70%)**: Huấn luyện trọng số mô hình và trích xuất đặc trưng TF-IDF.
+   - **Tập Validation (15%)**: **DUY NHẤT** được dùng để điều chỉnh siêu tham số (tuning C, learning rate, batch size), early stopping và lựa chọn mô hình tốt nhất (Model Selection).
+   - **Tập Test (15%) - BỊ KHÓA (LOCKED / SEALED)**:
+     - Bị khóa hoàn toàn trong toàn bộ quá trình nghiên cứu và tối ưu.
+     - Chỉ mở ra đúng một lần ở bước đánh giá cuối cùng để đối sánh khách quan giữa Baseline và Transformer đã chốt từ tập Validation.
+     - **Tuyệt đối không dùng kết quả Test set để tối ưu ngược lại mô hình, chọn tham số hay sửa đổi pipeline**.
+2. **Không gian Nhãn 3 Lớp Bắt buộc**:
    - `0: CLEAN`: Lành mạnh / không độc hại.
    - `1: OFFENSIVE`: Xúc phạm, thô tục, chửi thề.
    - `2: HATE`: Thù ghét, kỳ thị, công kích định danh nghiêm trọng.
    - *Tuyệt đối không chuyển đổi về nhãn nhị phân (Binary)* để đảm bảo độ mịn của bài toán.
-2. **Nguyên tắc "Cùng Tập Test Chuẩn" (Identical Test Set)**:
-   - Mô hình truyền thống (Traditional ML) và mô hình Transformer bắt buộc phải được đánh giá trên **cùng một tập test duy nhất** (`data/processed/test.parquet`) với nhãn tương thích 100%.
-   - Tập Test không được dùng cho hyperparameter tuning, early stopping hay threshold tuning.
 3. **Chống Rò rỉ Thông tin (Leakage Prevention)**:
    - TF-IDF vectorizer chỉ `fit` trên tập Train.
    - Kiểm tra giao thoa văn bản: `set(train_texts) ∩ set(test_texts) == 0`.
+4. **Hợp đồng Xác suất Nghiêm ngặt (Probability Contract)**:
+   - Logistic Regression sử dụng `.predict_proba()` chính thống.
+   - LinearSVC sử dụng `CalibratedClassifierCV(estimator=LinearSVC(...), cv=5, method='sigmoid')` (Platt scaling) để sinh xác suất hiệu chuẩn thực sự.
+   - Không được giả mạo confidence bằng hàm softmax tự chế trên uncalibrated decision margins.
 
 ---
 
 ## 2. KẾ HOẠCH HUẤN LUYỆN TRÊN GPU LOCAL (NVIDIA RTX 4060 8GB)
 
-### 2.1. Cấu hình Môi trường Phần cứng & Tối ưu VRAM
-- **GPU**: NVIDIA GeForce RTX 4060 Laptop/Desktop (8GB GDDR6 VRAM).
-- **Hệ thống CUDA & PyTorch**: PyTorch với CUDA 11.8 hoặc 12.x hỗ trợ Tensor Cores.
-- **Kỹ thuật tiết kiệm VRAM (VRAM Budget < 7.0 GB)**:
-  - **Mixed Precision (`fp16` hoặc `bf16`)**: Giảm 50% bộ nhớ activations và weights.
-  - **Batch Size & Gradient Accumulation**:
-    - `per_device_train_batch_size = 16`
-    - `gradient_accumulation_steps = 2` (tạo effective batch size = 32)
-  - **Độ dài Tokenizer giới hạn (`max_length`)**: Đặt ở mức 128 hoặc 160 tokens (dựa trên phân vị 95% của EDA).
-  - **DataLoader**: `pin_memory=True`, `num_workers=2`.
-- **Dự phòng (Fallback)**: Google Colab / Kaggle T4 GPU (chỉ sử dụng khi local gặp lỗi CUDA hoặc tràn VRAM).
-
-### 2.2. Không gian Siêu Tham số Huấn luyện (Hyperparameter Search Space)
-- **Mô hình Ứng viên**:
-  1. `uitnlp/visobert` (Ưu tiên số 1: Pretrained trên mạng xã hội tiếng Việt).
-  2. `vinai/phobert-base-v2` (Pretrained tổng quát, cần word segmentation).
-- **Hàm mất mát**: `CrossEntropyLoss(weight=class_weights)` trong đó `class_weights` được tính toán tự động nghịch đảo tỉ lệ 3 lớp từ tập train.
-- **Tối ưu hóa**: `AdamW` với learning rate: $2\times 10^{-5}$ đến $3\times 10^{-5}$, weight decay = 0.01.
-- **Scheduler**: Linear Warmup 10% và Cosine Annealing.
-- **Epochs & Early Stopping**: Tối đa 5 epochs, early stopping sau 2 epochs nếu Validation Macro-F1 không tăng.
+### 2.1. Cấu hình Môi trường & Siêu Tham số Tạm thời (`[PROVISIONAL]`)
+*Mọi thông số dưới đây là **`[PROVISIONAL / TẠM THỜI]`**, sẽ được điều chỉnh chính thức dựa trên kết quả EDA và benchmark VRAM:*
+- **Mô hình Ứng viên**: `uitnlp/visobert` (Social Media Domain) và `vinai/phobert-base-v2`.
+- **Cấu hình Huấn luyện Tạm thời (Chờ Validation Tuning)**:
+  - `per_device_train_batch_size = 16` [PROVISIONAL]
+  - `gradient_accumulation_steps = 2` (effective batch size = 32) [PROVISIONAL]
+  - `learning_rate = 2e-5` (grid search [1e-5, 2e-5, 3e-5] trên Validation set) [PROVISIONAL]
+  - `max_length = 160` (sẽ chốt dựa trên phân vị 95% độ dài chuỗi ở EDA) [PROVISIONAL]
+  - `VRAM budget < 7.0GB` (sẽ đo đạc bộ nhớ thực tế qua batch profiling) [PROVISIONAL]
+  - Mixed precision `fp16 = True` [PROVISIONAL: phụ thuộc kiểm tra driver CUDA local]
+  - Early stopping: Dừng sau 2 epochs nếu Validation Macro-F1 không tăng.
 
 ---
 
-## 3. THIẾT KẾ ĐỐI SÁNH KHOA HỌC (Benchmarking Protocol)
+## 3. THIẾT KẾ ĐỐI SÁNH KHOA HỌC KHÁCH QUAN (Objective Benchmarking)
 
 ### 3.1. Nhóm 1: Mô hình Cơ sở Truyền thống (Traditional ML Baselines)
-- **Đặc trưng**: TF-IDF Word N-grams (1, 2) + Char N-grams (2, 4), `max_features = 10000`.
-- **Phân loại**:
-  - `Baseline 1`: Multinomial Logistic Regression (`multi_class='multinomial'`, `class_weight='balanced'`).
-  - `Baseline 2`: LinearSVC (`multi_class='ovr'`, `class_weight='balanced'`).
-- **Thời gian chạy**: < 2 phút trên CPU.
+- **Đặc trưng**: TF-IDF Word N-grams (1, 2) + Char N-grams (2, 4), `max_features = 10000` [PROVISIONAL].
+- **Mô hình**:
+  1. `Logistic Regression` (`class_weight='balanced'`).
+  2. `LinearSVC` bọc trong `CalibratedClassifierCV(cv=5, method='sigmoid')`.
+- **Lựa chọn Baseline Tốt nhất**: Chọn mô hình có Macro-F1 cao nhất trên tập **Validation**.
 
 ### 3.2. Nhóm 2: Mô hình Transformer Nâng cao
-- Fine-tuned trên GPU RTX 4060, lưu checkpoint tốt nhất tại `models/transformer_best/`.
+- Fine-tuned trên GPU RTX 4060 (Train set), lưu checkpoint tốt nhất dựa trên **Validation Macro-F1**.
 
-### 3.3. Bảng Đối sánh Chuẩn (Comparison Matrix)
-*Điền bằng số liệu thực nghiệm thực tế sau khi chạy mã nguồn:*
+### 3.3. Đánh giá Đối kháng trên Tập Test Đã Khóa (Final Locked Test Evaluation)
+- Cả Best Baseline và Best Transformer cùng chạy dự đoán trên tập `test.parquet`.
+- **Nguyên tắc Đánh giá Khách quan**: Không bắt buộc Transformer phải vượt Baseline; mục tiêu là ghi nhận trung thực toàn bộ chỉ số:
+  - Macro-F1, Per-class Precision/Recall/F1 cho 3 lớp (`CLEAN`, `OFFENSIVE`, `HATE`).
+  - Ma trận nhầm lẫn (Confusion Matrix).
+  - Độ trễ suy luận trên CPU (ms) và dung lượng mô hình (MB).
+  - Phân tích nguyên nhân và trade-offs (ví dụ: Transformer chính xác hơn nhưng tốn tài nguyên hơn, hoặc ngược lại).
 
-| Mô hình (Model) | Backend | Macro-F1 | Clean F1 | Offensive F1 | Hate F1 | Latency (CPU ms) | Artifact Size (MB) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TF-IDF + Logistic Reg.** | Sklearn | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
-| **TF-IDF + LinearSVC** | Sklearn | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
-| **PhoBERT-base-v2** | PyTorch | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
-| **ViSoBERT** | PyTorch | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
-| **ViSoBERT (ONNX INT8)** | ONNX | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
+| Mô hình (Model) | Backend | Val Macro-F1 | Test Macro-F1 | Test Clean F1 | Test Offensive F1 | Test Hate F1 | Latency (CPU ms) | Size (MB) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Best Baseline (Calibrated)** | Sklearn | *TBD (Val)* | *TBD (Test)* | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
+| **Best Transformer** | PyTorch | *TBD (Val)* | *TBD (Test)* | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
+| **Best Transformer (ONNX INT8)** | ONNX | *TBD (Val)* | *TBD (Test)* | *TBD* | *TBD* | *TBD* | *TBD* | *TBD* |
 
 ---
 
-## 4. QUY TRÌNH KIỂM THỬ TÍCH HỢP ĐA BACKEND & BENCHMARK ONNX
+## 4. QUY TRÌNH KIỂM THỬ TÍCH HỢP TÁCH BIỆT & BENCHMARK ONNX
 
-1. **Kiểm thử Tích hợp Đa Backend**:
-   - Trước khi triển khai lên Web, module `tests/test_inference_backends.py` bắt buộc phải kiểm tra cả `SklearnBackend` và `PyTorchBackend`:
-     - Nhận cùng chuỗi text mẫu.
-     - Trả về đúng 3 xác suất $P(\text{Clean}) + P(\text{Offensive}) + P(\text{Hate}) \approx 1.0$.
-     - Trả về nhãn id (0, 1, 2) và nhãn chữ tương ứng.
-2. **Quy tắc Benchmark ONNX (Có điều kiện)**:
-   - Chạy script đo lường so sánh giữa `PyTorch (CPU)` và `ONNX (CPU)`:
+1. **Baseline Integration Test (`tests/test_baseline_integration.py`)**:
+   - Kiểm thử độc lập ngay sau M2: nạp Baseline `.joblib`, kiểm tra xác suất hiệu chuẩn, tích hợp với API schema, unblock phát triển Web M5.
+2. **Transformer Integration Test (`tests/test_transformer_integration.py`)**:
+   - Kiểm thử độc lập sau M3: nạp checkpoint PyTorch, kiểm tra output xác suất 3 lớp, so sánh latency với Baseline.
+3. **Quy tắc Benchmark ONNX (Có điều kiện)**:
+   - Đo lường so sánh giữa `PyTorch (CPU)` và `ONNX (CPU)`:
      - Đo độ trễ trung bình trên 100 câu mẫu.
      - Đo bộ nhớ RAM đỉnh điểm (Peak RAM).
-   - **Tiêu chuẩn kích hoạt ONNX**: Chỉ chuyển sang ONNX làm default engine nếu ONNX giúp giảm độ trễ ít nhất 25% hoặc giảm dung lượng RAM/Artifact rõ rệt mà không làm sụt giảm Macro-F1 (> 0.5%). Nếu không, giữ nguyên PyTorch backend.
+   - **Tiêu chuẩn kích hoạt ONNX**: Chỉ chuyển sang ONNX làm default engine nếu ONNX giúp giảm độ trễ $\ge 25\%$ hoặc giảm dung lượng RAM rõ rệt mà không làm sụt giảm Macro-F1 (> 0.5%). Nếu không, giữ nguyên PyTorch backend.

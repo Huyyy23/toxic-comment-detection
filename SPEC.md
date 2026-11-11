@@ -6,15 +6,23 @@ Kế hoạch triển khai & phân rã: **[`tasks/plan.md`](tasks/plan.md)** và 
 
 ---
 
-## Tóm tắt Quyết định Đã Phê duyệt (Approved Decisions)
+## Tóm tắt Quyết định & Giao thức Khoa học (Approved Principles)
 
-1. **Dataset**: Tải cả `tarudesu/ViCTSD` và `ura-hcmut/UIT-ViHSD` cho EDA. Ưu tiên `UIT-ViHSD` làm tập huấn luyện chính thức (chốt sau EDA).
-2. **Label Taxonomy**: Phân loại **3 lớp chuẩn**:
-   - `0: CLEAN`
-   - `1: OFFENSIVE`
-   - `2: HATE`
-   *(Tuyệt đối không tự động chuyển về Binary).*
-3. **Mô hình Hóa**: Huấn luyện và đối sánh thực nghiệm khoa học giữa **Traditional ML** (TF-IDF + Linear Classifier) và **Transformer tiếng Việt** (`PhoBERT` / `ViSoBERT`) trên **cùng một tập test 3 lớp duy nhất**.
-4. **Môi trường Huấn luyện**: Local GPU **NVIDIA GeForce RTX 4060 8GB** (Google Colab/Kaggle là backup).
-5. **Inference Engine**: Interface `BasePredictor` hỗ trợ đa backend (`SklearnBackend`, `PyTorchBackend`, `ONNXBackend` tùy chọn). Chỉ convert ONNX khi benchmark chứng minh được lợi ích thực tế.
-6. **Ứng dụng Web & Hosting**: Kiến trúc **Docker container kết hợp React (Frontend) + FastAPI (Backend)**, mục tiêu triển khai công khai trên **Hugging Face Spaces** (Docker SDK, port 7860). Bước xác minh điều kiện triển khai được thực hiện ngay tại Milestone 0.
+1. **Giao thức Đánh giá (Evaluation Protocol)**:
+   - **Validation Set**: Dùng để tuning siêu tham số, early stopping, và lựa chọn mô hình.
+   - **Locked Test Set**: Khóa hoàn toàn trong quá trình phát triển; chỉ mở ra đánh giá đối kháng cuối cùng đúng một lần. Tuyệt đối không dùng kết quả test để tối ưu mô hình.
+2. **Label Taxonomy**: Phân loại **3 lớp chuẩn**: `0: CLEAN`, `1: OFFENSIVE`, `2: HATE`. Không tự động chuyển về Binary.
+3. **Hợp đồng Xác suất (Probability Contract)**:
+   - Logistic Regression dùng `predict_proba`.
+   - LinearSVC bắt buộc dùng `CalibratedClassifierCV` (Platt scaling) để sinh xác suất hiệu chuẩn thực sự.
+   - Tổng xác suất 3 lớp $\approx 1.0$. Không giả mạo confidence.
+4. **Siêu tham số Tạm thời (`[PROVISIONAL]`)**:
+   - `max_length`, `batch_size`, learning rate, VRAM budget được gắn cờ tạm thời; chỉ chốt chính thức sau EDA và benchmark thực tế.
+5. **Inference & Tách biệt Kiểm thử Tích hợp**:
+   - `T4.2`: Baseline Integration Test (kiểm thử Baseline sớm, unblock Web MVP).
+   - `T4.3`: Transformer Integration Test (kiểm thử Transformer sau huấn luyện trên RTX 4060).
+   - `T4.4`: Conditional ONNX Benchmark (chỉ chuyển đổi khi có lợi ích thực tế).
+6. **Quy trình Artifacts cho Docker Space**:
+   - Version hóa qua Hugging Face Model Hub (pinned tag/revision); tự động fallback sang Baseline `.joblib` đóng gói sẵn nếu thiếu weights, ngăn ngừa container crash.
+7. **Đánh giá Khách quan (Objective Acceptance)**:
+   - Thay yêu cầu "Transformer bắt buộc vượt Baseline" bằng tiêu chí so sánh đối đầu khách quan, báo cáo trung thực số liệu và phân tích trade-offs.

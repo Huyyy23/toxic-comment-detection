@@ -1,30 +1,47 @@
 # Transformer fine-tuning configuration optimized for local NVIDIA RTX 4060 8GB
-model_name: "uitnlp/visobert" # uitnlp/visobert | vinai/phobert-base-v2
+# NOTE: All training hyperparameters below are [PROVISIONAL]. Final values will be determined by EDA and validation tuning.
+
+model_name: "uitnlp/visobert" # Proposed candidates: uitnlp/visobert | vinai/phobert-base-v2
 random_state: 42
 
+# Training Hyperparameters [PROVISIONAL - Subject to validation tuning and local VRAM profiling]
 training:
   output_dir: "models/checkpoints/"
-  num_train_epochs: 4
-  per_device_train_batch_size: 16
-  per_device_eval_batch_size: 32
-  gradient_accumulation_steps: 2 # Effective batch size = 32
-  learning_rate: 2.0e-5
-  weight_decay: 0.01
-  warmup_ratio: 0.1
-  fp16: true # Mixed precision on RTX 4060
+  num_train_epochs: 4                 # PROVISIONAL: Early stopping on Validation Macro-F1 (patience=2)
+  per_device_train_batch_size: 16     # PROVISIONAL: To be adjusted if VRAM exceeded on RTX 4060
+  per_device_eval_batch_size: 32      # PROVISIONAL
+  gradient_accumulation_steps: 2      # PROVISIONAL: Effective batch size = 32
+  learning_rate: 2.0e-5               # PROVISIONAL: Grid search [1e-5, 2e-5, 3e-5] on Validation set
+  weight_decay: 0.01                  # PROVISIONAL
+  warmup_ratio: 0.1                   # PROVISIONAL
+  fp16: true                          # PROVISIONAL: Verify CUDA / Tensor Core support on local RTX 4060
   bf16: false
   eval_strategy: "epoch"
   save_strategy: "epoch"
   load_best_model_at_end: true
-  metric_for_best_model: "eval_macro_f1"
+  metric_for_best_model: "eval_macro_f1" # Strictly evaluated on VALIDATION set, never on Test set
   greater_is_better: true
   save_total_limit: 2
-  dataloader_num_workers: 2
+  dataloader_num_workers: 2           # PROVISIONAL: Set to 0 if Windows multiprocessing issues occur
   logging_steps: 50
 
-tokenizer:
-  max_length: 160 # Optimized based on 95th percentile sentence length
+# Hardware Constraints [PROVISIONAL TARGETS]
+hardware:
+  target_gpu: "NVIDIA GeForce RTX 4060 8GB"
+  vram_budget_gb: 7.0                 # PROVISIONAL: Memory profiling required during initial batch dry-run
+  fallback_environment: "Google Colab / Kaggle T4 GPU"
 
+# Tokenizer Constraints [PROVISIONAL]
+tokenizer:
+  max_length: 160                     # PROVISIONAL: Must be updated based on EDA 95th percentile token length
+
+# Artifact Delivery & Hub Versioning
+artifact:
+  hub_repo_id: "your-hf-username/vietnamese-toxic-detector-weights" # Set when publishing
+  version_tag: "v1.0.0"               # Pinned tag or commit hash for production reproducibility
+  local_export_dir: "models/exported/"
+
+# 3-Class Label Taxonomy [CONFIRMED]
 labels:
   0: "CLEAN"
   1: "OFFENSIVE"
