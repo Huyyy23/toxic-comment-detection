@@ -1,0 +1,2 @@
+https://huggingface.co/datasets/tarudesu/ViCTSD
+https://huggingface.co/datasets/ura-hcmut/UIT-ViHSD
