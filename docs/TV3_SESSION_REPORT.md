@@ -73,3 +73,9 @@ Người dùng đã duyệt tạo `.venv` Python **3.12.5**, cài torch **2.15.0
 Người dùng yêu cầu commit và đưa công việc lên GitHub. **Nhánh giao: `feature/tv3-scratch-pipeline`**, xuất phát local HEAD `c2270f4`; không push thẳng/force-push/merge vào `master`. GitHub `master` tại kiểm tra đầu task là `bd96023`, có SPEC/Plan v4; cần review divergence trước khi tích hợp nhánh này vào master.
 
 Commit bao gồm source/config/tests/context/notebook và báo cáo này. `AGENTS.md` đang bị `.gitignore` loại trừ; file đã sửa được đưa riêng bằng explicit force-add theo yêu cầu lưu công việc, không đổi `.gitignore`. Không đưa `.venv`, caches, graphify outputs, raw data, checkpoints, MLflow stores hoặc secrets vào commit. Commit hash và kết quả push được báo sau khi lệnh thực tế hoàn tất, không đoán hash trong file.
+
+## 8. Cập nhật sau merge review
+
+Review phát hiện report chỉ nhận prediction IDs string dù data/trainer cho phép integer. Đã sửa validator giữ nguyên `int | str` (không bool), kiểm tra duplicate theo kiểu và giá trị; regression bao phủ integer/mixed IDs, duplicate và invalid IDs. Merge vào master được người dùng cho phép; không force-push. Giới hạn CUDA topology của exact resume giữ nguyên, không mở rộng scope GPU trong fix này.
+
+Sau tích hợp `origin/master` v4 không conflict: `.venv/Scripts/python.exe -m pytest tests/ -q` — **268 passed in 14.91s** (full repository test suite trong môi trường `.venv` CPU). SPEC/Plan v4 được giữ từ master; không còn cần dùng bản local v3 cho nhánh đã tích hợp. Kết quả push/merge cuối được xác nhận bằng output Git, không suy từ kế hoạch.

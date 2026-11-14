@@ -93,9 +93,15 @@ def _validate(result):
         if not isinstance(prediction, dict):
             raise ValueError("Prediction must be an object")
         identifier = prediction.get("id")
-        if not isinstance(identifier, str) or not identifier.strip() or identifier in ids:
-            raise ValueError("Prediction IDs must be unique nonempty strings")
-        ids.add(identifier)
+        if type(identifier) is not int and not (
+            type(identifier) is str and identifier
+            and not any(character.isspace() for character in identifier)
+        ):
+            raise ValueError("Prediction IDs must be integers or nonempty whitespace-free strings")
+        key = (type(identifier), identifier)
+        if key in ids:
+            raise ValueError("Prediction IDs must be unique")
+        ids.add(key)
         if "run_id" in prediction:
             if not isinstance(prediction["run_id"], str) or not prediction["run_id"].strip():
                 raise ValueError("Prediction run_id must be a nonempty string")

@@ -53,6 +53,29 @@ def test_load_accepts_file_and_artifact_directory(tmp_path, report):
     assert load_report(tmp_path) == report
 
 
+@pytest.mark.parametrize("identifiers", [[0, 1, 2], [1, "1", 0]])
+def test_load_preserves_integer_and_mixed_ids(tmp_path, report, identifiers):
+    for prediction, identifier in zip(report["last_validation"]["predictions"], identifiers):
+        prediction["id"] = identifier
+    loaded = load_report(save_report(tmp_path, report))
+    assert [row["id"] for row in loaded["last_validation"]["predictions"]] == identifiers
+
+
+@pytest.mark.parametrize("identifier", [True, False, 1.0, None, "", " ", "a b"])
+def test_load_rejects_invalid_prediction_ids(tmp_path, report, identifier):
+    report["last_validation"]["predictions"][0]["id"] = identifier
+    with pytest.raises(ValueError, match="Prediction IDs"):
+        load_report(save_report(tmp_path, report))
+
+
+@pytest.mark.parametrize("identifier", [0, "same"])
+def test_load_rejects_duplicate_typed_ids(tmp_path, report, identifier):
+    for prediction in report["last_validation"]["predictions"][:2]:
+        prediction["id"] = identifier
+    with pytest.raises(ValueError, match="unique"):
+        load_report(save_report(tmp_path, report))
+
+
 @pytest.mark.parametrize("corruption", ["status", "nan", "matrix", "probabilities", "predictions", "epoch", "support", "run_id"])
 def test_load_rejects_corrupt_evidence(tmp_path, report, corruption):
     if corruption == "status":

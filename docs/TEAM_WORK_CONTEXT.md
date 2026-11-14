@@ -1,7 +1,7 @@
 # TEAM WORK CONTEXT — Scratch-first v4
 
 > Tra cứu nhanh cho Agent; không thay thế SPEC/Plan. Cập nhật: **2026-11-14**. Nhóm 1–2 đã kiểm thử fixture; nhóm 3 tích hợp tracking/report, không official training/dataset.
-> **Nguồn đã đối chiếu:** GitHub `master` tại `bd9602300616cf0f01d5b4f04a463cb0148181be` (SPEC/Plan v4, 2026-11-11), yêu cầu nhóm trưởng trong phiên này; local HEAD `c2270f4344112fa6f68256b251e96ae6b1a7d853` còn SPEC/Plan v3. Khi hai bản khác nhau, dùng nguồn v4 được ghim ở §12 và yêu cầu mới nhất; không lấy EXP ID v3 để triển khai.
+> **Nguồn đã đối chiếu:** GitHub master revision `bd9602300616cf0f01d5b4f04a463cb0148181be` (SPEC/Plan v4). Nhánh TV3 đã tích hợp revision này khi sửa report ID contract trước merge master; các ghi nhận local v3 bên dưới là lịch sử lúc bắt đầu phiên, không phải trạng thái SPEC hiện tại. Full suite sau tích hợp: **268 passed in 14.91s**. Report nhận `int | str` IDs (không bool), giữ phân biệt `1` và `"1"`.
 > Báo cáo bàn giao phiên, lệnh kiểm thử tổng hợp và lưu ý commit/môi trường: [`TV3_SESSION_REPORT.md`](TV3_SESSION_REPORT.md). Đọc khi tiếp quản hoặc chuẩn bị tích hợp nhánh; không thay contract trong context này.
 
 ## 1. Project Overview

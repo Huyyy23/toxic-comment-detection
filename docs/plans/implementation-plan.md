@@ -1,116 +1,45 @@
-# Kế hoạch Thực thi Dự án (Implementation Plan)
-## Vietnamese Toxic Comment Detection System (ML-first, API-minimal)
+# Implementation Plan — 4 thành viên làm song song
 
-**Mã kế hoạch**: `PLAN-TOXIC-COMMENT-2026-V3.0-ML-FIRST`  
-**Phiên bản**: `3.0.0-ML-FIRST`  
-**Trạng thái**: `DRAFT — PENDING USER REVIEW`  
-**Dựa trên**: `SPEC.md`, `docs/spec.md`, `docs/plans/ml-experiments.md`, `docs/decisions.md`, `docs/dataset-requirements.md`, `docs/deployment-plan.md`, `docs/open-questions.md`  
-**Ngày cập nhật**: 2026-11-11  
+**Version:** 4.0.0-SCRATCH-FIRST · **Ngày:** 2026-11-11 · **Trạng thái:** PLAN ONLY.
 
----
+## Mục tiêu
+Bốn thành viên huấn luyện độc lập Logistic Regression, LinearSVC, LSTM/BiLSTM+Attention và TextCNN **từ đầu**. Nhóm trưởng (TV3) chốt Data Contract và làm PhoBERT pretrained **đối chứng mở rộng**. FastAPI minimal chỉ là demo sau nghiên cứu.
 
-## 1. TÓM TẮT THAY ĐỔI CHÍNH (Phiên này)
-
-Dự án được định hướng lại từ **full-stack (React + FastAPI trong Docker)** sang **ML-first, API-minimal**:
-
-- **Giữ**: FastAPI REST API tối giản (3 endpoint: `POST /predict`, `GET /health`, `GET /model-info`), Swagger UI tại `/docs`, probability contract, locked test set, MLflow local tracking.
-- **Loại bỏ khỏi phạm vi**: `frontend/` (React + Vite) — sẽ xóa hoàn toàn ở phiên implementation sau; `Dockerfile`/`docker-compose.yml` chỉ giữ nếu hosting yêu cầu; auth/JWT, user DB, dashboard, CRUD không liên quan ML, CI/CD phức tạp, distributed training.
-- **MLflow**: local (file store), không chạy server riêng.
-- **Ensemble/Stacking**: không bắt buộc, chỉ nếu có bằng chứng thực nghiệm.
-- **Không xóa source code trong phiên này.** Chỉ lập kế hoạch loại bỏ an toàn ở các phiên sau.
-
----
-
-## 2. PHÂN LOẠI THÀNH PHẦN (Status Ledger)
-
-| Nhóm | Thành phần | Ý nghĩa | Hành động đề xuất |
+## Chốt trách nhiệm
+| Member | Làm chính | Thực nghiệm | Bàn giao |
 |---|---|---|---|
-| **GIỮ** | `SPEC.md`, `docs/`, `backend/schemas.py`, `configs/*.yaml`, `tests/test_smoke.py`, `src/__init__.py`, `backend/__init__.py` | Hoạt động tốt và cần thiết | Giữ nguyên, cập nhật nếu cần |
-| **CẢI TIẾN** | `docs/decisions.md`, `docs/deployment-plan.md`, `docs/open-questions.md`, `docs/hf_eligibility_report.md`, `docs/dataset-requirements.md` | Có thể tái sử dụng nhưng cần nâng cấp cho ML-first | Đã cập nhật trong phiên này |
-| **BỔ SUNG** | MLflow local config, experiment docs, ablation docs, error analysis docs, inference.py (production), minimal FastAPI `main.py` | Chức năng còn thiếu | Tạo trong các phiên implementation sau |
-| **LOẠI BỎ (kế hoạch, chưa xóa code)** | `frontend/` (React + Vite) | Không còn phục vụ mục tiêu ML-first | Kế hoạch xóa hoàn toàn ở phiên implementation sau; không xóa trong phiên này |
-| **TÙY CHỌN** | `Dockerfile`, `docker-compose.yml` | Giữ nếu hosting yêu cầu container | Không bắt buộc trong phiên này |
+| TV1 | EDA, preprocessing, Logistic Regression | EXP-01 | data analysis, LR, ablation, val predictions |
+| TV2 | TF-IDF, LinearSVC, tuning/feature selection | EXP-02 | SVM, ablation, val predictions |
+| TV3 — Lead | Gate G0, LSTM→BiLSTM→Attention, error analysis; optional PhoBERT | EXP-00,03,05,07 | split manifest, DL artifacts, comparative report |
+| TV4 | TextCNN variants, conditional ensemble | EXP-04,06 | CNN, val predictions, ensemble assessment |
 
----
+## Phụ thuộc tối thiểu: Data Contract Gate G0
+- **TV3 chịu trách nhiệm**, không phải chờ EDA chuyên sâu của TV1; phải xác thực labels/schema, dữ liệu trùng lặp, leakage và phù hợp của official split trước khi khóa.
+- Dataset ưu tiên UIT-ViHSD, ViCTSD chỉ là nguồn OOD/cross-dataset conditional. Nếu tự chia: stratified 70/15/15, seed lưu `split_manifest`; official split phù hợp được ưu tiên.
+- Cố định cùng IDs/split, nhãn, version, metrics (Macro-F1), output predictions contract; test locked.
+- Trước G0: TV1 EDA; TV2–TV4 **code skeleton/smoke test với fixture**. Sau G0: cả bốn train chính thức **song song**.
 
-## 3. ĐỒ THỊ PHỤ THUỘC & ĐƯỜNG DẪN GĂNG (Critical Path)
+## Lịch 4 tuần (gợi ý, tùy deadline)
+| Tuần | TV1 | TV2 | TV3 (Lead) | TV4 | Gate |
+|---|---|---|---|---|---|
+| 1 | EDA + LR skeleton | SVM skeleton | G0 manifest + LSTM skeleton | CNN skeleton | G0 |
+| 2 | LR 3 variants | LinearSVC 3 variants | LSTM/BiLSTM/Attention 3 variants | CNN 3 variants | G1: 4 official runs |
+| 3 | LR error review | SVM ablation | Error analysis; optional PhoBERT | CNN ablation; conditional ensemble | G2: best candidates frozen by val |
+| 4 | Coordinate locked test | Reproduction + SVM report | Review + overall research report | Ensemble/CNN report; API support | G3: final test, demo, documentation |
 
-```
-[M0: Audit & Architecture Simplification]   (chỉ tài liệu, đã làm trong phiên này)
-       │
-       ▼
-[M1: Data & EDA]                           (EXP-001)
-       │
-       ▼
-[M2: Baseline Models]                      (EXP-002, EXP-003)
-       │
-       ▼
-[M3: Advanced Transformer Training]        (EXP-004, EXP-005)
-       │
-       ▼
-[M4: Ensemble & Ablation]                  (EXP-006, EXP-007 conditional, EXP-008)
-       │
-       ▼
-[M5: Evaluation & Research Documentation]  (EXP-009, Notebook reports)
-       │
-       ▼
-[M6: REST API Deployment]                  (FastAPI tối giản, 3 endpoint, Swagger UI)
-```
+GPU resource: nếu cùng RTX 4060 8GB, TV3 và TV4 **phát triển song song nhưng xếp lịch GPU**, không chạy đồng thời hai DL jobs lớn. PhoBERT chỉ chạy sau khi scratch deliverables đạt chuẩn.
 
-**Đường dẫn găng (Critical Path):**
-`M0` → `M1` → `M2` → `M3` → `M4` → `M5` → `M6`
+## Branch/contract
+- `feature/data-logreg` (TV1); `feature/svm` (TV2); `feature/bilstm` (TV3); `feature/textcnn` (TV4). PR review trước merge.
+- Shared `id,text,label,split` data contract; prediction output `id,true_label,predicted_label,probabilities_if_available,run_id`.
+- Mỗi EXP có hypothesis, ≥3 meaningful variants, MLflow logs, metrics, plots, artifact, ablation + report. Checkpoints nặng lưu ngoài git, version trong metadata.
+- Không sửa split do một cá nhân tự ý. Contract changes cần nhóm trưởng phê duyệt và chạy lại các kết quả liên quan.
 
-M3 (Transformer) có thể chạy song song với một phần M4/M5 sau khi có checkpoint, nhưng model selection phải chờ M3 xong.
+## Các điểm chặn rõ ràng
+**G0:** split/schema/hash/seed/leakage checks đã chốt → official train mở.  
+**G1:** 4 mô hình scratch có official validation runs và artifacts.  
+**G2:** tuning, error analysis, ablation, optional ensemble/PhoBERT hoàn tất hoặc đánh dấu skipped; freeze final candidates.  
+**G3:** one-shot locked test, notebook và FastAPI minimal demo (khi triển khai sau).
 
----
-
-## 4. TỔNG KẾT CÁC MILESTONES (6 Milestones)
-
-| Milestone | Mục tiêu | Experiments liên quan | Đặc trưng task |
-|---|---|---|---|
-| **M0** | Audit & Architecture Simplification | — | XS/S (tài liệu) |
-| **M1** | Data & EDA | EXP-001 | XS/S |
-| **M2** | Baseline Models (Traditional ML) | EXP-002, EXP-003 | S/M |
-| **M3** | Advanced Transformer Training | EXP-004, EXP-005 | M/L (GPU) |
-| **M4** | Ensemble & Ablation Study | EXP-006, EXP-007 (conditional), EXP-008 | S/M |
-| **M5** | Evaluation & Research Documentation | EXP-009 | XS/S |
-| **M6** | REST API Deployment (API-minimal) | — | S/M |
-
-**Tổng số milestone**: 6 (M0–M6).  
-**Tổng số task ước lượng**: ~20–24 atomic tasks (phân rã chi tiết ở `docs/plans/task-breakdown.md`).
-
----
-
-## 5. MA TRẬN RỦI RO & PHƯƠNG ÁN XỬ LÝ (Risk Register)
-
-| Mã | Rủi ro | Mức độ | Kế hoạch dự phòng / Giảm thiểu |
-|---|---|---|---|
-| R1 | Hugging Face Space chưa có token / yêu cầu thẻ tín dụng | Cao | Phương án dự phòng: Render Free Docker, Railway, hoặc chạy container Docker local. |
-| R2 | Mất cân bằng 3 lớp (HATE ít mẫu nhất) | Cao | Class-weighted loss, Macro-F1, stratified sampling, không dùng Accuracy đơn lẻ. |
-| R3 | Transformer OOM trên GPU 8GB | Trung bình | Giảm `max_length`, `batch_size`; mixed precision `fp16`; chuyển Colab/Kaggle T4 làm backup. |
-| R4 | Dùng Test set để tuning (data leakage) | Chí mạng | Khóa hoàn toàn `test.parquet`; toàn bộ chọn mô hình trên Validation; chỉ unseal Test một lần tại EXP-009. |
-| R5 | Dataset cũ không tổng quát hóa ngôn ngữ mạng xã hội mới | Trung bình | Đánh giá cross-dataset (ViCTSD vs UIT-ViHSD), ghi nhận giới hạn trong báo cáo. |
-| R6 | Ensemble/Stacking quá tốn tài nguyên, không mang lại lợi ích | Trung bình | Có phương án thay thế: Soft Voting; nếu không cải thiện ≥ 1% Macro-F1, giữ mô hình đơn tốt nhất. |
-
----
-
-## 6. NHỮNG VIỆC KHÔNG LÀM TRONG PHIÊN NÀY (Confirmation)
-
-- Không viết code Python.
-- Không sửa training pipeline.
-- Không refactor source code.
-- **Không xóa React/frontend** (chỉ lập kế hoạch xóa ở phiên sau).
-- Không cài đặt package.
-- Không thay đổi môi trường.
-- Không download dataset.
-- Không xử lý dữ liệu.
-- Không chạy training.
-- Không chạy inference.
-- Không chạy experiment.
-- Không tạo Notebook thực thi.
-- Không tạo API implementation.
-- Không tạo Dockerfile.
-- Không public deployment.
-- Không git commit/push nếu chưa được yêu cầu.
-
-Chỉ tạo hoặc chỉnh sửa file tài liệu (Markdown): SPEC.md, docs/spec.md, docs/plans/*.md, docs/decisions.md, docs/deployment-plan.md, docs/open-questions.md, docs/hf_eligibility_report.md, docs/dataset-requirements.md.
+## Chưa làm trong đợt cập nhật này
+Không sửa `src/`, `backend/`, `configs/`, `tests/`, `frontend/`; không download dataset, train, install packages, deploy, hay xóa file code. Đây chỉ là kế hoạch triển khai tương lai. Các tài liệu code/history cũ ngoài nhóm PLAN/SPEC có thể chưa đồng bộ; source of truth: SPEC v4 và docs/plans v4.
