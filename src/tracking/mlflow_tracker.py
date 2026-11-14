@@ -13,17 +13,19 @@ from __future__ import annotations
 
 import os
 import time
-import json
+from pathlib import Path
 import hashlib
 import subprocess
 from contextlib import contextmanager
 from typing import Any, Dict, Optional
+from urllib.parse import urlparse
+from urllib.request import url2pathname
 
 try:
     import mlflow
-    import mlflow.sklearn
-    import mlflow.pytorch
-except Exception:  # pragma: no cover - mlflow installed at runtime
+except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
+    if exc.name != "mlflow":
+        raise
     mlflow = None  # type: ignore
 
 
@@ -37,13 +39,24 @@ class MLflowTracker:
     ) -> None:
         if mlflow is None:
             raise ImportError(
-                "mlflow is not installed. Run: pip install mlflow>=2.0.0,<3.0.0"
+                "mlflow is not installed. Run: pip install 'mlflow>=2.0.0,<3.0.0'"
             )
-        self.tracking_uri = tracking_uri or os.path.join(
-            os.getcwd(), "mlruns"
-        )
-        mlflow.set_tracking_uri(self.tracking_uri)
-        self.experiment = mlflow.set_experiment(experiment_name)
+        uri = os.fspath(tracking_uri) if tracking_uri is not None else os.path.join(os.getcwd(), "mlruns")
+        parsed = urlparse(uri)
+        if parsed.scheme == "file":
+            local_path = url2pathname(parsed.path)
+            if parsed.netloc and parsed.netloc != "localhost":
+                local_path = f"//{parsed.netloc}{local_path}"
+            self.tracking_uri = Path(local_path).resolve().as_uri()
+        elif not parsed.scheme or (len(parsed.scheme) == 1 and uri[1:2] == ":"):
+            self.tracking_uri = Path(uri).resolve().as_uri()
+        else:
+            self.tracking_uri = uri
+        client = mlflow.tracking.MlflowClient(tracking_uri=self.tracking_uri)
+        self.experiment = client.get_experiment_by_name(experiment_name)
+        if self.experiment is None:
+            experiment_id = client.create_experiment(experiment_name)
+            self.experiment = client.get_experiment(experiment_id)
         self.experiment_id = self.experiment.experiment_id
         self._run: Optional[Any] = None
         self._run_id: Optional[str] = None
@@ -61,38 +74,53 @@ class MLflowTracker:
         """Start a new MLflow run and return its Run ID."""
         if self._run is not None:
             raise RuntimeError("A run is already active. Call end_run() first.")
-        self._run = mlflow.start_run(run_name=run_name, tags=tags or {})
+        if mlflow.active_run() is not None:
+            raise RuntimeError("Another MLflow run is active. End it before starting a run.")
+        mlflow.set_tracking_uri(self.tracking_uri)
+        self._run = mlflow.start_run(
+            experiment_id=self.experiment_id, run_name=run_name, tags=tags or {}
+        )
         self._run_id = self._run.info.run_id
         self._start_time = time.time()
         return self._run_id
 
-    def end_run(self) -> None:
-        """End the active MLflow run."""
+    def _activate_run(self) -> None:
+        """Restore this store without logging to or ending another owner's run."""
+        if self._run is None:
+            raise RuntimeError("No active run. Call start_run() first.")
+        active = mlflow.active_run()
+        if active is None or active.info.run_id != self._run_id:
+            raise RuntimeError("This tracker's run is not the active MLflow run.")
+        mlflow.set_tracking_uri(self.tracking_uri)
+
+    def end_run(self, status: str = "FINISHED") -> None:
+        """End this tracker's active run with the supplied MLflow status."""
         if self._run is not None:
-            mlflow.end_run()
+            self._activate_run()
+            mlflow.end_run(status=status)
             self._run = None
             self._run_id = None
             self._start_time = None
 
     def log_params(self, params: Dict[str, Any]) -> None:
         """Log hyperparameters to the active run."""
-        if self._run is None:
-            raise RuntimeError("No active run. Call start_run() first.")
+        self._activate_run()
         for key, value in params.items():
             mlflow.log_param(str(key), value)
 
     def log_metrics(self, metrics: Dict[str, float], step: Optional[int] = None) -> None:
         """Log metrics to the active run."""
-        if self._run is None:
-            raise RuntimeError("No active run. Call start_run() first.")
+        self._activate_run()
         for key, value in metrics.items():
             mlflow.log_metric(str(key), float(value), step=step)
 
     def log_artifact(self, local_path: str, artifact_path: Optional[str] = None) -> None:
         """Log a local file/directory as an artifact."""
-        if self._run is None:
-            raise RuntimeError("No active run. Call start_run() first.")
-        mlflow.log_artifact(local_path, artifact_path)
+        self._activate_run()
+        if os.path.isdir(local_path):
+            mlflow.log_artifacts(local_path, artifact_path)
+        else:
+            mlflow.log_artifact(local_path, artifact_path)
 
     def log_training_duration(self) -> Optional[float]:
         """Log elapsed time since start_run() was called."""
@@ -122,8 +150,8 @@ class MLflowTracker:
             }
         )
         if label_distribution:
-            for label, count in label_distribution.items():
-                mlflow.log_metric(f"dataset_{label}_count", float(count))
+            self.log_metrics({f"dataset_{label}_count": float(count)
+                              for label, count in label_distribution.items()})
 
     def log_model_architecture(self, architecture: str, model_type: str) -> None:
         """Log model architecture and type."""
@@ -176,7 +204,10 @@ class MLflowTracker:
         self.start_run(run_name=run_name, tags=tags)
         try:
             yield self
-        finally:
+        except BaseException:
+            self.end_run(status="FAILED")
+            raise
+        else:
             self.end_run()
 
 
@@ -195,8 +226,8 @@ def start_run(run_name: Optional[str] = None, tags: Optional[Dict[str, str]] = N
     return _get_default_tracker().start_run(run_name=run_name, tags=tags)
 
 
-def end_run() -> None:
-    _get_default_tracker().end_run()
+def end_run(status: str = "FINISHED") -> None:
+    _get_default_tracker().end_run(status=status)
 
 
 def log_params(params: Dict[str, Any]) -> None:

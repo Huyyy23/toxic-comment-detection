@@ -1,0 +1,15 @@
+{
+  "status": "PROVISIONAL_SYNTHETIC_SMOKE_ONLY",
+  "seed": 42,
+  "device": "cpu",
+  "max_length": 24,
+  "batch_size": 3,
+  "epochs": 3,
+  "patience": 2,
+  "learning_rate": 0.001,
+  "grad_clip": 1.0,
+  "embedding_dim": 16,
+  "hidden_size": 12,
+  "dropout": 0.1,
+  "variants": ["lstm", "bilstm", "bilstm_attention"]
+}
