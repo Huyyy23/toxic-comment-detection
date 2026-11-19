@@ -46,6 +46,8 @@ models/transformer_best/*
 
 # MLflow local tracking
 mlruns/
+*.db
+mlflow.db
 
 npm-debug.log*
 yarn-debug.log*
