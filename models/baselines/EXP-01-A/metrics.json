@@ -38,9 +38,9 @@
       122
     ]
   ],
-  "train_time_s": 1.243,
-  "preprocess_time_s": 0.04,
-  "tfidf_fit_time_s": 1.383,
+  "train_time_s": 1.517,
+  "preprocess_time_s": 0.012,
+  "tfidf_fit_time_s": 1.772,
   "inference_ms_per_sample": 0.0006,
   "n_features": 37436,
   "n_train": 24048,

@@ -38,10 +38,10 @@
       177
     ]
   ],
-  "train_time_s": 5.062,
-  "preprocess_time_s": 0.859,
-  "tfidf_fit_time_s": 8.785,
-  "inference_ms_per_sample": 0.0081,
+  "train_time_s": 5.172,
+  "preprocess_time_s": 0.745,
+  "tfidf_fit_time_s": 8.449,
+  "inference_ms_per_sample": 0.0018,
   "n_features": 95380,
   "n_train": 24048,
   "n_val": 2672
