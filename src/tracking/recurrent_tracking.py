@@ -25,19 +25,28 @@ def log_epoch(tracker, state):
     tracker.log_metrics(metrics, step=state["epoch"])
 
 
-def start_tracking(tracking_uri, *, architecture, resume):
-    """Create explicitly synthetic EXP-03 run; never reused as an official result."""
+def start_tracking(tracking_uri, *, architecture, resume, official=False, smoke=True):
+    """Create EXP-03 run. Synthetic by default; official when official=True."""
     uri = str(tracking_uri)
     parsed = urlparse(uri)
     if ("://" in uri and parsed.scheme != "file") or parsed.netloc or uri.startswith("\\\\"):
-        raise ValueError("synthetic smoke tracking requires a local path or file URI")
-    tracker = MLflowTracker(experiment_name="EXP-03-synthetic-smoke", tracking_uri=uri)
-    tags = {"exp": "EXP-03", "result_type": "synthetic", "research_result": "false",
-            "entry_point": "smoke_recurrent", "architecture": architecture,
+        raise ValueError("tracking requires a local path or file URI")
+    if official:
+        experiment_name = "EXP-03-official"
+        result_type = "official_smoke" if smoke else "official"
+        entry_point = "train_recurrent_official"
+    else:
+        experiment_name = "EXP-03-synthetic-smoke"
+        result_type = "synthetic"
+        entry_point = "smoke_recurrent"
+    tracker = MLflowTracker(experiment_name=experiment_name, tracking_uri=uri)
+    tags = {"exp": "EXP-03", "result_type": result_type,
+            "research_result": "false" if smoke else "true",
+            "entry_point": entry_point, "architecture": architecture,
             "pretrained": "false", "prediction_checkpoint": "last"}
     if resume is not None:
         tags["resumed_from_checkpoint"] = Path(resume).name
-    tracker.start_run(run_name=f"synthetic-{architecture}", tags=tags)
+    tracker.start_run(run_name=f"{result_type}-{architecture}", tags=tags)
     return tracker
 
 
