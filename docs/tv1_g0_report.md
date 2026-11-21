@@ -62,3 +62,17 @@ data/processed/dataset_info.json # Provenance đầy đủ
 
 ViCTSD (`tarudesu/ViCTSD`) có taxonomy khác (Constructive/Toxic/Severe Toxic).  
 **Chưa gộp vào training** — chỉ dùng OOD/đối chiếu nếu cần, sau khi xác minh ánh xạ nhãn.
+
+## 8. Review G0 — 2026-11-21
+
+**Quyết định: CHƯA DUYỆT G0; không mở official training.** Tỷ lệ 70/15/15 đã có trong artifact hiện tại, nhưng chỉ xác nhận số lượng theo split, không chứng minh split an toàn hay hợp lệ.
+
+Đối chiếu `data/processed/vihsd.jsonl` với `manifest.json` và `dataset_info.json`:
+
+- 33,400 records: train 23,380 (70%), val 5,010 (15%), test 5,010 (15%); manifest có 33,400 IDs.
+- `dataset_info.json` ghi split được chia lại theo stratified 70/15/15, seed=42; split test hiện tại không còn là locked test gốc.
+- Kiểm đếm exact text: 2,661 text xuất hiện nhiều lần; 1,253 text có mặt ở nhiều split; 241 text gắn nhiều hơn một label. Các overlap/conflicting labels chưa có báo cáo phân loại hoặc quyết định xử lý. Đây là blocker; không deduplicate hoặc đổi split âm thầm.
+- Report chưa xác minh license/revision, và chưa ghi nhận bằng chứng kiểm tra group/thread leakage hay quyết định normalization được TV3 duyệt.
+- Các raw JSONL hiện có không khớp số lượng/split của processed data; cần lập provenance thống nhất và chứng minh nguồn/hash cho đúng artifact đang xin duyệt.
+
+**Điều kiện để gửi duyệt lại:** chốt và ghi lý do split lại (bao gồm xử lý test gốc/locked test theo protocol); báo cáo các overlap train/val/test và nhãn mâu thuẫn cùng phương án xử lý được TV3 duyệt; xác minh revision/license/schema/mapping; đối chiếu raw → processed bằng hash; hoàn thành contract và normalization approval theo G0 checklist. Không dùng test mới cho tuning; nếu test gốc đã bị lộ vào development, phải ghi nhận và xác lập test lock mới độc lập trước EXP-08.
