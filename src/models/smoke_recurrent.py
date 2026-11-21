@@ -11,7 +11,7 @@ from pathlib import Path
 import torch
 
 from src.data.tokenizer import Vocabulary, collate_records
-from src.models.checkpoint import load_checkpoint, save_checkpoint, seed_everything
+from src.models.checkpoint import load_checkpoint, save_run_checkpoint, seed_everything
 from src.models.recurrent import RecurrentClassifier
 from src.models.training import evaluate, fit
 
@@ -92,9 +92,9 @@ def run_smoke(output_dir, *, config_path=DEFAULT_CONFIG, architecture="lstm", re
             best_epoch=epoch_state["best_epoch"], config=checkpoint_config,
             vocabulary_path=vocab_path, data_metadata=data_metadata,
         )
-        save_checkpoint(output / "last.pt", **arguments)
-        if epoch_state["best_epoch"] == epoch_state["epoch"]:
-            save_checkpoint(output / "best.pt", **arguments)
+        save_run_checkpoint(
+            output, is_best=epoch_state["best_epoch"] == epoch_state["epoch"], **arguments
+        )
         if tracker is not None:
             log_epoch(tracker, epoch_state)
 

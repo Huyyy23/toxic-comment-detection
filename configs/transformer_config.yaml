@@ -21,7 +21,7 @@ training:
   load_best_model_at_end: true
   metric_for_best_model: "eval_macro_f1" # Strictly evaluated on VALIDATION set, never on Test set
   greater_is_better: true
-  save_total_limit: 2
+  save_total_limit: 3                # Keep best plus the two most recent epoch checkpoints
   dataloader_num_workers: 2           # PROVISIONAL: Set to 0 if Windows multiprocessing issues occur
   logging_steps: 50
 

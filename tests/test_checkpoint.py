@@ -9,7 +9,7 @@ import pytest
 import torch
 from torch import nn
 
-from src.models.checkpoint import load_checkpoint, save_checkpoint, seed_everything
+from src.models.checkpoint import load_checkpoint, save_checkpoint, save_run_checkpoint, seed_everything
 
 
 CONFIG = {"architecture": "tiny", "seed": 23}
@@ -184,6 +184,53 @@ def test_atomic_save_preserves_original_and_cleans_temporary_file(checkpoint, mo
         save(path, model, optimizer, vocabulary_path)
     assert path.read_bytes() == original
     assert sorted(p.name for p in path.parent.iterdir()) == ["checkpoint.pt", "vocabulary.json"]
+
+
+def test_run_checkpoint_retention_keeps_best_and_two_latest_without_touching_other_run(
+        checkpoint, tmp_path, monkeypatch):
+    _, model, optimizer, vocabulary_path = checkpoint
+    run_dir = tmp_path / "run"
+    other_run = tmp_path / "other-run"
+    run_dir.mkdir()
+    other_run.mkdir()
+    other_checkpoint = other_run / "last.pt"
+    other_checkpoint.write_bytes(b"another run")
+
+    for epoch in range(1, 5):
+        step(model, optimizer)
+        save_run_checkpoint(
+            run_dir, model=model, optimizer=optimizer, epoch=epoch,
+            best_macro_f1=0.6 if epoch == 1 else 0.7, bad_epochs=0,
+            best_epoch=min(epoch, 2), config=CONFIG, vocabulary_path=vocabulary_path,
+            data_metadata=DATA, is_best=epoch in (1, 2),
+        )
+
+    assert {path.name for path in run_dir.glob("*.pt")} == {
+        "best.pt", "last.pt", "checkpoint-epoch-3.pt",
+    }
+    assert load(run_dir / "best.pt", *tiny_model())["epoch"] == 2
+    assert load(run_dir / "last.pt", *tiny_model())["epoch"] == 4
+    assert load(run_dir / "checkpoint-epoch-3.pt", *tiny_model())["epoch"] == 3
+    assert other_checkpoint.read_bytes() == b"another run"
+
+    from src.models import checkpoint as checkpoint_module
+    save = checkpoint_module.save_checkpoint
+
+    def fail_new_save(path, **state):
+        if path.name == "checkpoint-epoch-5.pt":
+            raise OSError("injected checkpoint write failure")
+        save(path, **state)
+
+    monkeypatch.setattr(checkpoint_module, "save_checkpoint", fail_new_save)
+    with pytest.raises(OSError, match="injected"):
+        save_run_checkpoint(
+            run_dir, model=model, optimizer=optimizer, epoch=5,
+            best_macro_f1=0.7, bad_epochs=0, best_epoch=2, config=CONFIG,
+            vocabulary_path=vocabulary_path, data_metadata=DATA, is_best=False,
+        )
+    assert {path.name for path in run_dir.glob("*.pt")} == {
+        "best.pt", "last.pt", "checkpoint-epoch-3.pt",
+    }
 
 
 def test_invalid_vocabulary_never_overwrites_checkpoint(checkpoint):
