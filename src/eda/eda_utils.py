@@ -123,7 +123,7 @@ def plot_text_length_distribution(df: pd.DataFrame) -> plt.Figure:
     data_by_label = [df[df["label"] == i]["word_count"].values for i in range(3)]
     axes[0].boxplot(
         data_by_label,
-        labels=["CLEAN", "OFFENSIVE", "HATE"],
+        tick_labels=["CLEAN", "OFFENSIVE", "HATE"],
         patch_artist=True,
         boxprops=dict(facecolor="lightblue"),
     )
@@ -135,7 +135,7 @@ def plot_text_length_distribution(df: pd.DataFrame) -> plt.Figure:
     data_by_label_char = [df[df["label"] == i]["char_count"].values for i in range(3)]
     axes[1].boxplot(
         data_by_label_char,
-        labels=["CLEAN", "OFFENSIVE", "HATE"],
+        tick_labels=["CLEAN", "OFFENSIVE", "HATE"],
         patch_artist=True,
         boxprops=dict(facecolor="lightyellow"),
     )

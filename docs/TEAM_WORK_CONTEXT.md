@@ -125,7 +125,7 @@ batch = collate_records(records[:2], vocab, max_length=32)
 | Đối tượng | Trạng thái hiện tại / phạm vi | Bằng chứng hoặc điểm chặn |
 |---|---|---|
 | G0 / EXP-00 — TV3 lead | UNKNOWN về tiến độ thực hiện; chưa chứng minh gate mở | Chưa có contract/manifest/hash/approval bàn giao trong bằng chứng đã xem |
-| TV1 / EXP-01 | EDA/preprocessing chưa hoàn thành; UNKNOWN đang làm tới đâu; official LR BLOCKED theo gate chưa được chứng minh | Xác nhận người dùng; không suy ra IN PROGRESS chỉ từ “chưa xong” |
+| TV1 / EXP-01 | EDA đã chạy trên UIT-ViHSD (train 24.048 / val 2.672): CLEAN 82,7%, OFFENSIVE 6,7%, HATE 10,6%; mean 11,5 từ; 3.586 exact duplicates; 318 cross-split overlap train∩val; figure lưu notebooks/ | Đã chạy src/eda/eda_utils.py, lưu 5 PNG notebooks/; official LR BLOCKED chờ G0 duyệt dữ liệu/split |
 | TV2 / EXP-02 | UNKNOWN cá nhân; official runs BLOCKED theo G0 chưa được chứng minh | Chưa có run/model/acceptance bàn giao |
 | TV3 / EXP-03 | IN PROGRESS; nhóm 1–3 IMPLEMENTED + TESTED fixture CPU; official training BLOCKED theo G0/data approval | Model/trainer/checkpoint, MLflow local thật, report/notebook đã smoke; chưa có official runs/research metrics |
 | TV4 / EXP-04 | UNKNOWN cá nhân; official runs BLOCKED theo G0 chưa được chứng minh | Chưa xác nhận tiến độ hay run ngoài repo |
