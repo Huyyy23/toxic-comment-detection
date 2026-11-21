@@ -1,0 +1,46 @@
+{
+  "dataset_name": "UIT-ViHSD",
+  "source": "ura-hcmut/UIT-ViHSD",
+  "huggingface_url": "https://huggingface.co/datasets/ura-hcmut/UIT-ViHSD",
+  "label_mapping": {
+    "0": "CLEAN",
+    "1": "OFFENSIVE",
+    "2": "HATE"
+  },
+  "text_column_used": "free_text",
+  "label_column_used": "label_id",
+  "split_map": {
+    "train": "train",
+    "validation": "val",
+    "dev": "val",
+    "test": "test"
+  },
+  "split_stats": {
+    "train": {
+      "n": 24048,
+      "CLEAN": 19886,
+      "OFFENSIVE": 1606,
+      "HATE": 2556
+    },
+    "val": {
+      "n": 2672,
+      "CLEAN": 2190,
+      "OFFENSIVE": 212,
+      "HATE": 270
+    },
+    "test": {
+      "n": 6680,
+      "CLEAN": 5548,
+      "OFFENSIVE": 444,
+      "HATE": 688
+    }
+  },
+  "contract_version": "v4",
+  "processed_jsonl_hash": "fb6f075da1eb0f39990f1bd78eefd015c296e580f7b99920b8ee7905155aedf3",
+  "raw_split_hashes": {
+    "train": "42a4fb3a948e5a9018e0854a14653825437d10419c952704080835d75fc068e7",
+    "validation": "02155da4eafc7b7731da6ad2409463ce06ceab387302a0f369da101411404363",
+    "test": "f3f890659dae2fdace5ab3ae3229eeb642d543c887a0f1db46a15a294aa10f77"
+  },
+  "note": "Official split từ HuggingFace được giữ nguyên. Locked test không phát hành cho development. Chỉ fit TF-IDF/vocabulary trên split=train."
+}
