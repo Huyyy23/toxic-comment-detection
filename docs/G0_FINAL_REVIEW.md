@@ -4,10 +4,10 @@
 
 ## Official shared dataset
 
-All team experiments use **`data/processed/g0_v1_candidate_release_final/`** only. Contract: [`DATA_CONTRACT_v1.md`](DATA_CONTRACT_v1.md). Rebuild:
+All team experiments use **`data/processed/vihsd_g0_v1/`** only. Contract: [`DATA_CONTRACT_v1.md`](DATA_CONTRACT_v1.md). Rebuild:
 
 ```text
-python -m src.data.build_g0_dataset --raw-dir data/raw --output-dir data/processed/g0_v1_candidate_release_final
+python -m src.data.build_g0_dataset --raw-dir data/raw --output-dir data/processed/vihsd_g0_v1
 ```
 
 Builder refuses to overwrite a non-empty output directory and never writes raw inputs. Do not use the legacy `data/processed/vihsd.jsonl` or earlier `g0_v1_candidate*` outputs for official experiments.

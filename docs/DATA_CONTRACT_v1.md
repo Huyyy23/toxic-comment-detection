@@ -1,6 +1,6 @@
 # Data Contract v1.0 — UIT-ViHSD candidate
 
-**Status: APPROVED BY USER; G0 acceptance checks PASS. G0 is OPEN subject to the documented source-permission and historical-test limitations.** The single shared candidate for TV1–TV4 is `data/processed/g0_v1_candidate_release_final/`. User approval and technical acceptance do not claim that the test is blind or that external source permissions were granted. See `docs/G0_FINAL_REVIEW.md` for evidence.
+**Status: APPROVED BY USER; G0 acceptance checks PASS. G0 is OPEN subject to the documented source-permission and historical-test limitations.** The single shared candidate for TV1–TV4 is `data/processed/vihsd_g0_v1/`. User approval and technical acceptance do not claim that the test is blind or that external source permissions were granted. See `docs/G0_FINAL_REVIEW.md` for evidence.
 
 ## Record schema
 
@@ -36,7 +36,7 @@ No normalization is performed when building the dataset. Experiment-specific pre
 ## Rebuild
 
 ```bash
-python -m src.data.build_g0_dataset --raw-dir data/raw --output-dir data/processed/g0_v1_candidate_release_final
+python -m src.data.build_g0_dataset --raw-dir data/raw --output-dir data/processed/vihsd_g0_v1
 ```
 
 The builder refuses to overwrite a nonempty output directory. Use a new versioned destination for each change. It never writes raw files. Generated SHA-256 values, split statistics, conflict counts/ledger hash and historical test warning are in `dataset_info.json`.
