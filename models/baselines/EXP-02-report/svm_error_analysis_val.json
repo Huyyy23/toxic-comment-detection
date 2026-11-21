@@ -1,0 +1,596 @@
+{
+  "source_variant": "EXP-02-C",
+  "run_id": "e58e837ef7d04a72942788751711e6e3",
+  "n_val_total": 4929,
+  "n_errors_total": 525,
+  "error_rate": 0.1065,
+  "confusion_pair_counts": {
+    "HATE -> CLEAN": 172,
+    "OFFENSIVE -> CLEAN": 123,
+    "CLEAN -> HATE": 67,
+    "HATE -> OFFENSIVE": 65,
+    "OFFENSIVE -> HATE": 50,
+    "CLEAN -> OFFENSIVE": 48
+  },
+  "pattern_tag_counts_among_errors": {
+    "contains_teencode": 223,
+    "context_or_lexical_nuance": 151,
+    "short_text_le_5_words": 124,
+    "offensive_hate_boundary": 115,
+    "contains_negation": 109,
+    "contains_emoji_or_punct": 72,
+    "contains_url_or_mention": 8
+  },
+  "representative_samples_by_pair": {
+    "OFFENSIVE -> CLEAN": [
+      {
+        "id": "test_1002",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "CLEAN",
+        "error_pair": "OFFENSIVE -> CLEAN",
+        "pattern_tags": [
+          "contains_teencode"
+        ],
+        "word_count": 6,
+        "text": "Ng Tuấn Châu uầy gắt vđ"
+      },
+      {
+        "id": "test_1021",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "CLEAN",
+        "error_pair": "OFFENSIVE -> CLEAN",
+        "pattern_tags": [
+          "short_text_le_5_words",
+          "contains_teencode",
+          "contains_emoji_or_punct"
+        ],
+        "word_count": 5,
+        "text": "được vl anh độ ạ😂"
+      },
+      {
+        "id": "test_1223",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "CLEAN",
+        "error_pair": "OFFENSIVE -> CLEAN",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 10,
+        "text": "Ý thức còn ít hơn kiến thức hoá của tao"
+      },
+      {
+        "id": "test_1285",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "CLEAN",
+        "error_pair": "OFFENSIVE -> CLEAN",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 7,
+        "text": "Diễm Quỳnh gét burn real vãi l"
+      },
+      {
+        "id": "test_1541",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "CLEAN",
+        "error_pair": "OFFENSIVE -> CLEAN",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 17,
+        "text": "Ăn thua gì, ăn mừng đón con khỉ nói tiếng Hoa cũng chết vài triệu mạng rồi."
+      },
+      {
+        "id": "test_2027",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "CLEAN",
+        "error_pair": "OFFENSIVE -> CLEAN",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 20,
+        "text": "Thôn làm vậy là do thôn lầm, thôn lầm nên dân nó ghét, nó bật lại là thôn cái lù"
+      },
+      {
+        "id": "test_2176",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "CLEAN",
+        "error_pair": "OFFENSIVE -> CLEAN",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_emoji_or_punct"
+        ],
+        "word_count": 9,
+        "text": "Thanglon nào cũng từng như thế cacban ạ 😌😌😌"
+      },
+      {
+        "id": "test_246",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "CLEAN",
+        "error_pair": "OFFENSIVE -> CLEAN",
+        "pattern_tags": [
+          "contains_emoji_or_punct"
+        ],
+        "word_count": 6,
+        "text": "nhìn nứng gkê ak abe ơi!!!"
+      }
+    ],
+    "HATE -> CLEAN": [
+      {
+        "id": "test_1045",
+        "true_label": "HATE",
+        "predicted_label": "CLEAN",
+        "error_pair": "HATE -> CLEAN",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_emoji_or_punct"
+        ],
+        "word_count": 16,
+        "text": "Viết Phúc ò ông lại tưởng m xl quá nên nó khg cho 😌😌😌.... Hụ hụ"
+      },
+      {
+        "id": "test_1259",
+        "true_label": "HATE",
+        "predicted_label": "CLEAN",
+        "error_pair": "HATE -> CLEAN",
+        "pattern_tags": [
+          "contains_teencode"
+        ],
+        "word_count": 19,
+        "text": "Lâm Quốc Huy đại học là oke ông , còn cấp 3 thì coi chừng thầy cô nứng :))"
+      },
+      {
+        "id": "test_1305",
+        "true_label": "HATE",
+        "predicted_label": "CLEAN",
+        "error_pair": "HATE -> CLEAN",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_negation"
+        ],
+        "word_count": 29,
+        "text": "Hỏi b ý xem có đi tiếp xúc với chị nhung gì k đó k mà thấy bị lây óc tó thể hiện qua lời phát biểu như v"
+      },
+      {
+        "id": "test_142",
+        "true_label": "HATE",
+        "predicted_label": "CLEAN",
+        "error_pair": "HATE -> CLEAN",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 13,
+        "text": "Bàn tay em đẹp quá. Nhìn chị là đàn bà mà xấu quá.."
+      },
+      {
+        "id": "test_1841",
+        "true_label": "HATE",
+        "predicted_label": "CLEAN",
+        "error_pair": "HATE -> CLEAN",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 12,
+        "text": "Nguyễn Thuận ca sĩ ra bài fan ý kiến chứ clg căng"
+      },
+      {
+        "id": "test_1874",
+        "true_label": "HATE",
+        "predicted_label": "CLEAN",
+        "error_pair": "HATE -> CLEAN",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 13,
+        "text": "Thôi anh ơi chuẩn bị về mở tiệm bánh tráng là được rồi"
+      },
+      {
+        "id": "test_197",
+        "true_label": "HATE",
+        "predicted_label": "CLEAN",
+        "error_pair": "HATE -> CLEAN",
+        "pattern_tags": [
+          "short_text_le_5_words"
+        ],
+        "word_count": 4,
+        "text": "Lũlên mạng lừa đão"
+      },
+      {
+        "id": "test_2135",
+        "true_label": "HATE",
+        "predicted_label": "CLEAN",
+        "error_pair": "HATE -> CLEAN",
+        "pattern_tags": [
+          "contains_teencode"
+        ],
+        "word_count": 41,
+        "text": "Có biết vì sao CNXH xếp sau cùng trong các hình thái Kinh tế của thế giới không? VÌ NƯỚC NÀO ÁP DỤNG NÓ SẼ BỊ DIỆT VONG CMNR CÒN TỒN TẠI ĐÂU MÀ ÁP DỤNG HÌNH THÁI KINH TẾ KHÁC."
+      }
+    ],
+    "CLEAN -> HATE": [
+      {
+        "id": "test_1087",
+        "true_label": "CLEAN",
+        "predicted_label": "HATE",
+        "error_pair": "CLEAN -> HATE",
+        "pattern_tags": [
+          "contains_negation"
+        ],
+        "word_count": 26,
+        "text": "Trung quốc hóa việt nam ah. Không đủ trình độ mà xuất khẩu lao động cho cả các thị trường khó tính như Nhật, Úc... sao."
+      },
+      {
+        "id": "test_1584",
+        "true_label": "CLEAN",
+        "predicted_label": "HATE",
+        "error_pair": "CLEAN -> HATE",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_negation"
+        ],
+        "word_count": 54,
+        "text": "Không liên qua nhưng 2 ông trẻ làm giám đốc sở bố làm bí thư, ông bí thư trẻ nhất nc bố làm ủy viên bộ chính trị, trưởng ban kiểm tra tw. Và con mr x cũng làm bí thư tỉnh kiên giang rồi. Đắng cho cái gọi là công bằng, dân chủ"
+      },
+      {
+        "id": "test_1717",
+        "true_label": "CLEAN",
+        "predicted_label": "HATE",
+        "error_pair": "CLEAN -> HATE",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 11,
+        "text": "định chê mày xấu. Nhưng thôi chắc mày tự biết rồi"
+      },
+      {
+        "id": "test_3207",
+        "true_label": "CLEAN",
+        "predicted_label": "HATE",
+        "error_pair": "CLEAN -> HATE",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 9,
+        "text": "Thà từ chức còn hơn làm một con rối!"
+      },
+      {
+        "id": "test_3652",
+        "true_label": "CLEAN",
+        "predicted_label": "HATE",
+        "error_pair": "CLEAN -> HATE",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 7,
+        "text": "Hot girl quốc dân BeBa ozawa :)"
+      },
+      {
+        "id": "test_502",
+        "true_label": "CLEAN",
+        "predicted_label": "HATE",
+        "error_pair": "CLEAN -> HATE",
+        "pattern_tags": [
+          "contains_teencode"
+        ],
+        "word_count": 13,
+        "text": "Dem me minh ra lam tro cuoi   noi tuc tieu khg hay dau"
+      },
+      {
+        "id": "test_5988",
+        "true_label": "CLEAN",
+        "predicted_label": "HATE",
+        "error_pair": "CLEAN -> HATE",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 10,
+        "text": "Thế Vinh linh vật thờ là con quỷ dữ :Đ"
+      },
+      {
+        "id": "test_6176",
+        "true_label": "CLEAN",
+        "predicted_label": "HATE",
+        "error_pair": "CLEAN -> HATE",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 34,
+        "text": ":v báo chí nước ta đã có 1 bước tiến rất lớn trong công cuộc bảo vệ biển đông đó là dám gọi thẳng quân Trung Quốc thay cho từ quân Nước Ngoài !"
+      }
+    ],
+    "HATE -> OFFENSIVE": [
+      {
+        "id": "test_1246",
+        "true_label": "HATE",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "HATE -> OFFENSIVE",
+        "pattern_tags": [
+          "short_text_le_5_words",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 3,
+        "text": "học trò lol"
+      },
+      {
+        "id": "test_1517",
+        "true_label": "HATE",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "HATE -> OFFENSIVE",
+        "pattern_tags": [
+          "short_text_le_5_words",
+          "contains_teencode",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 3,
+        "text": "Cc thầy eie"
+      },
+      {
+        "id": "test_1941",
+        "true_label": "HATE",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "HATE -> OFFENSIVE",
+        "pattern_tags": [
+          "short_text_le_5_words",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 4,
+        "text": "Trương Duy lz mẹ"
+      },
+      {
+        "id": "test_1996",
+        "true_label": "HATE",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "HATE -> OFFENSIVE",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_url_or_mention",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 18,
+        "text": "@Phương vo nói cl gì z mẹ. Nói mà để ng ta từ chối hiểu hay gì á"
+      },
+      {
+        "id": "test_2189",
+        "true_label": "HATE",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "HATE -> OFFENSIVE",
+        "pattern_tags": [
+          "contains_teencode",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 6,
+        "text": "Lựa cái đầu buồi ABe nè"
+      },
+      {
+        "id": "test_3469",
+        "true_label": "HATE",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "HATE -> OFFENSIVE",
+        "pattern_tags": [
+          "contains_teencode",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 21,
+        "text": "Đồn ý kiến vs bác thớt.Thằng đó tống tiền đích cmn thực r ấy chứ.Cho vào tù nhanh hộ cái :))"
+      },
+      {
+        "id": "test_3558",
+        "true_label": "HATE",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "HATE -> OFFENSIVE",
+        "pattern_tags": [
+          "short_text_le_5_words",
+          "contains_teencode",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 3,
+        "text": "Cc thầy eie"
+      },
+      {
+        "id": "test_3706",
+        "true_label": "HATE",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "HATE -> OFFENSIVE",
+        "pattern_tags": [
+          "contains_teencode",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 19,
+        "text": "Chat chan tay la xong.ko can lgi het.thang nao danh nguoi giet nguoi cu chat chan cat gan tay"
+      }
+    ],
+    "OFFENSIVE -> HATE": [
+      {
+        "id": "test_1491",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "HATE",
+        "error_pair": "OFFENSIVE -> HATE",
+        "pattern_tags": [
+          "short_text_le_5_words",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 2,
+        "text": "Lại sủa"
+      },
+      {
+        "id": "test_1593",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "HATE",
+        "error_pair": "OFFENSIVE -> HATE",
+        "pattern_tags": [
+          "contains_teencode",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 29,
+        "text": "thằng dưới thì thấy thế này, chứ đm thằng ad mà làm quan to xem, thử mở mồm ra nói nghĩ cho dân xem nào :)) thanh niên GATO"
+      },
+      {
+        "id": "test_2204",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "HATE",
+        "error_pair": "OFFENSIVE -> HATE",
+        "pattern_tags": [
+          "context_or_lexical_nuance",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 9,
+        "text": "Máu cộng sản ăn vào người rùi nên vậy."
+      },
+      {
+        "id": "test_4255",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "HATE",
+        "error_pair": "OFFENSIVE -> HATE",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_negation",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 18,
+        "text": "Hèn gì chúng nó chỉ dám nói là ko có liên quan. Cái địt mẹ mấy thằng lớn"
+      },
+      {
+        "id": "test_5620",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "HATE",
+        "error_pair": "OFFENSIVE -> HATE",
+        "pattern_tags": [
+          "context_or_lexical_nuance",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 11,
+        "text": "Idol. Viết vậy là chết con đĩ mẹ người ta rồi"
+      },
+      {
+        "id": "test_613",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "HATE",
+        "error_pair": "OFFENSIVE -> HATE",
+        "pattern_tags": [
+          "contains_negation",
+          "contains_emoji_or_punct",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 23,
+        "text": "Mikhai chốp còn biết nhảu khỏi tàu đắm,chứ bọn này đéo nhẩy đâu,ảo thuật gia và phim ở hollywood phải gọi bằng \"Cụ\"🤣"
+      },
+      {
+        "id": "test_622",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "HATE",
+        "error_pair": "OFFENSIVE -> HATE",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_negation",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 36,
+        "text": "doanh nghiệp nó sai thì nó bị phạt, còn thằng này thích tống tiền doanh nghiệp thì nó cũng đéo đúng đâu mà gào mồm ăn vạ :)) tưởng ăn đc tiền của ngkhác dễ à"
+      },
+      {
+        "id": "test_6446",
+        "true_label": "OFFENSIVE",
+        "predicted_label": "HATE",
+        "error_pair": "OFFENSIVE -> HATE",
+        "pattern_tags": [
+          "context_or_lexical_nuance",
+          "offensive_hate_boundary"
+        ],
+        "word_count": 8,
+        "text": "Lâm Anh Vinn tui bảo rồi loz mẹ"
+      }
+    ],
+    "CLEAN -> OFFENSIVE": [
+      {
+        "id": "test_19",
+        "true_label": "CLEAN",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "CLEAN -> OFFENSIVE",
+        "pattern_tags": [
+          "short_text_le_5_words"
+        ],
+        "word_count": 5,
+        "text": "Sét đánh chết tao đi"
+      },
+      {
+        "id": "test_4362",
+        "true_label": "CLEAN",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "CLEAN -> OFFENSIVE",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_emoji_or_punct"
+        ],
+        "word_count": 13,
+        "text": "Thằng nào kêu tao dạng háng leo rank là ăn ban nha 😣"
+      },
+      {
+        "id": "test_5338",
+        "true_label": "CLEAN",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "CLEAN -> OFFENSIVE",
+        "pattern_tags": [
+          "short_text_le_5_words"
+        ],
+        "word_count": 2,
+        "text": "Edg cmnr"
+      },
+      {
+        "id": "test_5400",
+        "true_label": "CLEAN",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "CLEAN -> OFFENSIVE",
+        "pattern_tags": [
+          "contains_teencode",
+          "contains_negation"
+        ],
+        "word_count": 12,
+        "text": "Nguyễn Văn Quý haha mắc cười vl sao đéo ai haha vậy"
+      },
+      {
+        "id": "test_5490",
+        "true_label": "CLEAN",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "CLEAN -> OFFENSIVE",
+        "pattern_tags": [
+          "context_or_lexical_nuance"
+        ],
+        "word_count": 14,
+        "text": "Đeo cái vòng này rồi thì Phật cũng méo độ nổi anh đâu kakaka."
+      },
+      {
+        "id": "train_1006",
+        "true_label": "CLEAN",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "CLEAN -> OFFENSIVE",
+        "pattern_tags": [
+          "short_text_le_5_words"
+        ],
+        "word_count": 5,
+        "text": "Chờ em mặc quần cái"
+      },
+      {
+        "id": "train_10490",
+        "true_label": "CLEAN",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "CLEAN -> OFFENSIVE",
+        "pattern_tags": [
+          "contains_emoji_or_punct"
+        ],
+        "word_count": 6,
+        "text": "Tưởng chết mẹ hết rồi 🤣🤣🤣"
+      },
+      {
+        "id": "train_1054",
+        "true_label": "CLEAN",
+        "predicted_label": "OFFENSIVE",
+        "error_pair": "CLEAN -> OFFENSIVE",
+        "pattern_tags": [
+          "contains_url_or_mention"
+        ],
+        "word_count": 6,
+        "text": "@ss a bê đê đó má"
+      }
+    ]
+  }
+}
