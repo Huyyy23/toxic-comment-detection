@@ -51,29 +51,28 @@ Ngoài ma trận yêu cầu: v4 còn **EXP-00 = G0** (TV3 lead, TV1 review) và 
 
 ## 5. Shared Data Contract
 
-**Contract được SPEC v4 yêu cầu; chưa có bằng chứng Data Contract v1 đã phát hành/được bốn TV xác nhận.** Thiết kế interface theo schema này, không coi là đã có official dataset.
+**G0/Data Contract v1: OPEN theo phê duyệt của user và acceptance report ngày 2026-11-21.** Nguồn dữ liệu duy nhất cho TV1–TV4: `data/processed/g0_v1_candidate_release_final/`; chi tiết/caveats tại `docs/DATA_CONTRACT_v1.md` và bằng chứng tại `docs/G0_FINAL_REVIEW.md`. Không dùng các artifact `data/processed/vihsd.jsonl` hay `g0_v1_candidate*` cũ cho official runs.
 
-| Thành phần | Contract v4 |
+| Thành phần | Data Contract v1 (G0 OPEN) |
 |---|---|
 | Input tối thiểu | `id,text,label,split`; IDs ổn định, `label ∈ {0,1,2}`, split train/validation/test |
 | Nhãn | `0:CLEAN`, `1:OFFENSIVE`, `2:HATE`; không tự đổi taxonomy/gộp ViCTSD |
 | Nguồn | Ưu tiên UIT-ViHSD sau xác minh source/revision/license/schema/mapping; ViCTSD chỉ OOD/đối chiếu nếu phù hợp taxonomy |
-| Split | Ưu tiên official split nếu phù hợp; nếu không mới stratified 70/15/15, seed và group/thread policy ghi manifest; không chia lại riêng từng EXP |
+| Split | Seed 42, deterministic greedy stratified exact-text groups, target 70/15/15; one shared manifest; no per-EXP splits |
 | Metadata G0 | Dataset version/hash, label mapping, normalization rules bất biến, manifest `id→split`, seed, exact/near-duplicate/conflicting-label/group leakage checks |
-| Phát hành | Chỉ Train/Validation cho development; locked test do quy trình final quản lý |
+| Phát hành | `train_val.jsonl` only to development; `test_locked.jsonl` reserved for EXP-08 (historical exposure disclosed) |
 | Fit | Vocabulary/tokenizer, TF-IDF, feature selection, class statistics và mọi transform có học chỉ fit train/train-fold; validation/test chỉ transform |
 | Thay đổi | TV3 duyệt, version contract, thông báo nhóm và chạy lại kết quả bị ảnh hưởng trước final; không âm thầm đổi IDs/split |
 
 Loader phải kiểm tra schema, IDs, text hợp lệ và label mapping; không tự tạo split khi thiếu manifest. `cleaned_text`/`label_name` nằm trong draft dataset requirements cũ, **không phải input tối thiểu bắt buộc của v4**. Định dạng file, tên giá trị `val` hay `validation`, kiểu ID và đường dẫn manifest còn cần chốt ở G0. Không hard-code `train.parquet` chỉ vì plan v3 từng ghi như vậy.
 
-### G0 — Checklist bàn giao và phê duyệt (chưa mở gate)
+### G0 — Acceptance and caveats (2026-11-21)
 
-| Owner | Bằng chứng cần bàn giao | Điều kiện đóng |
-|---|---|---|
-| TV1 cung cấp; TV3 review | Source/revision/license, schema thực và mapping nhãn; raw-data reference/hash | Truy vết được nguồn, taxonomy và quyền dùng; unknowns được xử lý trước official training |
-| TV1 cung cấp dữ liệu; TV3 duyệt split | Official split hoặc lý do tự chia; seed, `id→split`, dataset/split hashes; exact/near-duplicate, conflicting-label/group leakage report | Cùng IDs cho bốn nhánh, không known overlap chưa xử lý; test tách khỏi development |
-| TV1 đề xuất; TV3 duyệt normalization | Quy tắc bất biến và version preprocessing; train/val artifacts hoặc references; length/class statistics có provenance | Không fit validation/test, không thay split; đủ thông tin quyết định config official |
-| TV3 điều phối; TV1–TV4 xác nhận | Data Contract v1, nơi giữ locked test và quyền chạy final; prediction schema; acknowledgment bốn thành viên | Có bằng chứng approval, không chỉ checklist; official training mới được mở |
+- Gate **OPEN**; official training is permitted, not performed in this acceptance task.
+- TV1–TV4 must use only `data/processed/g0_v1_candidate_release_final/`; train/val in `train_val.jsonl`, test separated in `test_locked.jsonl`. Fit all learned transforms on train only. Test reserved for one-shot EXP-08; historical exposure of a prior test split must be disclosed.
+- Policy: exclude all conflicting exact-text groups without relabeling; group same-label exact duplicates during deterministic stdlib split (seed 42, target 70/15/15).
+- HF mirror metadata declares CC-BY-NC-SA-4.0, but original UIT permission/license is unverified and card instructs obtaining permission. See report before redistribution/public release.
+- No thread IDs: exact text leakage check passes; near-duplicate/thread leakage is not certified. Acceptance details: `docs/G0_FINAL_REVIEW.md`.
 
 Adapter kỹ thuật nhóm 1 dùng JSONL UTF-8, manifest truyền tường minh dưới dạng mapping ID→split, split development `train`/`val`, ID string hoặc integer (không bool). Đây **không phải** quyết định định dạng official dataset hay G0 approval. Tokenization fixture dùng `str.split` giữ case/diacritics, chưa có normalization theo EDA. Batch trả Python lists để không cần PyTorch ở lớp dữ liệu; tensorization thuộc pipeline huấn luyện sau.
 
@@ -120,19 +119,19 @@ batch = collate_records(records[:2], vocab, max_length=32)
 
 **Quy ước:** DONE = đủ bằng chứng đạt DoD; IN PROGRESS = có bằng chứng đang làm; BLOCKED = có dependency chặn cụ thể; NOT STARTED = có xác nhận chưa bắt đầu (ghi thời điểm); UNKNOWN = không đủ thông tin hiện tại. Kế hoạch/checkbox/file scaffold không chứng minh hoàn thành.
 
-**Bằng chứng 2026-11-14:** TV1 chưa xong EDA/preprocessing; TV2/TV4 chưa xác nhận đầy đủ. Nhóm 1–3 đã triển khai/kiểm thử kỹ thuật trên fixture, chưa có official runs. `.venv` Python 3.12.5: torch 2.15.0+cpu, pytest 9.2.0, MLflow 2.22.5, Matplotlib 3.11.2, NumPy 1.26.4; package cài theo quyền được duyệt. Có notebook phân tích không lưu outputs. Không thay dataset/split chính thức hoặc truy cập runs máy khác.
+**Bằng chứng 2026-11-21:** User approved Data Contract v1 policy; G0 acceptance report states OPEN. Official training is now permitted by gate, but no official run was performed in this acceptance task. Earlier status notes below may predate the gate opening; use the current G0 report as source of truth.
 
 | Đối tượng | Trạng thái hiện tại / phạm vi | Bằng chứng hoặc điểm chặn |
 |---|---|---|
-| G0 / EXP-00 — TV3 lead | UNKNOWN về tiến độ thực hiện; chưa chứng minh gate mở | Chưa có contract/manifest/hash/approval bàn giao trong bằng chứng đã xem |
-| TV1 / EXP-01 | EDA đã chạy trên UIT-ViHSD (train 24.048 / val 2.672): CLEAN 82,7%, OFFENSIVE 6,7%, HATE 10,6%; mean 11,5 từ; 3.586 exact duplicates; 318 cross-split overlap train∩val; figure lưu notebooks/ | Đã chạy src/eda/eda_utils.py, lưu 5 PNG notebooks/; official LR BLOCKED chờ G0 duyệt dữ liệu/split |
-| TV2 / EXP-02 | UNKNOWN cá nhân; official runs BLOCKED theo G0 chưa được chứng minh | Chưa có run/model/acceptance bàn giao |
-| TV3 / EXP-03 | IN PROGRESS; nhóm 1–3 IMPLEMENTED + TESTED fixture CPU; official training BLOCKED theo G0/data approval | Model/trainer/checkpoint, MLflow local thật, report/notebook đã smoke; chưa có official runs/research metrics |
-| TV4 / EXP-04 | UNKNOWN cá nhân; official runs BLOCKED theo G0 chưa được chứng minh | Chưa xác nhận tiến độ hay run ngoài repo |
+| G0 / EXP-00 — TV3 lead | OPEN (user-approved policy + acceptance) | `docs/G0_FINAL_REVIEW.md`; provenance/test exposure caveats retained |
+| TV1 / EXP-01 | EDA có trước trên split raw gốc; official runs có thể bắt đầu theo Data Contract v1 | Dùng `data/processed/g0_v1_candidate_release_final/`; prior EDA không phải result trên contract v1 |
+| TV2 / EXP-02 | UNKNOWN cá nhân; official runs permitted after G0 OPEN | Chưa có run/model/acceptance bàn giao |
+| TV3 / EXP-03 | IN PROGRESS; model/trainer/checkpoint and tracking infrastructure tested on fixtures; official training permitted by G0 | No official runs or research metrics recorded |
+| TV4 / EXP-04 | UNKNOWN cá nhân; official runs permitted after G0 OPEN | Chưa xác nhận tiến độ hay run ngoài repo |
 | EXP-05 | BLOCKED phần phân tích thực nghiệm | Thiếu predictions/metrics EXP-01…04 |
 | EXP-06 | BLOCKED, conditional | Thiếu ≥2 model predictions và diversity evidence |
 | EXP-07 | BLOCKED, optional | Chưa chứng minh EXP-03 đạt nghiệm thu; không triển khai trước |
-| EXP-08 | BLOCKED | Chưa có G0, official candidates và freeze được xác nhận |
+| EXP-08 | G0 dependency OPEN; EXP-08 still pending freeze/results | Requires candidate manifest, validation selection/freeze and one-shot protocol |
 
 Không EXP nào được ghi DONE. Trạng thái NOT STARTED ngày 2026-11-11 không tự động xác nhận trạng thái cá nhân ngày 2026-11-14. Bổ sung run IDs/PR/artifact + DoD trước khi đổi trạng thái.
 
