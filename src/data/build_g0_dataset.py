@@ -161,7 +161,7 @@ def build(raw_dir: Path, output_dir: Path, seed: int = 42) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--raw-dir", type=Path, default=Path("data/raw"))
-    parser.add_argument("--output-dir", type=Path, default=Path("data/processed/v1_candidate"))
+    parser.add_argument("--output-dir", type=Path, default=Path("data/processed/vihsd_g0_v1"))
     args = parser.parse_args()
     info = build(args.raw_dir, args.output_dir)
     print(json.dumps(info["split"], ensure_ascii=False, indent=2))
