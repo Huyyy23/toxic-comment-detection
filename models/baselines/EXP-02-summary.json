@@ -1,0 +1,215 @@
+[
+  {
+    "variant": "A",
+    "run_id": "435376e5ce864397a2ca954f2a0e57cb",
+    "metrics": {
+      "macro_f1": 0.6377609315497104,
+      "weighted_f1": 0.8716206636439194,
+      "balanced_accuracy": 0.5850395750383217,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9108108108108108,
+          "recall": 0.9844206426484907,
+          "f1": 0.9461862423958821,
+          "support": 4108.0
+        },
+        "OFFENSIVE": {
+          "precision": 0.574585635359116,
+          "recall": 0.3291139240506329,
+          "f1": 0.41851106639839036,
+          "support": 316.0
+        },
+        "HATE": {
+          "precision": 0.724025974025974,
+          "recall": 0.4415841584158416,
+          "f1": 0.5485854858548586,
+          "support": 505.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          4044,
+          29,
+          35
+        ],
+        [
+          162,
+          104,
+          50
+        ],
+        [
+          234,
+          48,
+          223
+        ]
+      ],
+      "train_time_s": 0.4465,
+      "feature_selection_time_s": 0.0,
+      "inference_ms_per_sample": 0.0007,
+      "n_features_raw": 35436,
+      "n_features_selected": 35436,
+      "preprocess_time_s": 0.0439,
+      "tfidf_fit_time_s": 3.0856,
+      "n_train": 23002,
+      "n_val": 4929,
+      "model_size_mb": 1.9989
+    },
+    "artifacts_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\EXP-02-A",
+    "calibrated": false,
+    "effective_svm_cfg": {
+      "kernel": "linear",
+      "C": 1.0,
+      "class_weight": null,
+      "max_iter": 2000,
+      "dual": "auto"
+    },
+    "effective_fs_cfg": {
+      "enabled": false,
+      "method": null,
+      "k_requested": null,
+      "k_effective": null
+    }
+  },
+  {
+    "variant": "B",
+    "run_id": "8816655917444836b9fb1723b9bd9c80",
+    "metrics": {
+      "macro_f1": 0.6615105694602637,
+      "weighted_f1": 0.8800187799716159,
+      "balanced_accuracy": 0.6145396087807418,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9201277955271565,
+          "recall": 0.9814995131450828,
+          "f1": 0.9498233215547703,
+          "support": 4108.0
+        },
+        "OFFENSIVE": {
+          "precision": 0.5734597156398105,
+          "recall": 0.3829113924050633,
+          "f1": 0.45920303605313095,
+          "support": 316.0
+        },
+        "HATE": {
+          "precision": 0.7202380952380952,
+          "recall": 0.4792079207920792,
+          "f1": 0.5755053507728894,
+          "support": 505.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          4032,
+          31,
+          45
+        ],
+        [
+          146,
+          121,
+          49
+        ],
+        [
+          204,
+          59,
+          242
+        ]
+      ],
+      "train_time_s": 2.1837,
+      "feature_selection_time_s": 0.0,
+      "inference_ms_per_sample": 0.0024,
+      "n_features_raw": 64732,
+      "n_features_selected": 64732,
+      "preprocess_time_s": 0.4671,
+      "tfidf_fit_time_s": 11.4256,
+      "n_train": 23002,
+      "n_val": 4929,
+      "model_size_mb": 3.5203
+    },
+    "artifacts_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\EXP-02-B",
+    "calibrated": false,
+    "effective_svm_cfg": {
+      "kernel": "linear",
+      "C": 1.0,
+      "class_weight": null,
+      "max_iter": 2000,
+      "dual": "auto"
+    },
+    "effective_fs_cfg": {
+      "enabled": false,
+      "method": null,
+      "k_requested": null,
+      "k_effective": null
+    }
+  },
+  {
+    "variant": "C",
+    "run_id": "e58e837ef7d04a72942788751711e6e3",
+    "metrics": {
+      "macro_f1": 0.6844714711660448,
+      "weighted_f1": 0.8864941735518063,
+      "balanced_accuracy": 0.6517435190451859,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9312033582089553,
+          "recall": 0.9720058422590068,
+          "f1": 0.9511672224868986,
+          "support": 4108.0
+        },
+        "OFFENSIVE": {
+          "precision": 0.55859375,
+          "recall": 0.4525316455696203,
+          "f1": 0.5,
+          "support": 316.0
+        },
+        "HATE": {
+          "precision": 0.6961038961038961,
+          "recall": 0.5306930693069307,
+          "f1": 0.6022471910112359,
+          "support": 505.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          3993,
+          48,
+          67
+        ],
+        [
+          123,
+          143,
+          50
+        ],
+        [
+          172,
+          65,
+          268
+        ]
+      ],
+      "train_time_s": 0.9995,
+      "feature_selection_time_s": 0.4041,
+      "inference_ms_per_sample": 0.0012,
+      "n_features_raw": 88044,
+      "n_features_selected": 50000,
+      "preprocess_time_s": 0.8549,
+      "tfidf_fit_time_s": 13.5527,
+      "n_train": 23002,
+      "n_val": 4929,
+      "model_size_mb": 5.3646
+    },
+    "artifacts_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\EXP-02-C",
+    "calibrated": false,
+    "effective_svm_cfg": {
+      "kernel": "linear",
+      "C": 0.1,
+      "class_weight": "balanced",
+      "max_iter": 3000,
+      "dual": "auto"
+    },
+    "effective_fs_cfg": {
+      "enabled": true,
+      "method": "chi2",
+      "k_requested": 50000,
+      "k_effective": 50000
+    }
+  }
+]

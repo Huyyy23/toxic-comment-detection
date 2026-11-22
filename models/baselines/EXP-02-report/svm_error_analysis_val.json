@@ -1,0 +1,24 @@
+{
+  "source_variant": "EXP-02-C",
+  "run_id": "e58e837ef7d04a72942788751711e6e3",
+  "n_val_total": 4929,
+  "n_errors_total": 525,
+  "error_rate": 0.1065,
+  "confusion_pair_counts": {
+    "HATE -> CLEAN": 172,
+    "OFFENSIVE -> CLEAN": 123,
+    "CLEAN -> HATE": 67,
+    "HATE -> OFFENSIVE": 65,
+    "OFFENSIVE -> HATE": 50,
+    "CLEAN -> OFFENSIVE": 48
+  },
+  "pattern_tag_counts_among_errors": {
+    "contains_teencode": 223,
+    "context_or_lexical_nuance": 151,
+    "short_text_le_5_words": 124,
+    "offensive_hate_boundary": 115,
+    "contains_negation": 109,
+    "contains_emoji_or_punct": 72,
+    "contains_url_or_mention": 8
+  }
+}

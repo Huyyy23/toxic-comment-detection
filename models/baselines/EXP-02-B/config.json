@@ -1,0 +1,50 @@
+{
+  "experiment": "EXP-02",
+  "variant": "EXP-02-B",
+  "run_id": "8816655917444836b9fb1723b9bd9c80",
+  "owner": "TV2",
+  "description": "Basic cleanup + word+char TF-IDF + LinearSVC (C=1.0)",
+  "hypothesis": "Kết hợp basic cleanup (lowercase, strip URL/HTML) và char_wb n-grams (2-4) giúp LinearSVC chống nhiễu tốt hơn trước viết tắt, sai chính tả và từ lóng.",
+  "preprocessing": "basic",
+  "tfidf": {
+    "mode": "word+char",
+    "word_ngram_range": [
+      1,
+      2
+    ],
+    "char_ngram_range": [
+      2,
+      4
+    ],
+    "max_features": 100000,
+    "sublinear_tf": true,
+    "min_df": 2
+  },
+  "feature_selection": {
+    "enabled": false,
+    "method": null,
+    "k_requested": null,
+    "k_effective": null
+  },
+  "svm": {
+    "kernel": "linear",
+    "C": 1.0,
+    "class_weight": null,
+    "max_iter": 2000,
+    "dual": "auto"
+  },
+  "calibrated": false,
+  "calibration_method": null,
+  "calibration_cv": null,
+  "tuned": false,
+  "seed": 42,
+  "data_contract_version": "1.0",
+  "dataset_path": "D:\\Projects\\toxic-comment-detection-master\\data\\processed\\vihsd_g0_v1\\train_val.jsonl",
+  "manifest_path": "D:\\Projects\\toxic-comment-detection-master\\data\\processed\\vihsd_g0_v1\\manifest.json",
+  "dataset_file_sha256": "c17d920f788ff982775405d7031373dc2cd5525cbba5db6ed4e4f85e70159164",
+  "manifest_file_sha256": "1a3364ae6dcdc50e4f55e4bda665c5b4065c2835d2d98db808e60f4932c2edb2",
+  "train_text_sha256": "b732b51e2d3331cdf4ab5b3a0c11956c90ac752e610c936e18501f21c738f2a8",
+  "val_text_sha256": "52e7de35cb97bcdb8fbdc0be04c8a066a3351bd166a4a6c9ecbb11d538b76ab4",
+  "n_train": 23002,
+  "n_val": 4929
+}
