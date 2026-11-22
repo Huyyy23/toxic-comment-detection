@@ -1,4 +1,17 @@
-# TODO — TV4: TextCNN, tuning kiến trúc, Ensemble/Stacking (EXP-04/06)
+# TODO — TV4: TheAnh — TextCNN, tuning kiến trúc, Ensemble/Stacking (EXP-04/06)
+
+## Kế hoạch hiện hành D1–D4
+
+Các mục G0 bên dưới là lịch sử ba lớp; giữ trạng thái đã ghi và làm lại phần cần thiết trên split nhị phân mới.
+
+- [ ] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
+- [ ] **N7:** Sau N4 và N5, phối hợp Huy thử BiGRU/BiLSTM với Char-CNN. Chạy ba seed, chọn checkpoint theo val Macro-F1, báo F1 TOXIC và VRAM mục tiêu dưới 7 GB.
+- [ ] **N7:** Thực hiện ablation Char-CNN trên validation; chỉ thay một yếu tố mỗi lần. Lưu config, hash, checkpoint, MLflow run ID, metrics và predictions theo lớp, nguồn.
+- [ ] Bàn giao validation predictions và lỗi CNN cho Huy; không gọi raw scores là xác suất calibrated.
+- [ ] **N10:** Cùng nhóm đánh giá danh sách đã freeze trong một đợt locked test; không tuning theo test.
+
+## Lịch sử G0 trước D1–D4
+
 
 **Snapshot audit:** chưa thấy implementation TextCNN, config, test, run metrics, validation predictions hay checkpoints riêng cho TV4. Vì vậy EXP-04 **chưa bắt đầu/nghiệm thu**; ensemble EXP-06 cũng chưa có căn cứ vì chưa có outputs từ các model. G0 hiện OPEN, có thể bắt đầu pipeline và chạy official experiments song song với các thành viên khác.
 

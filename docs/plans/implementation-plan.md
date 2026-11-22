@@ -24,9 +24,9 @@ Train LR, SVM, LSTM, BiLSTM with attention, character CNN, and FastText without 
 | N12 deployment | Chưa phân công | N10, N11 |
 | N13 optional PhoBERT | TV3 | N2, N4 if augmentation is used, instructor approval |
 | N14 optional extras | Huy | N13, if applicable |
-| N15 error analysis | TV3 lead; Huy supports | N10 |
+| N15 error analysis | Huy (TV3) lead | N10 |
 
-The existing `tasks/todo.md` assigns PhoBERT to TV3 and error analysis to TV3 lead, with all members contributing. It does not identify Huy as TV3. Confirm the N14 and N15 supporting assignment with the team; do not infer Huy's member number.
+TV1 là Tam, TV2 là Vinh, TV3 là Huy và TV4 là TheAnh, theo xác nhận của người dùng ngày 2026-11-23.
 
 Integrate in this order: data, leakage audit, augmentation, embeddings, baselines, neural models, calibration, ablation, locked test, web and deployment. N5 and N6 may run in parallel after N2. This integration order does not add a dependency between them.
 

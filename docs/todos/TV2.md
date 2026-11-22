@@ -1,4 +1,17 @@
-# TODO — TV2: LinearSVC, feature engineering, tuning, ablation (EXP-02)
+# TODO — TV2: Vinh — LinearSVC, feature engineering, tuning, ablation (EXP-02)
+
+## Kế hoạch hiện hành D1–D4
+
+Các mục G0 bên dưới là lịch sử ba lớp; giữ nguyên các mục `[x]`. Kết quả cũ không phải kết quả trên split nhị phân mới.
+
+- [ ] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
+- [ ] **N6:** Sau N2, chạy TF-IDF + LinearSVC trên split nhị phân với ba seed. Fit vectorizer và feature selection trên train; lưu config, hash, MLflow run ID, model, validation predictions và metrics theo lớp và nguồn.
+- [ ] **N6:** So sánh feature và hyperparameter trên validation; chọn checkpoint theo Macro-F1 và báo F1 TOXIC. Phối hợp calibration trên validation; không gọi `decision_function` là xác suất.
+- [ ] Bàn giao predictions và phân tích lỗi validation cho Huy; ghi thời gian và kích thước artifact.
+- [ ] **N10:** Cùng nhóm đánh giá danh sách đã freeze trong một đợt locked test; không tuning từ kết quả test.
+
+## Lịch sử G0 trước D1–D4
+
 
 **Snapshot audit:** chưa thấy pipeline/config/run artifacts riêng cho LinearSVC hoặc kết quả EXP-02. `src/features/tfidf_pipeline.py` là hạ tầng TF-IDF dùng chung, không phải bằng chứng đã huấn luyện SVM. **EXP-02 chưa bắt đầu/nghiệm thu.** G0 hiện OPEN, nên TV2 có thể làm song song ngay với TV1, TV3, TV4.
 

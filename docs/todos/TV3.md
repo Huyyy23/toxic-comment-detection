@@ -1,4 +1,19 @@
-# TODO — TV3 (nhóm trưởng): Data Contract, recurrent, Error Analysis, tích hợp
+# TODO — TV3: Huy (nhóm trưởng) — Data Contract, recurrent, Error Analysis, tích hợp
+
+## Kế hoạch hiện hành D1–D4
+
+Các mục G0 bên dưới là lịch sử ba lớp. `tasks/todo.md` ghi ba official EXP-03 runs đã hoàn thành trên G0 train/validation; các run này cần chạy lại cho split nhị phân, không xóa lịch sử.
+
+- [ ] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
+- [ ] **N2:** Cùng Tam kiểm tra nguồn, permission UIT và mapping; gộp ViHSD/ViCTSD, tạo nhãn CLEAN/TOXIC và `source`, dedupe trong và giữa nguồn, split 70/15/15 stratified theo `(source,label)`. Lưu Parquet, manifest, seed, hash và thống kê split × source.
+- [ ] **N7:** Sau N4 và N5, chạy LSTM, BiLSTM, BiLSTM + Attention tự huấn luyện; phối hợp TheAnh với Char-CNN. Dùng ba seed, chọn checkpoint theo val Macro-F1, báo F1 TOXIC và lưu config, checkpoint, metrics, predictions và hash.
+- [ ] **N13:** Chỉ sau xác nhận giảng viên, fine-tune PhoBERT khởi tạo pretrained làm benchmark riêng, trên cùng split; N2 và N4 nếu dùng augmentation. Dùng `phobert-base`, tách từ có ghi phiên bản, chọn checkpoint theo val Macro-F1, chạy ba seed và lưu config, log, checkpoint, VRAM.
+- [ ] **N14:** Nếu được phép và còn thời gian, thử learning rate, epoch và chiến lược fine-tuning trên val; mỗi lần đổi một yếu tố. Lưu `docs/experiments/phobert_extra_val.csv`. Phụ thuộc N13.
+- [ ] **N10:** Duyệt danh sách candidate, seed, threshold và protocol trước khi Tam điều phối một đợt test. Không tuning hay chọn lại theo test.
+- [ ] **N15:** Sau N10, phân tích lỗi hai chiều giữa PhoBERT pretrained fine-tune nếu được phép và các mô hình khác. Ghi ví dụ, số mẫu, lỗi tiếng lóng, teencode, từ bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode trong `docs/experiments/error_analysis.md`. Không dùng lỗi test để tuning.
+
+## Lịch sử G0 trước D1–D4
+
 
 **Snapshot audit:** `docs/DATA_CONTRACT_v1.md` được user duyệt; G0 acceptance PASS và Gate OPEN theo `docs/G0_FINAL_REVIEW.md`. Recurrent model/trainer/checkpoint/loader/tracking/report đã có và từng được test trên fixture CPU theo `docs/TV3_SESSION_REPORT.md`; hiện có thêm official driver/config cho G0. Chưa có bằng chứng official EXP-03 training runs/checkpoints. EXP-05 và EXP-07 chưa có kết quả nghiên cứu.
 

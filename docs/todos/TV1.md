@@ -1,4 +1,18 @@
-# TODO — TV1: EDA, preprocessing, TF-IDF + Logistic Regression (EXP-01)
+# TODO — TV1: Tam — EDA, preprocessing, TF-IDF + Logistic Regression (EXP-01)
+
+## Kế hoạch hiện hành D1–D4
+
+Các mục G0 bên dưới là lịch sử ba lớp; giữ trạng thái đã ghi và chạy lại các bước cần thiết trên split nhị phân mới. Không dùng kết quả G0 như kết quả của split mới.
+
+- [ ] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
+- [ ] **N2:** Hỗ trợ Huy xác minh nguồn, mapping ViHSD/ViCTSD, dedupe và thống kê theo split × source. Phụ thuộc N1; quyền UIT và cách xử lý khác biệt nhãn còn chờ xác nhận.
+- [ ] **N6:** Sau N2, chạy TF-IDF + Logistic Regression trên split nhị phân với ba seed. Fit vectorizer trên train; lưu config, hash, MLflow run ID, model, validation predictions và metrics theo lớp và nguồn.
+- [ ] **N6:** So sánh preprocessing trên validation, chọn checkpoint theo Macro-F1, báo F1 TOXIC; phối hợp calibration trên validation và bàn giao baseline `.joblib` dưới 15 MB.
+- [ ] **N10:** Sau N9 và N14 nếu có, điều phối cả nhóm freeze candidates, seed, threshold và protocol; tạo file khóa và chạy một đợt locked test. Báo cáo `locked_test.md`, công bố lịch sử test exposure và không tuning theo test.
+- [ ] Bàn giao validation predictions và lỗi LR cho Huy; lưu lại evidence theo từng run.
+
+## Lịch sử G0 trước D1–D4
+
 
 **Snapshot audit:** EDA notebook và EXP-01 A/B/C artifacts đã có, nhưng chúng dùng `data/processed/vihsd.jsonl` (run ghi 24,048 train / 2,672 val), không phải candidate G0 hiện hành `data/processed/vihsd_g0_v1/` (23,002 train / 4,929 val). Vì vậy đây là **đã chạy trên dữ liệu cũ; chưa nghiệm thu official EXP-01**. Không dùng kết quả cũ để so sánh chính thức. G0 hiện OPEN; có thể làm song song với TV2–TV4.
 

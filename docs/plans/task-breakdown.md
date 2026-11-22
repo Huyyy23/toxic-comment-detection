@@ -19,9 +19,9 @@
 | N12 | Deploy after N10 and N11 gates. Consider ONNX only if measured benefit warrants it. | N10, N11 | Chưa phân công |
 | N13 | Optional PhoBERT benchmark, only after instructor approval. Use `phobert-base`, word segmentation, 128–160 tokens, learning rate `2e-5`, batch size 16, 10% warmup, weight decay `0.01`, 3–4 epochs, validation Macro-F1 early stopping, and fp16 or accumulation when supported. | N2, N4 if augmentation is used, instructor approval | TV3 |
 | N14 | Optional extras, using validation only. | N13, if applicable | Huy |
-| N15 | Analyze errors after N10 without using test errors to change candidates or settings. | N10 | TV3 lead; Huy supports |
+| N15 | Analyze errors after N10 without using test errors to change candidates or settings. | N10 | Huy (TV3) lead |
 
-The current TODO assigns PhoBERT to TV3 and error analysis to the TV3 lead with all members contributing. It does not identify Huy as TV3. Confirm the Huy assignments without inferring a member number.
+TV1 là Tam, TV2 là Vinh, TV3 là Huy và TV4 là TheAnh, theo xác nhận của người dùng ngày 2026-11-23.
 
 ## Shared contract and experiment controls
 Use `id,text,label,source,split` as the dataset schema and `CLEAN=0`, `TOXIC=1` as labels. Keep source-specific mappings explicit because dataset meanings differ. UIT permission, source revisions, ViCTSD encoding, data availability, and correspondence of existing G0 outputs remain pending verification.

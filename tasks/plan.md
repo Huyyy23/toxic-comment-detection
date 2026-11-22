@@ -25,9 +25,9 @@
 | N12 | Deploy after test and integration gates pass. Consider ONNX only if it offers a measured benefit. | N10, N11 | Chưa phân công |
 | N13 | Run the optional pretrained PhoBERT fine-tuning benchmark after instructor approval. | N2, N4 if augmentation is used, instructor approval | TV3 |
 | N14 | Run optional pretrained PhoBERT fine-tuning extras on validation only. | N13, if applicable | Huy |
-| N15 | Analyze errors after the final locked-test batch without tuning candidates. | N10 | TV3 lead; Huy hỗ trợ |
+| N15 | Analyze errors after the final locked-test batch without tuning candidates. | N10 | Huy (TV3) lead |
 
-`tasks/todo.md` names N15's corresponding error-analysis work as TV3 lead with contributions from TV1–TV4; it does not identify Huy by name. Confirm the N13–N15 assignment with the team. This plan does not infer that Huy is TV3.
+TV1 là Tam, TV2 là Vinh, TV3 là Huy và TV4 là TheAnh, theo xác nhận của người dùng ngày 2026-11-23.
 
 ## Integration order and controlled experiments
 The integration order is data → leakage → augmentation → embeddings → baselines → neural models → calibration → ablation → locked test → web/deploy. N5 and N6 can run in parallel after N2; the order above is not a dependency between them. The dependencies in the task table govern execution.
