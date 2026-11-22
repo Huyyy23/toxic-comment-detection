@@ -1,6 +1,8 @@
 # Project TODO — Scratch-first v4.0
 **Plan only — 2026-11-11.** Trạng thái dưới đây chỉ phản ánh **kế hoạch mới**, không suy ra code/scaffold cũ đã bị xóa hoặc đã chạy thí nghiệm.
 
+**Cập nhật kế hoạch 2026-11-23:** D1–D4 thay contract ba lớp bằng dữ liệu gộp nhị phân. Các mục dưới giữ nguyên trạng thái và lịch sử G0; kết quả cũ không phải kết quả của split mới. Deadline và quan hệ giữa tên Huy với mã TV chưa được xác nhận.
+
 ## G0 — Data Contract (TV3 nhóm trưởng)
 - [ ] Kiểm chứng source/license/schema/label 3 lớp của UIT-ViHSD (TV1 hỗ trợ audit).
 - [ ] Check duplicate, nhãn mâu thuẫn và leakage; quyết định official split hoặc stratified 70/15/15.
@@ -35,3 +37,41 @@
 
 Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-experiments.md) · [task breakdown](../docs/plans/task-breakdown.md).
 **Chỉ sửa PLAN/SPEC lần này — không triển khai bất cứ TODO nào.**
+
+## D1–D4 — Cần làm lại / bị thay thế
+- [ ] G0 ba lớp và EXP-01–EXP-04 cần chạy lại theo D1/D2 trên split nhị phân mới. Các mục `[x]` phía trên vẫn là lịch sử đã hoàn thành, không chuyển thành chưa làm.
+- [ ] Kiểm tra lịch sử test exposure trước khi xây dựng split mới; không tuyên bố test hoàn toàn blind nếu dữ liệu đã lộ.
+- [ ] Các công việc API-only, ensemble và TextCNN trước đây không thay thế yêu cầu React + FastAPI và neural mới. PhoBERT pretrained fine-tune chỉ thực hiện sau xác nhận giảng viên.
+
+## Checklist D1–D4 theo thành viên
+
+### TV1
+- [ ] N6: TF-IDF + Logistic Regression cùng TV2. Chọn checkpoint theo val Macro-F1, báo F1 TOXIC, xuất baseline calibrated `.joblib` dưới 15 MB. Phụ thuộc N2.
+- [ ] N10: Điều phối cả nhóm đánh giá locked test một đợt, sau N9 và N14 nếu có. Đóng băng candidate và ba seed trước khi mở, tạo file khóa và báo cáo `locked_test.md`.
+
+### TV2
+- [ ] N6: TF-IDF + LinearSVC cùng TV1. Hiệu chuẩn margins, cùng protocol và điều kiện nghiệm thu N6.
+
+### TV3
+- [ ] N2: Lead data pipeline với hỗ trợ TV1. Map nhị phân, lưu `source`, dedupe trong và giữa nguồn, split stratified theo `(source, label)`. Xuất Parquet và thống kê theo split × source sau N1.
+- [ ] N13: Theo phân công PhoBERT EXP-07 hiện có, TV3 phụ trách benchmark pretrained fine-tune sau xác nhận giảng viên. Phụ thuộc N2, thêm N4 nếu augment. Lưu checkpoint/config/log, chạy ba seed và ghi VRAM.
+- [ ] N15: Lead phân tích lỗi sau N10 theo vai trò hiện có. Huy hỗ trợ theo yêu cầu mới; chưa xác nhận Huy có phải TV3. Viết `docs/experiments/error_analysis.md`, so sánh hai chiều, có ví dụ và số mẫu theo nguồn, độ dài và teencode.
+
+### TV4
+- [ ] N7: Phối hợp neural với TV3 theo vai trò recurrent và CNN hiện có. Sau N4, N5, thử BiGRU/BiLSTM + Char-CNN, checkpoint theo val Macro-F1, ghi F1 TOXIC và VRAM mục tiêu dưới 7 GB.
+
+### Huy
+- [ ] N14: Nếu có thời gian và giảng viên cho phép PhoBERT pretrained fine-tune, thử learning rate, epoch và chiến lược fine-tune trên val sau N13. Mỗi lần đổi một yếu tố, lưu `docs/experiments/phobert_extra_val.csv`.
+- [ ] N15: Phối hợp TV3 phân tích lỗi sau N10 như trên.
+
+### Cả nhóm hoặc chưa phân công
+- [ ] N1: Cả nhóm duyệt spec, decisions, plan và todo D1–D4.
+- [ ] N3: Chưa phân công. Mở rộng `test_leakage` sau N2 để kiểm tra split và augmentation.
+- [ ] N4: Chưa phân công. Sau N3, augment train-only TOXIC, thêm `is_augmented`, mục tiêu 30–35% nếu đạt được với giới hạn số bản; không điều chỉnh test.
+- [ ] N5: Chưa phân công. Sau N2, train FastText bằng gensim chỉ trên train, lưu embedding và báo kích thước.
+- [ ] N8: Chưa phân công. Sau N6, N7 và N13 nếu PhoBERT được phép, calibration và chọn threshold trên val, báo ECE trước/sau.
+- [ ] N9: Chưa phân công. Sau N7, N8 và N13 nếu được phép, ablation trên val và so sánh với PhoBERT pretrained fine-tune nếu được phép. Lưu `ablation_val.csv`.
+- [ ] N11: Chưa phân công. Sau N6 và N8, cập nhật inference/API/frontend nhị phân; test API và fallback `.joblib`.
+- [ ] N12: Chưa phân công. Sau N10 và N11, Docker + HF Spaces, smoke test.
+- [ ] Deadline: Chưa xác định. Nhóm xác nhận phân công còn thiếu, quyền dùng UIT, mapping nhãn và cho phép PhoBERT pretrained fine-tune.
+

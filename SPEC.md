@@ -1,38 +1,51 @@
 # Vietnamese Toxic Comment Detection — Project Specification
 
-**Version:** 4.0.0 — SCRATCH-FIRST | **Date:** 2026-11-11 | **Status:** APPROVED DIRECTION / IMPLEMENTATION NOT STARTED
+**Version:** 5.0.0 · **Date:** 2026-11-23 · **Status:** PLANNED cho D1–D4; các công việc cũ có trạng thái riêng.
 
-## Mục tiêu
-Đồ án cuối kỳ Machine Learning: phân loại bình luận tiếng Việt thành **CLEAN (0), OFFENSIVE (1), HATE (2)**. Trọng tâm là **tự huấn luyện, so sánh, cải tiến và lý giải kết quả**; không lấy mô hình phân loại đã huấn luyện sẵn làm sản phẩm chính.
+## Mục tiêu và trạng thái
 
-## Bốn hướng nghiên cứu chính (training from scratch)
-| Thành viên | Mô hình chính | Thí nghiệm |
-|---|---|---|
-| TV1 | TF-IDF + Logistic Regression | EDA, preprocessing, word/char n-grams, class weighting |
-| TV2 | TF-IDF + LinearSVC | C, n-grams, feature selection; RBF SVC chỉ khi khả thi |
-| TV3 — nhóm trưởng | Random-initialized LSTM → BiLSTM → BiLSTM + Attention | Kiến trúc, hidden size, dropout, ablation; sở hữu data contract |
-| TV4 | Random-initialized TextCNN → multi-kernel TextCNN | Kernel/filter/dropout, ablation; ensemble khi có cơ sở |
+Đồ án phân loại bình luận tiếng Việt thành **CLEAN=0** hoặc **TOXIC=1**. Hướng nghiên cứu đã chốt là gộp ViHSD và ViCTSD sau khi xác minh permission và mapping nhãn. Đây là quyết định đặc tả mới, không phải mô tả dữ liệu hay pipeline đã triển khai. UIT permission, mapping tương thích, xác nhận giảng viên về PhoBERT, yêu cầu bài tập và deadline vẫn pending.
 
-**Pretrained benchmark (riêng biệt):** TV3 fine-tune `vinai/phobert-base-v2` chỉ để **đối chứng Transfer Learning**, sau khi mô hình tự train đã có kết quả. Không coi PhoBERT là mô hình scratch. TV4 có thể hỗ trợ vận hành. Phần mở rộng, không là điều kiện chặn nghiệm thu bốn mô hình chính.
+ViHSD dùng `label > 0` làm TOXIC; ViCTSD dùng `Toxicity` làm nhãn nhị phân. Hai taxonomy gốc khác nhau; cần kiểm tra ý nghĩa, schema và permission trước khi coi nhãn gộp tương đương. CLEAN luôn là 0, TOXIC là 1. Không dùng pretrained embeddings, LLM hay backtranslation cho nhóm mô hình chính.
 
-## Giao thức khoa học
-- Dataset ưu tiên: UIT-ViHSD, phải xác minh schema, nguồn, giấy phép và split chính thức trước khi khóa. ViCTSD chỉ làm cross-dataset/OOD nếu taxonomy tương thích; không tự ghép nhãn.
-- Data Contract do TV3 ban hành ở **Gate G0** sau kiểm tra tối thiểu (nhãn, trùng lặp, leakage, split). TV1 tiếp tục EDA chi tiết song song với TV2–TV4 viết code.
-- Nếu official split phù hợp, ưu tiên giữ nguyên; nếu không, stratified 70/15/15, seed được ghi trong manifest. Chỉ fit tokenizer/vocabulary/TF-IDF và mọi tham số preprocessing có học trên train.
-- **Macro-F1** là metric chọn mô hình. Báo cáo per-class precision/recall/F1, confusion matrix, training time, inference latency, model size. Validation dùng tuning; **locked test chỉ dùng ở giai đoạn cuối**, không tối ưu theo test.
-- Tối thiểu **3 biến thể/cấu hình có ý nghĩa mỗi người**, ghi MLflow run/config/seed/dataset hash, lưu artifact và phân tích nguyên nhân kết quả; chạy nhiều seed cho các cấu hình quan trọng nếu tài nguyên cho phép.
-- Ensemble chỉ thử khi dự đoán validation từ các mô hình chứng tỏ lỗi bổ sung; stacking phải dùng out-of-fold đúng quy tắc.
-- Không bịa kết quả, không khẳng định mô hình mới tốt hơn trước khi đo. Mọi kết quả train/deploy hiện là **chưa thực hiện/chưa xác minh**.
+**Lịch sử:** đặc tả ba lớp CLEAN/OFFENSIVE/HATE ở v4 được giữ làm lịch sử đã superseded, không còn là taxonomy hiện hành.
 
-## Phạm vi ứng dụng
-Giữ **FastAPI tối giản** làm demo suy luận (`POST /predict`, `GET /health`, `GET /model-info`), Swagger `/docs`; không phát triển React/frontend, auth, database hay dashboard. Hosting/Hugging Face Spaces chỉ quyết định sau khi kiểm tra điều kiện thật.
+## Dữ liệu và giao thức
 
-## Tài liệu nguồn chuẩn
-- [Đặc tả chi tiết](docs/spec.md)
-- [Kế hoạch thí nghiệm](docs/plans/ml-experiments.md)
-- [Kế hoạch giai đoạn và phối hợp](docs/plans/implementation-plan.md)
-- [Task và nghiệm thu](docs/plans/task-breakdown.md)
-- [Kế hoạch nhóm tóm tắt](tasks/plan.md)
-- [Checklist](tasks/todo.md)
+- Nguồn dự kiến gồm ViHSD (`vihsd`) và ViCTSD (`victsd`). Hợp nhất theo schema chung; deduplicate trước split; stratify theo `(source,label)` 70/15/15; ghi seed, source, hash và ID-split trong manifest. Split nhị phân mới chưa được xây dựng.
+- Validation Macro-F1 là tiêu chí thống nhất để chọn checkpoint và so sánh mọi mô hình; F1 TOXIC là metric bổ sung.
+- Fit mọi biến đổi học được chỉ trên train. Không dùng pretrained embeddings, LLM hoặc backtranslation cho nhóm chính.
+- Dùng 3 seed và báo metrics từng seed. Test khóa, chỉ một batch cuối cho candidates đã freeze. Dùng bootstrap CI hoặc McNemar theo protocol thống nhất trước khi mở test.
+- Không khẳng định kết quả chưa đo. Mọi bước bên dưới là dự kiến.
 
-**Chỉ cập nhật SPEC/PLAN trong thay đổi này; tuyệt đối chưa sửa code, dataset, config, checkpoint hoặc triển khai.**
+### Lịch sử split và trạng thái
+
+G0 review ghi nhận split ba lớp cũ có 23,002 train, 4,929 validation và 4,929 test sau khi loại 540 bản ghi thuộc 241 nhóm xung đột nhãn. Same-label exact duplicates được giữ cùng split. Test từng hiện diện trong artifacts chia sẻ, nên không được gọi là blind. Split cũ không phải split binary mới và không chuyển trạng thái chấp thuận sang split mới.
+
+
+## Mô hình và ablation
+
+Các nhóm chính tự huấn luyện Logistic Regression (LR), SVM, BiLSTM random-init với cross-entropy, FastText, và Char-CNN. Ablation gồm LR balanced; BiLSTM random CE; FastText train-only; Char-CNN; chọn đúng một phương án imbalance theo validation; augmentation train-only; calibration cùng threshold. Mỗi ablation đổi một yếu tố so với baseline, không giả định cải thiện.
+
+Augmentation chỉ áp dụng cho TOXIC trên train, tối đa +1 mẫu sinh mỗi mẫu gốc và không quá 2x. Mục tiêu TOXIC chiếm 30–35% không bảo đảm. Bảo vệ từ độc hại và lọc bản trùng với validation/test. Chọn duy nhất một trong class weights, focal loss hoặc sampler bằng validation.
+
+PhoBERT là benchmark pretrained fine-tune riêng, **[Pending lecturer confirmation]**, không phải mô hình scratch. Dùng `vinai/phobert-base`, word segmentation có ghi công cụ và phiên bản, 128–160 tokens, giới hạn khoảng 256, learning rate `2e-5`, batch 16, warmup 10%, weight decay `.01`, 3–4 epochs, early stopping theo validation Macro-F1. Dùng fp16 và gradient accumulation nếu hỗ trợ. P1 là cấu hình mặc định; P2 thêm phương án imbalance D3; P3 tùy chọn thử một yếu tố trên val.
+Calibration và threshold validation có thể tạo optimistic bias nếu dùng để xếp hạng model. So sánh raw predictions và chọn candidate bằng validation Macro-F1 trước. Sau đó fit calibration và threshold trên validation chỉ cho artifact inference; ghi diagnostics là in-sample, không dùng làm bằng chứng so sánh công bằng. Freeze artifact trước test, không fit lại trên test.
+
+
+## API và artifacts dự kiến
+
+Prediction binary gồm `label_id`, `label_name`, `confidence`, `probabilities` (`CLEAN`, `TOXIC`), `is_calibrated`, `threshold`, `latency_ms`, `model_backend`. Probabilities có tổng xấp xỉ 1; `confidence` là xác suất của nhãn trả về. `is_calibrated` chỉ true khi có calibration hợp lệ; raw margins và softmax không tự động là calibrated probabilities. Threshold chọn trên validation và lưu trong metadata.
+
+Artifacts dự kiến gồm `models/neural_best/`, `configs/neural_config.yaml`, `models/transformer_best/`, `configs/transformer_config.yaml` và baseline fallback `.joblib`. Các đường dẫn này là yêu cầu đích, chưa khẳng định tồn tại.
+
+Hệ thống ứng dụng theo yêu cầu người dùng dự kiến dùng React, FastAPI, Docker và Hugging Face Spaces. Đây là quyết định mới, trái với kiến trúc FastAPI-only trong tài liệu cũ; chưa có phần nào được xác nhận đã triển khai. HF eligibility và deploy vẫn pending.
+
+- **D1 Data:** xác minh permission, source/schema/label mapping; hợp nhất theo source `vihsd`/`victsd`; deduplicate trước split; stratify 70/15/15 theo `(source,label)`; lưu seed, hashes, manifest và khóa test. Split binary mới chưa được dựng.
+- **D2 Models:** LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation; PhoBERT chỉ sau xác nhận giảng viên.
+- **D3 Improvements:** augmentation TOXIC chỉ trên train theo giới hạn; chọn đúng một imbalance method; calibration, threshold và ECE; không dùng test.
+- **D4 Evaluation:** cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; artifacts và React/FastAPI/Docker/HF Spaces theo yêu cầu, sau khi xác minh deploy.
+
+Mọi tiêu chí còn phụ thuộc permission, mapping, xác nhận giảng viên, yêu cầu bài tập và deadline đều pending. Chỉ sửa đặc tả trong thay đổi này; không sửa code, dữ liệu hay cấu hình.
+
+Tài liệu liên quan: [Đặc tả chi tiết](docs/spec.md), [kế hoạch thí nghiệm](docs/plans/ml-experiments.md), [yêu cầu dữ liệu](docs/dataset-requirements.md), [deployment](docs/deployment-plan.md).
