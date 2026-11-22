@@ -46,19 +46,34 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 ## Checklist D1–D4 theo thành viên
 
 ### TV1
+- [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
+- [ ] N2: Hỗ trợ TV3 kiểm tra nguồn, mapping nhãn, dedupe và thống kê split theo nguồn.
 - [ ] N6: TF-IDF + Logistic Regression cùng TV2. Chọn checkpoint theo val Macro-F1, báo F1 TOXIC, xuất baseline calibrated `.joblib` dưới 15 MB. Phụ thuộc N2.
+  - [ ] Chạy ít nhất ba seed trên split nhị phân; lưu config, hash dữ liệu, predictions, metrics và artifact.
+  - [ ] Thực hiện preprocessing ablation và phân tích lỗi LR trên validation.
 - [ ] N10: Điều phối cả nhóm đánh giá locked test một đợt, sau N9 và N14 nếu có. Đóng băng candidate và ba seed trước khi mở, tạo file khóa và báo cáo `locked_test.md`.
 
 ### TV2
+- [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
 - [ ] N6: TF-IDF + LinearSVC cùng TV1. Hiệu chuẩn margins, cùng protocol và điều kiện nghiệm thu N6.
+  - [ ] Chạy ít nhất ba seed trên split nhị phân; lưu config, hash dữ liệu, predictions, metrics và artifact.
+  - [ ] Thực hiện SVM feature/hyperparameter ablation và so sánh chi phí train trên validation.
+- [ ] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning.
 
 ### TV3
+- [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
 - [ ] N2: Lead data pipeline với hỗ trợ TV1. Map nhị phân, lưu `source`, dedupe trong và giữa nguồn, split stratified theo `(source, label)`. Xuất Parquet và thống kê theo split × source sau N1.
+  - [ ] Lưu seed, hash và manifest ID→split. Ghi rõ quyền UIT và mapping khác biệt giữa hai nguồn đang chờ xác nhận.
+- [ ] N7: Phụ trách LSTM, BiLSTM và BiLSTM + Attention tự huấn luyện; phối hợp TV4 cho nhánh Char-CNN sau N4 và N5. Lưu checkpoint, config, ba seed và metrics validation.
+- [ ] N10: Duyệt danh sách candidate, threshold và protocol đã đóng băng trước đợt test.
 - [ ] N13: Theo phân công PhoBERT EXP-07 hiện có, TV3 phụ trách benchmark pretrained fine-tune sau xác nhận giảng viên. Phụ thuộc N2, thêm N4 nếu augment. Lưu checkpoint/config/log, chạy ba seed và ghi VRAM.
 - [ ] N15: Lead phân tích lỗi sau N10 theo vai trò hiện có. Huy hỗ trợ theo yêu cầu mới; chưa xác nhận Huy có phải TV3. Viết `docs/experiments/error_analysis.md`, so sánh hai chiều, có ví dụ và số mẫu theo nguồn, độ dài và teencode.
 
 ### TV4
+- [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
 - [ ] N7: Phối hợp neural với TV3 theo vai trò recurrent và CNN hiện có. Sau N4, N5, thử BiGRU/BiLSTM + Char-CNN, checkpoint theo val Macro-F1, ghi F1 TOXIC và VRAM mục tiêu dưới 7 GB.
+  - [ ] Thực hiện CNN ablation trên validation; lưu config, hash dữ liệu, ba seed và metrics.
+- [ ] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning.
 
 ### Huy
 - [ ] N14: Nếu có thời gian và giảng viên cho phép PhoBERT pretrained fine-tune, thử learning rate, epoch và chiến lược fine-tune trên val sau N13. Mỗi lần đổi một yếu tố, lưu `docs/experiments/phobert_extra_val.csv`.
