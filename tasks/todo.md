@@ -55,9 +55,9 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 
 ### TV2 — Vinh
 - [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
-- [ ] N6: TF-IDF + LinearSVC cùng TV1. Hiệu chuẩn margins, cùng protocol và điều kiện nghiệm thu N6.
-  - [ ] Chạy ít nhất ba seed trên split nhị phân; lưu config, hash dữ liệu, predictions, metrics và artifact.
-  - [ ] Thực hiện SVM feature/hyperparameter ablation và so sánh chi phí train trên validation.
+- [x] N6: TF-IDF + LinearSVC cùng TV1. Hiệu chuẩn margins, cùng protocol và điều kiện nghiệm thu N6.
+  - [x] Chạy ít nhất ba seed trên split nhị phân; lưu config, hash dữ liệu, predictions, metrics và artifact.
+  - [x] Thực hiện SVM feature/hyperparameter ablation và so sánh chi phí train trên validation.
 - [ ] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning.
 
 ### TV3 — Huy
