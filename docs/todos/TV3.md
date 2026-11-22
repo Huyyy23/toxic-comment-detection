@@ -7,7 +7,7 @@ Các mục G0 bên dưới là lịch sử ba lớp. `tasks/todo.md` ghi ba offi
 - [ ] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
 - [ ] **N2:** Cùng Tam kiểm tra nguồn, permission UIT và mapping; gộp ViHSD/ViCTSD, tạo nhãn CLEAN/TOXIC và `source`, dedupe trong và giữa nguồn, split 70/15/15 stratified theo `(source,label)`. Lưu Parquet, manifest, seed, hash và thống kê split × source.
 - [x] **N3:** Đã kiểm tra split N2 và augmentation giả lập. Xem `docs/dataset-requirements.md` về kết quả và giới hạn near-duplicate/thread.
-- [ ] **N4:** Đã mở khóa sau N3. Augment chỉ lớp TOXIC trên train, thêm `is_augmented`; mục tiêu 30–35% nếu đạt được trong giới hạn số bản. Bắt buộc chạy lại leakage tests trên augmentation thật theo `docs/dataset-requirements.md`, không dùng test để tuning.
+- [x] **N4:** Tạo augmentation TOXIC train-only theo D3, artifact 5.675 dòng đạt 30,0% TOXIC; leakage tests trên dữ liệu thật pass (10 passed). Xem hash, provenance và giới hạn trong `docs/dataset-requirements.md`.
 - [ ] **N5:** Sau N2, train FastText bằng gensim chỉ trên train; lưu model, embedding và báo kích thước.
 - [ ] **N8:** Sau N6, N7 và N13, calibration và chọn threshold trên val cho các mô hình; báo ECE trước/sau.
 - [ ] **N9:** Sau N7, N8 và N13, ablation trên val và so sánh với PhoBERT pretrained fine-tune; lưu `ablation_val.csv`.

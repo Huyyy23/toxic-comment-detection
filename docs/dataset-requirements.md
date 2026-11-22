@@ -42,7 +42,15 @@ Không có nhóm exact text hoặc nhóm trùng sau NFKC, casefold và loại k�
 
 N3 hoàn thành ngày 2026-11-23. `tests/test_n3_leakage.py` kiểm tra ba file N2, cùng fixture hợp lệ và các fixture rò rỉ exact text, text chuẩn hóa, parent không tồn tại hoặc augmentation ngoài train. Lệnh `.venv/Scripts/python.exe -m pytest -q` chạy toàn bộ suite và cho kết quả 328 passed, 1 skipped. Test bị skip là kiểm tra augmentation thật vì N4 chưa tạo dữ liệu.
 
-Sau khi N4 tạo augmentation, lưu các mẫu augmentation vào một file Parquet có các cột `id`, `text`, `label`, `split`, `is_augmented`, `parent_id`. Giá trị `parent_id` phải trỏ tới ID mẫu gốc trong N2. Trên PowerShell, chạy `$env:N3_AUGMENTATION_PARQUET = "<đường_dẫn>"; .venv/Scripts/python.exe -m pytest -q tests/test_n3_leakage.py` và xóa biến môi trường sau đó bằng `Remove-Item Env:N3_AUGMENTATION_PARQUET`. Test so sánh augmentation với cả ba split N2 và yêu cầu augmentation cùng parent thuộc train, mang nhãn TOXIC. Không dùng kết quả này để tuning trên test.
+### Audit N4 ngày 2026-11-23
+
+`src/data/augment_binary_train.py` tạo `data/processed/binary_n4_v1/augmentation.parquet` chỉ từ mẫu TOXIC của train N2. Mỗi biến thể dùng xóa/đổi chỗ ký tự, bỏ dấu hoặc ánh xạ teencode hai chiều; từ vựng bảo vệ được ước lượng chỉ trên train và không bị sửa. Giữ tối đa hai biến thể cho mỗi parent, loại exact/normalized trùng với N2 train, val, test và các biến thể đã tạo. Split/nhãn val/test không được dùng; chỉ nội dung để kiểm tra overlap.
+
+Artifact có 5.675 dòng thuộc 2.872 parent; mỗi dòng mang `label=1`, `split=train`, `is_augmented=true` và `parent_id` trỏ tới ID N2. Tỉ lệ TOXIC của train sau ghép là 30,0%, đạt ngưỡng tối thiểu mục tiêu D3. SHA-256: `2f42eaaee33efe96a41816ecbb112df07473da20ef0641d7f3b6df2754bd488d`.
+
+Kiểm tra: `N3_AUGMENTATION_PARQUET=data/processed/binary_n4_v1/augmentation.parquet .venv/Scripts/python.exe -m pytest -q tests/test_n3_leakage.py` — 10 passed. Kiểm tra bao gồm cả split N2 và artifact thật; không dùng nhãn/nội dung test để chọn biến thể hay tham số.
+
+Đây là augmentation heuristic, chưa được đánh giá qua huấn luyện hoặc review thủ công về giữ nguyên nghĩa/nhãn. Chưa chứng minh loại bỏ near-duplicate tổng quát hoặc thread leakage; test N2 không blind. Không xem các kết quả này là bằng chứng chất lượng mô hình tăng.
 
 ---
 

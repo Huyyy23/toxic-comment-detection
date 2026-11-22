@@ -10,4 +10,4 @@
 
 **Cập nhật 2026-11-23:** N2 đã tạo và kiểm tra cơ bản tại `data/processed/binary_n2_v1/`; N3 tiếp tục audit leakage. Người dùng xác nhận nhóm đã xin phép UIT cho đồ án, nhưng repo chưa có bằng chứng để kiểm chứng giấy phép. Xem `docs/dataset-requirements.md` về mapping và giới hạn test.
 
-**Cập nhật 2026-11-23:** N3 hoàn thành theo kiểm thử N2 và fixture augmentation. N4 được mở khóa; phải chạy lại kiểm thử leakage khi có augmentation thật. Xem lệnh, kết quả và giới hạn tại `docs/dataset-requirements.md`.
+**Cập nhật 2026-11-23:** N3 hoàn thành; N4 tạo augmentation TOXIC train-only và chạy leakage tests trên artifact thật (10 passed). Artifact, hash và giới hạn tại `docs/dataset-requirements.md`; N5 tiếp tục theo plan.
