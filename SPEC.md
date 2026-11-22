@@ -4,7 +4,7 @@
 
 ## Mục tiêu và trạng thái
 
-Đồ án phân loại bình luận tiếng Việt thành **CLEAN=0** hoặc **TOXIC=1**. Hướng nghiên cứu đã chốt là gộp ViHSD và ViCTSD sau khi xác minh permission và mapping nhãn. Đây là quyết định đặc tả mới, không phải mô tả dữ liệu hay pipeline đã triển khai. UIT permission, mapping tương thích, xác nhận giảng viên về PhoBERT, yêu cầu bài tập và deadline vẫn pending.
+Đồ án phân loại bình luận tiếng Việt thành **CLEAN=0** hoặc **TOXIC=1**. Hướng nghiên cứu đã chốt là gộp ViHSD và ViCTSD sau khi xác minh permission và mapping nhãn. Đây là quyết định đặc tả mới, không phải mô tả dữ liệu hay pipeline đã triển khai. UIT permission, mapping tương thích, yêu cầu bài tập và deadline vẫn pending.
 
 ViHSD dùng `label > 0` làm TOXIC; ViCTSD dùng `Toxicity` làm nhãn nhị phân. Hai taxonomy gốc khác nhau; cần kiểm tra ý nghĩa, schema và permission trước khi coi nhãn gộp tương đương. CLEAN luôn là 0, TOXIC là 1. Không dùng pretrained embeddings, LLM hay backtranslation cho nhóm mô hình chính.
 
@@ -29,7 +29,7 @@ Các nhóm chính tự huấn luyện Logistic Regression (LR), SVM, BiLSTM rand
 
 Augmentation chỉ áp dụng cho TOXIC trên train, tối đa +1 mẫu sinh mỗi mẫu gốc và không quá 2x. Mục tiêu TOXIC chiếm 30–35% không bảo đảm. Bảo vệ từ độc hại và lọc bản trùng với validation/test. Chọn duy nhất một trong class weights, focal loss hoặc sampler bằng validation.
 
-PhoBERT là benchmark pretrained fine-tune riêng, **[Pending lecturer confirmation]**, không phải mô hình scratch. Dùng `vinai/phobert-base`, word segmentation có ghi công cụ và phiên bản, 128–160 tokens, giới hạn khoảng 256, learning rate `2e-5`, batch 16, warmup 10%, weight decay `.01`, 3–4 epochs, early stopping theo validation Macro-F1. Dùng fp16 và gradient accumulation nếu hỗ trợ. P1 là cấu hình mặc định; P2 thêm phương án imbalance D3; P3 tùy chọn thử một yếu tố trên val.
+PhoBERT là benchmark pretrained fine-tune riêng, đã được chấp nhận theo xác nhận người dùng, không phải mô hình scratch. Dùng `vinai/phobert-base`, word segmentation có ghi công cụ và phiên bản, 128–160 tokens, giới hạn khoảng 256, learning rate `2e-5`, batch 16, warmup 10%, weight decay `.01`, 3–4 epochs, early stopping theo validation Macro-F1. Dùng fp16 và gradient accumulation nếu hỗ trợ. P1 là cấu hình mặc định; P2 thêm phương án imbalance D3; P3 tùy chọn thử một yếu tố trên val.
 Calibration và threshold validation có thể tạo optimistic bias nếu dùng để xếp hạng model. So sánh raw predictions và chọn candidate bằng validation Macro-F1 trước. Sau đó fit calibration và threshold trên validation chỉ cho artifact inference; ghi diagnostics là in-sample, không dùng làm bằng chứng so sánh công bằng. Freeze artifact trước test, không fit lại trên test.
 
 
@@ -42,10 +42,10 @@ Artifacts dự kiến gồm `models/neural_best/`, `configs/neural_config.yaml`,
 Hệ thống ứng dụng theo yêu cầu người dùng dự kiến dùng React, FastAPI, Docker và Hugging Face Spaces. Đây là quyết định mới, trái với kiến trúc FastAPI-only trong tài liệu cũ; chưa có phần nào được xác nhận đã triển khai. HF eligibility và deploy vẫn pending.
 
 - **D1 Data:** xác minh permission, source/schema/label mapping; hợp nhất theo source `vihsd`/`victsd`; deduplicate trước split; stratify 70/15/15 theo `(source,label)`; lưu seed, hashes, manifest và khóa test. Split binary mới chưa được dựng.
-- **D2 Models:** LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation; PhoBERT chỉ sau xác nhận giảng viên.
+- **D2 Models:** LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính. PhoBERT pretrained fine-tune đã được chấp nhận làm benchmark riêng.
 - **D3 Improvements:** augmentation TOXIC chỉ trên train theo giới hạn; chọn đúng một imbalance method; calibration, threshold và ECE; không dùng test.
 - **D4 Evaluation:** cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; artifacts và React/FastAPI/Docker/HF Spaces theo yêu cầu, sau khi xác minh deploy.
 
-Mọi tiêu chí còn phụ thuộc permission, mapping, xác nhận giảng viên, yêu cầu bài tập và deadline đều pending. Chỉ sửa đặc tả trong thay đổi này; không sửa code, dữ liệu hay cấu hình.
+Các điều kiện về permission, mapping, yêu cầu bài tập và deadline còn pending. Chỉ sửa đặc tả trong thay đổi này; không sửa code, dữ liệu hay cấu hình.
 
 Tài liệu liên quan: [Đặc tả chi tiết](docs/spec.md), [kế hoạch thí nghiệm](docs/plans/ml-experiments.md), [yêu cầu dữ liệu](docs/dataset-requirements.md), [deployment](docs/deployment-plan.md).

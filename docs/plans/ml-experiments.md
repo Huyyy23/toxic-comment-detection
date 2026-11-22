@@ -26,8 +26,8 @@ Augmentation mặc định thêm một bản mỗi mẫu TOXIC, tối đa hai b�
 
 Change one factor at a time. Fix the architecture before ablation steps 5–7. Keep the same data split and report three seeds for each configured candidate.
 
-## Optional PhoBERT benchmark
-PhoBERT is a pretrained fine-tuning benchmark, not a core scratch model, and is pending lecturer confirmation. P1 uses the default `phobert-base` configuration. P2 adds the imbalance treatment selected under D3. P3 optionally changes learning rate, epochs, or fine-tuning strategy one factor at a time on validation.
+## PhoBERT benchmark
+PhoBERT is an accepted pretrained fine-tuning benchmark, not a core scratch model. P1 uses the default `phobert-base` configuration. P2 adds the imbalance treatment selected under D3. P3 optionally changes learning rate, epochs, or fine-tuning strategy one factor at a time on validation.
 
 Use word segmentation and record its tool and version, 128–160 tokens with a hard limit of about 256, learning rate `2e-5`, batch size 16, 10% warmup, weight decay `0.01`, 3–4 epochs, and early stopping by validation Macro-F1. Use fp16 and gradient accumulation when supported.
 

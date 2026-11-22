@@ -9,15 +9,15 @@ Các mục G0 bên dưới là lịch sử ba lớp. `tasks/todo.md` ghi ba offi
 - [ ] **N3:** Sau N2, mở rộng `test_leakage` kiểm tra split và augmentation, ghi giới hạn near-duplicate/thread.
 - [ ] **N4:** Sau N3, augment chỉ lớp TOXIC trên train, thêm `is_augmented`; mục tiêu 30–35% nếu đạt được trong giới hạn số bản. Kiểm tra trùng val/test mà không dùng test để tuning.
 - [ ] **N5:** Sau N2, train FastText bằng gensim chỉ trên train; lưu model, embedding và báo kích thước.
-- [ ] **N8:** Sau N6, N7 và N13 nếu PhoBERT được phép, calibration và chọn threshold trên val cho các mô hình; báo ECE trước/sau.
-- [ ] **N9:** Sau N7, N8 và N13 nếu được phép, ablation trên val, so sánh với PhoBERT pretrained fine-tune nếu được phép; lưu `ablation_val.csv`.
+- [ ] **N8:** Sau N6, N7 và N13, calibration và chọn threshold trên val cho các mô hình; báo ECE trước/sau.
+- [ ] **N9:** Sau N7, N8 và N13, ablation trên val và so sánh với PhoBERT pretrained fine-tune; lưu `ablation_val.csv`.
 - [ ] **N11:** Sau N6 và N8, cập nhật inference, API và frontend cho nhãn nhị phân; kiểm tra API và fallback `.joblib`.
 - [ ] **N12:** Sau N10 và N11, triển khai Docker + HF Spaces và smoke test.
 - [ ] **N7:** Sau N4 và N5, chạy LSTM, BiLSTM, BiLSTM + Attention tự huấn luyện; phối hợp TheAnh với Char-CNN. Dùng ba seed, chọn checkpoint theo val Macro-F1, báo F1 TOXIC và lưu config, checkpoint, metrics, predictions và hash.
-- [ ] **N13:** Chỉ sau xác nhận giảng viên, fine-tune PhoBERT khởi tạo pretrained làm benchmark riêng, trên cùng split; N2 và N4 nếu dùng augmentation. Dùng `phobert-base`, tách từ có ghi phiên bản, chọn checkpoint theo val Macro-F1, chạy ba seed và lưu config, log, checkpoint, VRAM.
-- [ ] **N14:** Nếu được phép và còn thời gian, thử learning rate, epoch và chiến lược fine-tuning trên val; mỗi lần đổi một yếu tố. Lưu `docs/experiments/phobert_extra_val.csv`. Phụ thuộc N13.
+- [ ] **N13:** Fine-tune PhoBERT khởi tạo pretrained làm benchmark riêng trên cùng split; phụ thuộc N2 và N4 nếu dùng augmentation. Dùng `phobert-base`, tách từ có ghi phiên bản, chọn checkpoint theo val Macro-F1, chạy ba seed và lưu config, log, checkpoint, VRAM.
+- [ ] **N14:** Nếu còn thời gian, thử learning rate, epoch và chiến lược fine-tuning trên val; mỗi lần đổi một yếu tố. Lưu `docs/experiments/phobert_extra_val.csv`. Phụ thuộc N13.
 - [ ] **N10:** Duyệt danh sách candidate, seed, threshold và protocol trước khi Tam điều phối một đợt test. Không tuning hay chọn lại theo test.
-- [ ] **N15:** Sau N10, phân tích lỗi hai chiều giữa PhoBERT pretrained fine-tune nếu được phép và các mô hình khác. Ghi ví dụ, số mẫu, lỗi tiếng lóng, teencode, từ bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode trong `docs/experiments/error_analysis.md`. Không dùng lỗi test để tuning.
+- [ ] **N15:** Sau N10, phân tích lỗi hai chiều giữa PhoBERT pretrained fine-tune và các mô hình khác. Ghi ví dụ, số mẫu, lỗi tiếng lóng, teencode, từ bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode trong `docs/experiments/error_analysis.md`. Không dùng lỗi test để tuning.
 
 ## Lịch sử G0 trước D1–D4
 

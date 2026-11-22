@@ -12,12 +12,12 @@
 | N5 | Train FastText from training data only and publish three-seed validation predictions, configs, hashes, and metrics. | N2 | Huy (TV3) |
 | N6 | Train calibrated LR and SVM; select by validation Macro-F1, report TOXIC F1, export baseline `.joblib` under 15 MB. | N2 | TV1 LR; TV2 SVM |
 | N7 | Train scratch neural models including BiLSTM and Char-CNN; record VRAM under 7 GB target and select by validation Macro-F1. | N4, N5 | TV3 và TV4 |
-| N8 | Fit calibration and choose thresholds on validation only for eligible N6/N7/N13 models. Report ECE and record the selection rule. | N6, N7, N13 if PhoBERT is permitted | Huy (TV3) |
-| N9 | Run controlled validation ablations. Change one factor at a time and use the specified baseline set. Fix the architecture before ablation steps 5–7. | N7, N8, N13 if permitted | Huy (TV3) |
+| N8 | Fit calibration and choose thresholds on validation only for eligible N6/N7/N13 models. Report ECE and record the selection rule. | N6, N7, N13 | Huy (TV3) |
+| N9 | Run controlled validation ablations. Change one factor at a time and use the specified baseline set. Fix the architecture before ablation steps 5–7. | N7, N8, N13 | Huy (TV3) |
 | N10 | Evaluate all frozen candidates and three seeds in one locked-test batch, create lock file and `locked_test.md`, report class metrics and bootstrap CI or McNemar. | N9, N14 if applicable | TV1 điều phối; cả nhóm |
 | N11 | Integrate the selected model into API and frontend. Keep model selection and thresholds from validation. | N6, N8 | Huy (TV3) |
 | N12 | Deploy after N10 and N11 gates. Consider ONNX only if measured benefit warrants it. | N10, N11 | Huy (TV3) |
-| N13 | Optional PhoBERT benchmark, only after instructor approval. Use `phobert-base`, word segmentation, 128–160 tokens, learning rate `2e-5`, batch size 16, 10% warmup, weight decay `0.01`, 3–4 epochs, validation Macro-F1 early stopping, and fp16 or accumulation when supported. | N2, N4 if augmentation is used, instructor approval | TV3 |
+| N13 | Accepted PhoBERT pretrained fine-tuning benchmark. Use `phobert-base`, word segmentation, 128–160 tokens, learning rate `2e-5`, batch size 16, 10% warmup, weight decay `0.01`, 3–4 epochs, validation Macro-F1 early stopping, and fp16 or accumulation when supported. | N2, N4 if augmentation is used | TV3 |
 | N14 | Optional extras, using validation only. | N13, if applicable | Huy |
 | N15 | Analyze errors after N10 without using test errors to change candidates or settings. | N10 | Huy (TV3) lead |
 

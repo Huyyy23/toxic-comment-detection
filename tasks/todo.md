@@ -41,7 +41,7 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 ## D1–D4 — Cần làm lại / bị thay thế
 - [ ] G0 ba lớp và EXP-01–EXP-04 cần chạy lại theo D1/D2 trên split nhị phân mới. Các mục `[x]` phía trên vẫn là lịch sử đã hoàn thành, không chuyển thành chưa làm.
 - [ ] Kiểm tra lịch sử test exposure trước khi xây dựng split mới; không tuyên bố test hoàn toàn blind nếu dữ liệu đã lộ.
-- [ ] Các công việc API-only, ensemble và TextCNN trước đây không thay thế yêu cầu React + FastAPI và neural mới. PhoBERT pretrained fine-tune chỉ thực hiện sau xác nhận giảng viên.
+- [ ] Các công việc API-only, ensemble và TextCNN trước đây không thay thế yêu cầu React + FastAPI và neural mới. PhoBERT pretrained fine-tune đã được chấp nhận theo xác nhận người dùng.
 
 ## Checklist D1–D4 theo thành viên
 
@@ -66,8 +66,16 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
   - [ ] Lưu seed, hash và manifest ID→split. Ghi rõ quyền UIT và mapping khác biệt giữa hai nguồn đang chờ xác nhận.
 - [ ] N7: Phụ trách LSTM, BiLSTM và BiLSTM + Attention tự huấn luyện; phối hợp TV4 cho nhánh Char-CNN sau N4 và N5. Lưu checkpoint, config, ba seed và metrics validation.
 - [ ] N10: Duyệt danh sách candidate, threshold và protocol đã đóng băng trước đợt test.
-- [ ] N13: Theo phân công PhoBERT EXP-07 hiện có, TV3 phụ trách benchmark pretrained fine-tune sau xác nhận giảng viên. Phụ thuộc N2, thêm N4 nếu augment. Lưu checkpoint/config/log, chạy ba seed và ghi VRAM.
-- [ ] N15: Lead phân tích lỗi sau N10 theo vai trò hiện có. Huy hỗ trợ theo yêu cầu mới; chưa xác nhận Huy có phải TV3. Viết `docs/experiments/error_analysis.md`, so sánh hai chiều, có ví dụ và số mẫu theo nguồn, độ dài và teencode.
+- [ ] N13: TV3 phụ trách benchmark PhoBERT pretrained fine-tune đã được chấp nhận. Phụ thuộc N2, thêm N4 nếu augment. Lưu checkpoint/config/log, chạy ba seed và ghi VRAM.
+- [ ] N14: Nếu có thời gian, thử learning rate, epoch và chiến lược PhoBERT pretrained fine-tune trên val sau N13. Mỗi lần đổi một yếu tố, lưu `docs/experiments/phobert_extra_val.csv`.
+- [ ] N15: Lead phân tích lỗi sau N10. Viết `docs/experiments/error_analysis.md`, so sánh hai chiều, có ví dụ và số mẫu theo nguồn, độ dài và teencode.
+- [ ] N3: Mở rộng `test_leakage` sau N2 để kiểm tra split và augmentation.
+- [ ] N4: Sau N3, augment train-only TOXIC, thêm `is_augmented`, mục tiêu 30–35% nếu đạt được với giới hạn số bản; không điều chỉnh test.
+- [ ] N5: Sau N2, train FastText bằng gensim chỉ trên train, lưu embedding và báo kích thước.
+- [ ] N8: Sau N6, N7 và N13, calibration và chọn threshold trên val, báo ECE trước/sau.
+- [ ] N9: Sau N7, N8 và N13, ablation trên val và so sánh với PhoBERT pretrained fine-tune. Lưu `ablation_val.csv`.
+- [ ] N11: Sau N6 và N8, cập nhật inference/API/frontend cho nhị phân; test API và fallback `.joblib`.
+- [ ] N12: Sau N10 và N11, Docker + HF Spaces, smoke test.
 
 ### TV4 — TheAnh
 - [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
@@ -81,5 +89,5 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 
 ### Cả nhóm hoặc chưa phân công
 - [ ] N1: Cả nhóm duyệt spec, decisions, plan và todo D1–D4.
-- [ ] Deadline: Chưa xác định. Nhóm xác nhận quyền dùng UIT, mapping nhãn và cho phép PhoBERT pretrained fine-tune.
+- [ ] Deadline: Chưa xác định. Nhóm xác nhận quyền dùng UIT và mapping nhãn.
 

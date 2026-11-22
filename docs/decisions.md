@@ -111,12 +111,12 @@ Phương pháp: **ML-first, API-minimal, reproducibility-first**
 
 ## D2: Nhóm tự huấn luyện và đối chứng PhoBERT
 
-- **Bối cảnh**: Giảng viên yêu cầu sinh viên tự huấn luyện; chưa xác nhận có được dùng trọng số pretrained.
+- **Bối cảnh**: Giảng viên yêu cầu sinh viên tự huấn luyện. Người dùng xác nhận ngày 2026-11-23 rằng PhoBERT đã được chấp nhận.
 - **Quyết định**: Nhóm chính gồm TF-IDF + LR/LinearSVC, LSTM, BiLSTM, BiLSTM + Attention và nhánh Char-CNN; FastText tự train bằng gensim chỉ trên train. Không dùng pretrained weights, pretrained embeddings, back-translation hoặc paraphrase/LLM sinh dữ liệu. PhoBERT fine-tune từ pretrained là benchmark riêng, không thay nhóm chính.
 - **Lý do**: Tách kết quả tự huấn luyện khỏi đối chứng khởi tạo pretrained để tránh nhầm khi chấm điểm.
-- **Hệ quả**: PhoBERT **[Pending lecturer confirmation]**. Nếu không được phép, chuyển sang phụ lục hoặc bỏ; không đưa vào kết quả chính. Báo cáo tách bảng hoặc gắn nhãn rõ. Kế hoạch tích hợp React + FastAPI, Docker và HF Spaces; đây là thay đổi kế hoạch, không phải bằng chứng triển khai. ONNX T4.4 chỉ xem xét nếu có lợi.
+- **Hệ quả**: PhoBERT pretrained fine-tune đã được chấp nhận theo xác nhận người dùng. Báo cáo tách bảng hoặc gắn nhãn rõ. Kế hoạch tích hợp React + FastAPI, Docker và HF Spaces; đây là thay đổi kế hoạch, không phải bằng chứng triển khai. ONNX T4.4 chỉ xem xét nếu có lợi.
 - **Ngày**: 2026-11-23.
-- **Trạng thái**: Accepted (PhoBERT: pending lecturer confirmation).
+- **Trạng thái**: Accepted; PhoBERT đã được chấp nhận theo xác nhận người dùng.
 
 ## D3: Mất cân bằng và calibration
 
@@ -129,9 +129,9 @@ Phương pháp: **ML-first, API-minimal, reproducibility-first**
 
 ## D4: Đối chứng PhoBERT và giao thức so sánh
 
-- **Bối cảnh**: Cần so sánh công bằng nhóm tự huấn luyện với PhoBERT pretrained fine-tune, nếu giảng viên cho phép.
+- **Bối cảnh**: Cần so sánh công bằng nhóm tự huấn luyện với PhoBERT pretrained fine-tune đã được chấp nhận.
 - **Quyết định**: Dùng cùng split nhị phân, metric, nguyên tắc xử lý mất cân bằng và một đợt test khóa cho LR, SVM, LSTM, BiLSTM, BiLSTM + Attention và PhoBERT. Chạy ba seed mỗi mô hình, báo trung bình ± độ lệch chuẩn, bootstrap CI hoặc McNemar, số tham số, thời gian train, latency và kích thước.
 - **Lý do**: Tách biến nghiên cứu và công bố độ bất định thay vì suy ra cải thiện từ một run.
-- **Hệ quả**: PhoBERT pretrained fine-tune **[Pending lecturer confirmation]**, cấu hình phobert-base là dự kiến, tách từ có ghi công cụ/phiên bản, max length 128–160, tối đa khoảng 256, lr 2e-5, batch 16, warmup 10%, weight decay 0,01, 3–4 epoch, early stopping theo val Macro-F1; fp16 và accumulation khi phù hợp thiết bị. Thử bổ sung chỉ trên val và đổi một yếu tố mỗi lần. Sau khi đóng băng mọi candidate và seed, mở test một đợt có file khóa; không chọn lại theo test. Phân tích lỗi đối chiếu hai chiều, theo nguồn, độ dài, teencode và nhóm lỗi, chỉ kết luận về ngữ cảnh khi có ví dụ và đủ mẫu; ghi nhận nhãn mơ hồ.
+- **Hệ quả**: PhoBERT pretrained fine-tune đã được chấp nhận; cấu hình phobert-base là dự kiến, tách từ có ghi công cụ/phiên bản, max length 128–160, tối đa khoảng 256, lr 2e-5, batch 16, warmup 10%, weight decay 0,01, 3–4 epoch, early stopping theo val Macro-F1; fp16 và accumulation khi phù hợp thiết bị. Thử bổ sung chỉ trên val và đổi một yếu tố mỗi lần. Sau khi đóng băng mọi candidate và seed, mở test một đợt có file khóa; không chọn lại theo test. Phân tích lỗi đối chiếu hai chiều, theo nguồn, độ dài, teencode và nhóm lỗi, chỉ kết luận về ngữ cảnh khi có ví dụ và đủ mẫu; ghi nhận nhãn mơ hồ.
 - **Ngày**: 2026-11-23.
-- **Trạng thái**: Accepted; PhoBERT pending lecturer confirmation.
+- **Trạng thái**: Accepted; PhoBERT đã được chấp nhận theo xác nhận người dùng.

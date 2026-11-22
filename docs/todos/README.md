@@ -4,7 +4,7 @@ Checklist theo thành viên: [Tam (TV1)](TV1.md) · [Vinh (TV2)](TV2.md) · [Huy
 
 **Protocol hiện hành D1–D4:** ViHSD và ViCTSD dự kiến gộp thành `0=CLEAN`, `1=TOXIC`, có `source`, dedupe trước split 70/15/15 theo `(source,label)`. Split mới chưa được dựng; quyền UIT và khác biệt định nghĩa nhãn còn chờ xác nhận. Chọn checkpoint bằng val Macro-F1; calibration và threshold trên val. Freeze mọi candidate trước một đợt locked test, công bố lịch sử test exposure.
 
-PhoBERT là benchmark pretrained fine-tune, do Huy phụ trách và chờ xác nhận giảng viên. Huy phụ trách N3, N4, N5, N8, N9, N11 và N12; xem [checklist chung](../../tasks/todo.md). Deadline chưa xác định.
+PhoBERT pretrained fine-tune đã được chấp nhận theo xác nhận người dùng và là benchmark do Huy phụ trách. Huy phụ trách N3, N4, N5, N8, N9, N11 và N12; xem [checklist chung](../../tasks/todo.md). Deadline chưa xác định.
 
 Các mục `[x]` trong checklist cá nhân được giữ làm lịch sử, không chứng minh đã hoàn thành trên split nhị phân.
 ## Lịch sử G0 trước D1–D4

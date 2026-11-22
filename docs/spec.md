@@ -11,11 +11,11 @@ Phân loại bình luận tiếng Việt thành **CLEAN=0** và **TOXIC=1**. Hư
 | ViHSD | `vihsd` | `label > 0` thành TOXIC=1; `label = 0` thành CLEAN=0 |
 | ViCTSD | `victsd` | `Toxicity` thành TOXIC=1 hoặc CLEAN=0 |
 
-Taxonomy gốc khác nhau. Phải xác minh ý nghĩa nhãn, schema thực và khả năng tương thích; không coi hai khái niệm là đồng nhất khi chưa có căn cứ. Permission UIT, mapping, xác nhận giảng viên, yêu cầu bài tập và deadline đều pending. Lịch sử ba lớp CLEAN/OFFENSIVE/HATE ở v4 được giữ làm lịch sử superseded.
+Taxonomy gốc khác nhau. Phải xác minh ý nghĩa nhãn, schema thực và khả năng tương thích; không coi hai khái niệm là đồng nhất khi chưa có căn cứ. Permission UIT, mapping, yêu cầu bài tập và deadline đều pending. Lịch sử ba lớp CLEAN/OFFENSIVE/HATE ở v4 được giữ làm lịch sử superseded.
 
 ### 1.2 Information Ledger
 
-- [Pending] Xác nhận giảng viên về PhoBERT pretrained fine-tune; nếu không được phép, chuyển sang phụ lục hoặc bỏ.
+- [Confirmed 2026-11-23] Người dùng xác nhận PhoBERT pretrained fine-tune đã được chấp nhận làm benchmark riêng.
 - [Pending] Xin phép UIT, thống nhất khác biệt định nghĩa Toxicity và OFFENSIVE/HATE, phân công còn thiếu và deadline.
 - [Pending] Xác minh schema nguồn, test exposure và hosting. Báo cáo theo `source` vì văn phong nguồn có thể tạo shortcut.
 
@@ -47,7 +47,7 @@ Nhóm mô hình chính gồm Logistic Regression, SVM, LSTM, BiLSTM, BiLSTM + At
 
 Augmentation chỉ áp dụng TOXIC train-only, mặc định thêm một bản và tối đa hai bản mỗi mẫu. Mục tiêu 30–35% không bảo đảm. Dùng deletion/swap, nhiễu dấu hoặc ký tự và teencode hai chiều; bảo vệ token độc hại bằng lexicon train và lọc bản trùng val/test. Mỗi bước đổi một yếu tố, cố định seed, không tuyên bố cải thiện nếu chưa đo.
 
-PhoBERT là benchmark pretrained fine-tune **[Pending lecturer confirmation]**. Dùng `vinai/phobert-base`, tách từ và ghi công cụ/phiên bản, 128–160 tokens, giới hạn khoảng 256, learning rate `2e-5`, batch 16, warmup 10%, weight decay `.01`, 3–4 epochs, early stopping theo validation Macro-F1. Dùng fp16 và gradient accumulation nếu hỗ trợ. P1 là cấu hình mặc định; P2 thêm phương án imbalance D3; P3 tùy chọn thay một yếu tố trên val.
+PhoBERT là benchmark pretrained fine-tune đã được chấp nhận theo xác nhận người dùng. Dùng `vinai/phobert-base`, tách từ và ghi công cụ/phiên bản, 128–160 tokens, giới hạn khoảng 256, learning rate `2e-5`, batch 16, warmup 10%, weight decay `.01`, 3–4 epochs, early stopping theo validation Macro-F1. Dùng fp16 và gradient accumulation nếu hỗ trợ. P1 là cấu hình mặc định; P2 thêm phương án imbalance D3; P3 tùy chọn thay một yếu tố trên val.
 
 ## 4. Metrics và đánh giá cuối
 
@@ -68,13 +68,13 @@ Các endpoint dự kiến là `POST /predict`, `GET /health`, `GET /model-info`.
 | `mod-augment` | Augment TOXIC train-only sau kiểm tra leakage. |
 | `mod-embedding` | FastText tự train trên train. |
 | `mod-neural` | LSTM, BiLSTM, Attention và Char-CNN tự huấn luyện. |
-| `mod-trans` | PhoBERT pretrained fine-tune làm benchmark, chờ xác nhận giảng viên. |
-| `mod-phobert-exp` | Thí nghiệm PhoBERT pretrained fine-tune bổ sung trên val, chờ xác nhận giảng viên. |
+| `mod-trans` | PhoBERT pretrained fine-tune làm benchmark đã được chấp nhận. |
+| `mod-phobert-exp` | Thí nghiệm PhoBERT pretrained fine-tune bổ sung trên val. |
 | `mod-calibration` | Calibration, threshold và ECE trên val cho các mô hình đủ điều kiện. |
 
 ## 6. Artifact và ứng dụng
 
-Neural checkpoint tốt nhất dự kiến ở `models/neural_best/`, cấu hình ở `configs/neural_config.yaml`. PhoBERT pretrained fine-tune dùng `models/transformer_best/` và `configs/transformer_config.yaml`, chờ xác nhận giảng viên. Fallback baseline `.joblib` được giữ. Đây là cấu trúc đích, không khẳng định các đường dẫn đã tồn tại.
+Neural checkpoint tốt nhất dự kiến ở `models/neural_best/`, cấu hình ở `configs/neural_config.yaml`. PhoBERT pretrained fine-tune dùng `models/transformer_best/` và `configs/transformer_config.yaml`. Fallback baseline `.joblib` được giữ. Đây là cấu trúc đích, không khẳng định các đường dẫn đã tồn tại.
 
 Theo yêu cầu người dùng, kiến trúc ứng dụng dự kiến gồm React frontend, FastAPI backend, Docker và Hugging Face Spaces. Đây là quyết định mới thay cho kiến trúc FastAPI-only trong tài liệu cũ. Không khẳng định frontend, Docker image, API hay Space đã được triển khai. HF account/eligibility, token, quyền tạo Space và deploy vẫn pending.
 
@@ -83,13 +83,13 @@ Theo yêu cầu người dùng, kiến trúc ứng dụng dự kiến gồm Reac
 | Giai đoạn | Điều kiện dự kiến |
 |---|---|
 | **D1 Data** | Xác minh permission, source/schema/label mapping; hợp nhất theo source `vihsd`/`victsd`; deduplicate trước split; stratify 70/15/15 theo `(source,label)`; ghi seed, hashes, manifest; khóa test. Binary split mới chưa dựng. |
-| **D2 Models** | LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation; PhoBERT chỉ sau xác nhận giảng viên. |
+| **D2 Models** | LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính; PhoBERT pretrained fine-tune là benchmark riêng đã được chấp nhận. |
 | **D3 Improvements** | TOXIC augmentation train-only theo giới hạn; chọn đúng một imbalance method; calibration, threshold và ECE; không dùng test. |
 | **D4 Evaluation** | Cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; artifacts và React/FastAPI/Docker/HF Spaces theo yêu cầu, sau khi xác minh deploy. |
 
-Test chỉ mở một đợt sau khi đóng băng mọi candidate, seed, threshold và protocol; file khóa ghi danh sách trước đợt đánh giá và ngăn chạy lại. Báo riêng nhóm tự huấn luyện và PhoBERT pretrained fine-tune nếu được giảng viên cho phép. Phân tích lỗi sau test chỉ để báo cáo, không tuning. Ghi ví dụ, số mẫu, lỗi tiếng lóng, viết tắt bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode.
+Test chỉ mở một đợt sau khi đóng băng mọi candidate, seed, threshold và protocol; file khóa ghi danh sách trước đợt đánh giá và ngăn chạy lại. Báo riêng nhóm tự huấn luyện và PhoBERT pretrained fine-tune. Phân tích lỗi sau test chỉ để báo cáo, không tuning. Ghi ví dụ, số mẫu, lỗi tiếng lóng, viết tắt bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode.
 
-Các điều kiện về quyền sử dụng, mapping, giảng viên, yêu cầu bài tập và deadline chưa được xác minh. Đây là tiêu chí dự kiến, không phải kết quả nghiệm thu.
+Các điều kiện về quyền sử dụng, mapping, yêu cầu bài tập và deadline chưa được xác minh. Đây là tiêu chí dự kiến, không phải kết quả nghiệm thu.
 
 ## 8. Tài liệu liên quan
 
