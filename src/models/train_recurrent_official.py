@@ -1,9 +1,3 @@
-"""Official EXP-03 entrypoint: scratch recurrent training on G0 v1 data.
-
-Usage:
-  python -m src.models.train_recurrent_official --architecture bilstm_attention
-  python -m src.models.train_recurrent_official --architecture lstm --smoke
-"""
 from __future__ import annotations
 
 import argparse
@@ -44,8 +38,47 @@ def _load_dataset(config: dict) -> tuple[list[dict], list[dict], dict]:
     return train, val, data_metadata
 
 
+def _load_parquet_dataset(dataset_dir: Path) -> tuple[list[dict], list[dict], dict, int]:
+    import pandas as pd
+
+    dataset_dir = Path(dataset_dir)
+    train_path, val_path = dataset_dir / "train.parquet", dataset_dir / "val.parquet"
+    train_table, val_table = pd.read_parquet(train_path), pd.read_parquet(val_path)
+    columns = ["id", "text", "label"]
+    if not set(columns).issubset(train_table.columns) or not set(columns).issubset(val_table.columns):
+        raise ValueError("train and val Parquet must contain id, text, and label")
+    train, val = train_table.to_dict("records"), val_table.to_dict("records")
+    if not train or not val:
+        raise ValueError("train/val must be nonempty")
+    train_labels = {row["label"] for row in train}
+    if any(type(label) is not int for label in train_labels):
+        raise ValueError("train labels must be integers")
+    num_classes = len(train_labels)
+    if train_labels != set(range(num_classes)) or num_classes < 2:
+        raise ValueError("train labels must be contiguous classes starting at zero")
+    for rows, expected_split in ((train, "train"), (val, "val")):
+        for row in rows:
+            if not isinstance(row["id"], str) or not row["id"].strip():
+                raise ValueError("dataset IDs must be nonblank strings")
+            if not isinstance(row["text"], str) or not row["text"].strip():
+                raise ValueError("dataset text must be nonblank strings")
+            if type(row["label"]) is not int or row["label"] not in range(num_classes):
+                raise ValueError("validation labels must be in the train class range")
+            if row.get("split") not in (None, expected_split):
+                raise ValueError("dataset rows have an invalid split")
+    metadata = {
+        "dataset_dir": str(dataset_dir),
+        "train_count": len(train),
+        "val_count": len(val),
+        "train_sha256": hashlib.sha256(train_path.read_bytes()).hexdigest(),
+        "val_sha256": hashlib.sha256(val_path.read_bytes()).hexdigest(),
+    }
+    return train, val, metadata, num_classes
+
+
 def run(config_path: Path, architecture: str, smoke: bool, output_dir: Path,
-        tracking_uri: str | None, resume: Path | None = None) -> dict:
+        tracking_uri: str | None, resume: Path | None = None,
+        dataset_dir: Path | None = None) -> dict:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     if config.get("status") != "OFFICIAL":
         raise ValueError("config must have status OFFICIAL")
@@ -62,7 +95,12 @@ def run(config_path: Path, architecture: str, smoke: bool, output_dir: Path,
     seed_everything(cfg["seed"])
     torch.set_num_threads(1)
 
-    train, val, data_metadata = _load_dataset(config)
+    if dataset_dir is None:
+        train, val, data_metadata = _load_dataset(config)
+        num_classes = 3
+    else:
+        train, val, data_metadata, num_classes = _load_parquet_dataset(dataset_dir)
+        cfg["dataset_dir"] = str(dataset_dir)
     if smoke:
         train = train[: cfg["train_size"]]
         val = val[: cfg["val_size"]]
@@ -112,6 +150,8 @@ def run(config_path: Path, architecture: str, smoke: bool, output_dir: Path,
         "architecture": architecture,
         "pad_id": vocabulary.pad_id,
     }
+    if num_classes != 3:
+        model_config["num_classes"] = num_classes
     model = RecurrentClassifier(**model_config)
     device = cfg["device"]
     if device == "auto":
@@ -216,7 +256,7 @@ def run(config_path: Path, architecture: str, smoke: bool, output_dir: Path,
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--architecture", choices=("lstm", "bilstm", "bilstm_attention"), required=True)
     parser.add_argument("--smoke", action="store_true")
@@ -224,9 +264,11 @@ def main():
                         help="Local output when tracking is disabled; tracked runs use their MLflow artifact directory")
     parser.add_argument("--tracking-uri", default=None)
     parser.add_argument("--resume", type=Path)
+    parser.add_argument("--dataset-dir", type=Path,
+                        help="Optional train/val Parquet package; test.parquet is not read")
     args = parser.parse_args()
     result = run(args.config, args.architecture, args.smoke, args.output_dir,
-                 args.tracking_uri, resume=args.resume)
+                 args.tracking_uri, resume=args.resume, dataset_dir=args.dataset_dir)
     print(json.dumps({"status": result["status"], "architecture": args.architecture,
                       "device": result["device"], "macro_f1": result["last_validation"]["macro_f1"],
                       "run_id": result.get("run_id"), "artifact_dir": result["artifact_dir"]}))

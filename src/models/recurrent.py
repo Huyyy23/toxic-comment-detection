@@ -1,4 +1,4 @@
-"""Random-initialized recurrent classifiers for CLEAN, OFFENSIVE, HATE logits."""
+"""Random-initialized recurrent classifiers for configurable class logits."""
 
 import math
 from numbers import Real
@@ -13,7 +13,7 @@ class RecurrentClassifier(nn.Module):
 
     Inputs are right-padded LongTensors [batch, time] and positive sequence
     lengths [batch]. Lengths, not token values, define valid positions. Output
-    is unnormalized logits [batch, 3]; dropout is disabled by ``eval()``.
+    is unnormalized logits [batch, num_classes]; dropout is disabled by ``eval()``.
     """
 
     def __init__(
@@ -24,12 +24,14 @@ class RecurrentClassifier(nn.Module):
         dropout: float = 0.3,
         architecture: str = "lstm",
         pad_id: int = 0,
+        num_classes: int = 3,
     ) -> None:
         super().__init__()
         for name, value in (
             ("vocab_size", vocab_size),
             ("embedding_dim", embedding_dim),
             ("hidden_size", hidden_size),
+            ("num_classes", num_classes),
         ):
             if isinstance(value, bool) or not isinstance(value, int):
                 raise TypeError(f"{name} must be an integer")
@@ -49,6 +51,7 @@ class RecurrentClassifier(nn.Module):
             raise ValueError("architecture must be lstm, bilstm, or bilstm_attention")
 
         self.architecture = architecture
+        self.num_classes = num_classes
         bidirectional = architecture != "lstm"
         feature_size = hidden_size * (2 if bidirectional else 1)
         self.embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx=pad_id)
@@ -59,10 +62,10 @@ class RecurrentClassifier(nn.Module):
         )
         if architecture == "bilstm_attention":
             self.attention = nn.Linear(feature_size, 1, bias=False)
-        self.classifier = nn.Linear(feature_size, 3)
+        self.classifier = nn.Linear(feature_size, num_classes)
 
     def forward(self, input_ids: Tensor, lengths: Tensor) -> Tensor:
-        """Return three logits per example; ignore all positions past lengths."""
+        """Return ``num_classes`` logits per example; ignore right padding."""
         if not isinstance(input_ids, Tensor) or not isinstance(lengths, Tensor):
             raise TypeError("input_ids and lengths must be tensors")
         if input_ids.dtype != torch.long or lengths.dtype != torch.long:

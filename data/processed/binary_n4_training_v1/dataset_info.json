@@ -1,0 +1,102 @@
+{
+  "seed": 42,
+  "input_sha256": {
+    "n2/train.parquet": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "n2/val.parquet": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "n2/test.parquet": "d200be4a7ff2f2e725ba8e6c2c0ab835afd73612b9a5b2f14b528cb5c577be4e",
+    "n2/dataset_info.json": "38fa06c14026d01b2b97cb608f0e4f34fd5beb9f610d10b788809a2bde2da9d2",
+    "n4/augmentation.parquet": "2f42eaaee33efe96a41816ecbb112df07473da20ef0641d7f3b6df2754bd488d"
+  },
+  "output_sha256": {
+    "train.parquet": "f57fbf0a55de6b08c8cba1cd366c3895bfed495f2817069f892ba27b5786542e",
+    "val.parquet": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "test.parquet": "d200be4a7ff2f2e725ba8e6c2c0ab835afd73612b9a5b2f14b528cb5c577be4e"
+  },
+  "split_counts": {
+    "train": 33906,
+    "val": 6048,
+    "test": 6048
+  },
+  "counts": [
+    {
+      "split": "test",
+      "source": "victsd",
+      "label": 0,
+      "count": 1325
+    },
+    {
+      "split": "test",
+      "source": "victsd",
+      "label": 1,
+      "count": 165
+    },
+    {
+      "split": "test",
+      "source": "vihsd",
+      "label": 0,
+      "count": 3759
+    },
+    {
+      "split": "test",
+      "source": "vihsd",
+      "label": 1,
+      "count": 799
+    },
+    {
+      "split": "train",
+      "source": "victsd",
+      "label": 0,
+      "count": 6185
+    },
+    {
+      "split": "train",
+      "source": "victsd",
+      "label": 1,
+      "count": 1754
+    },
+    {
+      "split": "train",
+      "source": "vihsd",
+      "label": 0,
+      "count": 17549
+    },
+    {
+      "split": "train",
+      "source": "vihsd",
+      "label": 1,
+      "count": 8418
+    },
+    {
+      "split": "val",
+      "source": "victsd",
+      "label": 0,
+      "count": 1324
+    },
+    {
+      "split": "val",
+      "source": "victsd",
+      "label": 1,
+      "count": 165
+    },
+    {
+      "split": "val",
+      "source": "vihsd",
+      "label": 0,
+      "count": 3760
+    },
+    {
+      "split": "val",
+      "source": "vihsd",
+      "label": 1,
+      "count": 799
+    }
+  ],
+  "source_names": [
+    "victsd",
+    "vihsd"
+  ],
+  "augmentation_count": 5675,
+  "duplicate_rule": "NFKC, casefold, remove non-word characters; no general near-duplicate detection",
+  "normalized_cross_split_duplicate_count": 0,
+  "test_blind": false
+}

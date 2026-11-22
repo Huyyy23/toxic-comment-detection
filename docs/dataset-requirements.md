@@ -52,6 +52,16 @@ Kiểm tra: `N3_AUGMENTATION_PARQUET=data/processed/binary_n4_v1/augmentation.pa
 
 Đây là augmentation heuristic, chưa được đánh giá qua huấn luyện hoặc review thủ công về giữ nguyên nghĩa/nhãn. Chưa chứng minh loại bỏ near-duplicate tổng quát hoặc thread leakage; test N2 không blind. Không xem các kết quả này là bằng chứng chất lượng mô hình tăng.
 
+### G1 nhị phân với augmentation N4
+
+Gói huấn luyện bất biến nằm tại `data/processed/binary_n4_training_v1/`. Tạo gói vào thư mục chưa tồn tại bằng `.venv/Scripts/python.exe -m src.data.build_binary_training_dataset`. Builder ghép `binary_n2_v1` với `binary_n4_v1/augmentation.parquet`, giữ nguyên byte của `val.parquet` và `test.parquet`, ghi hash/thống kê trong `dataset_info.json`, kiểm tra nguồn cha và leakage chuẩn hóa, rồi công bố bằng đổi tên thư mục trên cùng volume. Nếu đích đã có, builder từ chối ghi đè.
+
+Artifact đã tạo với seed 42: train 33.906 mẫu, validation 6.048, test 6.048; train có 5.675 mẫu augmentation. `tests/test_n3_leakage.py` với N4 thật đạt 10/10. Theo chuẩn hóa NFKC/casefold/bỏ ký tự ngoài `\w`, có 248/57/59 key lặp tương ứng trong train/validation/test và không có key chung giữa các split; các mẫu lặp trong cùng split được giữ nguyên. Near-duplicate tổng quát và thread leakage chưa được loại trừ.
+
+Runner recurrent giữ nguyên G0 khi không truyền `--dataset-dir`. Với gói nhị phân, dùng `--dataset-dir data/processed/binary_n4_training_v1`; runner chỉ đọc train và val, suy ra số lớp từ nhãn train và không nạp test. Classifier và metric hỗ trợ số lớp cấu hình được; mặc định ba lớp giữ tương thích với caller G0.
+
+Chuẩn hóa duplicate dùng NFKC, casefold và bỏ ký tự không thuộc `\w`. Phép kiểm tra không phát hiện mọi near-duplicate hoặc thread leakage. `test_blind` là false.
+
 ---
 
 ## 1. Nguồn Dữ liệu Được Cung cấp (Input Datasets)
