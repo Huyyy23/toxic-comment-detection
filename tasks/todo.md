@@ -1,44 +1,46 @@
 # Project TODO — Scratch-first v4.0
-**Plan only — 2026-11-11.** Trạng thái dưới đây chỉ phản ánh **kế hoạch mới**, không suy ra code/scaffold cũ đã bị xóa hoặc đã chạy thí nghiệm.
+**Cập nhật 2026-11-22.** Đây là trạng thái công việc; chỉ đánh dấu hoàn tất khi có artifact/bằng chứng.
 
 **Cập nhật kế hoạch 2026-11-23:** D1–D4 thay contract ba lớp bằng dữ liệu gộp nhị phân. Các mục dưới giữ nguyên trạng thái và lịch sử G0; kết quả cũ không phải kết quả của split mới. TV1 là Tam, TV2 là Vinh, TV3 là Huy, TV4 là TheAnh, theo xác nhận ngày 2026-11-23. Deadline chưa xác định.
 
-## G0 — Data Contract (TV3 nhóm trưởng)
-- [ ] Kiểm chứng source/license/schema/label 3 lớp của UIT-ViHSD (TV1 hỗ trợ audit).
-- [ ] Check duplicate, nhãn mâu thuẫn và leakage; quyết định official split hoặc stratified 70/15/15.
-- [ ] Khóa test; lưu dataset version/hash, seed, ID→split manifest; ban hành input/output contract.
-- [ ] Cả 4 thành viên xác nhận dùng chung contract.
+## Nhóm 0 — Data contract (TV3 lead; TV1 hỗ trợ) — G0 OPEN
+- [x] Kiểm chứng source/revision/schema/nhãn; chấp nhận giới hạn về permission UIT và lịch sử test exposure.
+- [x] Kiểm tra exact-text duplicates, conflict groups, split leakage; khóa seed 42, split 70/15/15.
+- [x] Tạo manifest ID→split, hashes và contract v1; dataset chính thức: `data/processed/vihsd_g0_v1/`.
+- [ ] Cả 4 thành viên xác nhận dùng đúng contract và dataset; không dùng `vihsd.jsonl` hoặc `g0_v1_candidate*`.
+- [ ] Giới hạn đã biết: near-duplicate/thread leakage chưa xác minh; test không được xem để phát triển/tuning.
 
-## Parallel work — các nhánh độc lập sau G0
-- [ ] **TV1 EXP-01:** EDA; raw/basic/teencode + TF-IDF word/char + Logistic Regression; ≥3 official runs.
-- [ ] **TV2 EXP-02:** LinearSVC + TF-IDF, tuning C/n-grams, feature selection; ≥3 official runs. Optional RBF SVC.
-- [ ] **TV3 EXP-03:** random-init LSTM → BiLSTM → BiLSTM+Attention; ≥3 official runs.
-- [ ] **TV4 EXP-04:** random-init TextCNN one/multi-kernel, filters/dropout; ≥3 official runs.
-- [ ] Mỗi TV xuất checkpoint/config/hash/MLflow run IDs + validation predictions + Macro-F1/per-class F1.
+## Nhóm 1 — Chạy mô hình song song trên G0 (mỗi thành viên sở hữu nhánh riêng)
+- [ ] **TV1 — EXP-01:** EDA; LR với raw/basic/teencode và TF-IDF word/char; tối thiểu 3 official runs.
+- [ ] **TV2 — EXP-02:** LinearSVC + TF-IDF; tuning C/n-grams/feature selection; tối thiểu 3 official runs.
+- [x] **TV3 — EXP-03:** scratch LSTM → BiLSTM → BiLSTM+Attention; 3 official runs completed on G0 train/validation with train-only vocabulary. No locked test used.
+  - [x] Pipeline: best-checkpoint validation, data hashes, CUDA/CPU auto-selection, complete optimizer/RNG checkpoints and resume support. Artifacts: `models/recurrent_official/EXP-03/`.
+- [ ] **TV4 — EXP-04:** scratch TextCNN single/multi-kernel; tối thiểu 3 official runs.
+- [ ] **Bàn giao chung mỗi mô hình:** config/seed/dataset hash, MLflow run IDs, checkpoint, validation predictions, Macro-F1/per-class F1 và thời gian/size.
 
-## Improvement and research
-- [ ] TV1: preprocessing ablation và phân tích lỗi Logistic Regression.
-- [ ] TV2: SVM feature/hyperparameter ablation và training-cost comparison.
-- [ ] TV3 EXP-05: cross-model error analysis ≥30 validation errors, hypotheses for improvement.
-- [ ] TV4: CNN kernel/dropout ablation.
-- [ ] **Conditional TV4 EXP-06:** error diversity → voting/stacking (OOF nếu dùng); hoặc ghi lý do skipped.
-- [ ] **Optional TV3 EXP-07:** pretrained PhoBERT fine-tuning **chỉ sau khi scratch BiLSTM hoàn thành**, hoặc ghi lý do skipped.
+## Nhóm 2 — Ablation và phân tích (sau khi có validation results)
+- [ ] **TV1:** preprocessing ablation và lỗi LR.
+- [ ] **TV2:** SVM feature/hyperparameter ablation và training-cost comparison.
+- [ ] **TV3 lead; TV1–TV4 đóng góp:** **EXP-05**, phân tích ít nhất 30 lỗi validation cross-model, nhóm lỗi và giả thuyết kiểm chứng.
+- [ ] **TV4:** CNN kernel/dropout ablation.
+- [ ] **TV4, có điều kiện — EXP-06:** chỉ thử voting/stacking khi validation predictions cho thấy error diversity; stacking phải dùng OOF train predictions. Nếu không phù hợp, ghi lý do skip.
+- [ ] **TV3, tùy chọn — EXP-07:** PhoBERT chỉ sau nghiệm thu EXP-03; được skip nếu không đủ tài nguyên, không chặn final.
 
-## Finalization
-- [ ] TV3 freeze candidate models/hyperparameters bằng validation, ghi danh sách cuối.
-- [ ] TV1 + cả nhóm EXP-08: chạy locked test final một đợt, không tune theo test.
-- [ ] Cả nhóm: reproducibility report/notebooks, 4 phần thí nghiệm cá nhân.
-- [ ] Minimal FastAPI demo `/predict`, `/health`, `/model-info`; hosting chỉ sau khi kiểm tra eligibility.
+## Nhóm 3 — Chọn mô hình và đánh giá cuối
+- [ ] **TV3 lead:** freeze candidate và hyperparameters bằng validation; ghi danh sách trước khi mở test.
+- [ ] **TV1 điều phối, cả nhóm tham gia, TV3 duyệt — EXP-08:** đánh giá locked test đúng một đợt; không tuning/đổi candidate theo kết quả test. Báo cáo rõ test từng có exposure trong artifact cũ.
+- [ ] **Cả nhóm:** reproducibility report/notebooks và 4 phần thí nghiệm cá nhân.
+- [ ] **Cả nhóm:** Minimal FastAPI `/predict`, `/health`, `/model-info`; chỉ phục vụ model đã chọn, hosting sau khi kiểm tra eligibility.
 
-## Coordination
-- [ ] Mỗi thành viên branch riêng, PR review; không sửa split độc lập.
-- [ ] Nếu chung GPU 8GB: schedule DL jobs, không chạy hai job lớn đồng thời.
-- [ ] Mỗi tuần review MLflow runs và artifacts, không chỉ báo cáo miệng.
+## Nhóm 4 — Phối hợp
+- [ ] Mỗi thành viên dùng branch riêng và PR review; không tự sửa split hoặc contract.
+- [ ] Nếu dùng chung GPU 8GB, lên lịch DL jobs; tránh chạy hai job lớn đồng thời.
+- [ ] Review MLflow runs/artifacts hàng tuần; ghi trạng thái theo bằng chứng.
 
-Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-experiments.md) · [task breakdown](../docs/plans/task-breakdown.md).
-**Chỉ sửa PLAN/SPEC lần này — không triển khai bất cứ TODO nào.**
+Nguồn chi tiết: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-experiments.md) · [task breakdown](../docs/plans/task-breakdown.md) · [G0 acceptance](../docs/G0_FINAL_REVIEW.md).
 
 ## D1–D4 — Cần làm lại / bị thay thế
+
 - [ ] G0 ba lớp và EXP-01–EXP-04 cần chạy lại theo D1/D2 trên split nhị phân mới. Các mục `[x]` phía trên vẫn là lịch sử đã hoàn thành, không chuyển thành chưa làm.
 - [x] Kiểm tra lịch sử test exposure trước khi xây dựng split mới; test mới không blind vì test cũ từng lộ.
 - [ ] Các công việc API-only, ensemble và TextCNN trước đây không thay thế yêu cầu React + FastAPI và neural mới. PhoBERT pretrained fine-tune đã được chấp nhận theo xác nhận người dùng.
@@ -83,11 +85,7 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
   - [ ] Thực hiện CNN ablation trên validation; lưu config, hash dữ liệu, ba seed và metrics.
 - [ ] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning.
 
-### Huy
-- [ ] N14: Nếu có thời gian và giảng viên cho phép PhoBERT pretrained fine-tune, thử learning rate, epoch và chiến lược fine-tune trên val sau N13. Mỗi lần đổi một yếu tố, lưu `docs/experiments/phobert_extra_val.csv`.
-- [ ] N15: Phối hợp TV3 phân tích lỗi sau N10 như trên.
-
-### Cả nhóm hoặc chưa phân công
+### Cả nhóm
 - [x] N1: Cả nhóm duyệt spec, decisions, plan và todo D1–D4.
   Hoàn thành 2026-11-23 — cả nhóm duyệt D1–D4. N2 đã được mở khóa.
 - [ ] Deadline: Chưa xác định.
