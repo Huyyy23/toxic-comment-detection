@@ -34,6 +34,14 @@ Dataset nhị phân nằm tại `data/processed/binary_n2_v1/`: train 28231, val
 
 Kiểm tra sau tạo cho thấy không trùng exact text giữa split và không trùng sau NFKC, casefold và bỏ ký tự không thuộc `\w`. Phương pháp này không phát hiện mọi near-duplicate hoặc thread leakage. Test mới không blind do test cũ từng lộ.
 
+### Audit N3 ngày 2026-11-23
+
+Đối chiếu độc lập sáu file raw, manifest và ba file Parquet với SHA-256 trong `dataset_info.json`. Hash khớp. Audit đối chiếu 43.400 ID nguồn, 40.327 bản ghi đầu ra, 205 nhóm nhãn mâu thuẫn và 466 bản ghi bị loại. Mỗi ID còn lại trỏ đúng ID nội dung và split trong manifest; nhãn và nguồn của bản đại diện khớp bản ghi nguồn đầu tiên theo thứ tự ID.
+
+Không có nhóm exact text hoặc nhóm trùng sau NFKC, casefold và loại ký tự không thuộc `\w` nằm trên nhiều split. Đối với text rỗng sau chuẩn hóa, phép kiểm tra dùng ID nội dung như builder. Đây không phải kiểm tra bao quát near-duplicate. Raw không có thread ID, nên audit không xác minh được thread leakage. Test đã được đọc để kiểm tra tính toàn vẹn split; không dùng nội dung hoặc nhãn test để chọn mô hình hay thay đổi split. Test không blind.
+
+N3 chưa hoàn thành. Còn mở rộng kiểm thử leakage có thể chạy lại và kiểm tra augmentation sau khi N4 tạo dữ liệu augmentation.
+
 ---
 
 ## 1. Nguồn Dữ liệu Được Cung cấp (Input Datasets)

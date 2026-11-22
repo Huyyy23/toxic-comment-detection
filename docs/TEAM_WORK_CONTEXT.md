@@ -9,3 +9,5 @@
 **Cập nhật 2026-11-23:** N1 hoàn thành theo xác nhận người dùng: Tam, Vinh, Huy và TheAnh đã duyệt D1–D4. N2 đã được mở khóa; quyền UIT và mapping nhãn vẫn chờ xác minh.
 
 **Cập nhật 2026-11-23:** N2 đã tạo và kiểm tra cơ bản tại `data/processed/binary_n2_v1/`; N3 tiếp tục audit leakage. Người dùng xác nhận nhóm đã xin phép UIT cho đồ án, nhưng repo chưa có bằng chứng để kiểm chứng giấy phép. Xem `docs/dataset-requirements.md` về mapping và giới hạn test.
+
+**Cập nhật 2026-11-23:** N3 đang thực hiện. Đã đối chiếu raw, manifest, hash và split N2; kết quả và giới hạn tại `docs/dataset-requirements.md`. Kiểm thử leakage chạy lại và kiểm tra augmentation vẫn chưa hoàn thành.
