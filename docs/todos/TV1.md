@@ -78,3 +78,11 @@ Các mục G0 bên dưới là lịch sử ba lớp; giữ trạng thái đã gh
 
 - `models/baselines/EXP-01-A/B/C/` có metrics, config, prediction và run ID; summary có số liệu validation. Tuy nhiên config hiện trỏ tới `vihsd.jsonl`, nên các số đó không phải kết quả trên candidate được duyệt.
 - `notebooks/EXP-01-EDA.ipynb` ghi rõ EDA và leakage 318 text cross-split trên bản cũ; không tái dùng nhận định đó cho G0 mới. `docs/G0_FINAL_REVIEW.md` là nguồn hiện trạng G0; checklist/báo cáo TV1 cũ còn trạng thái pending là lịch sử.
+
+## EDA N2/N4 (2026-11-23)
+
+- Notebook `notebooks/EXP-EDA-N2-N4.ipynb` có bảng, biểu đồ, kết quả chạy và có thể chạy lại bằng Restart & Run All.
+- N2 train có 28.231 mẫu, 15,93% TOXIC. N4 thêm 5.675 mẫu TOXIC vào train, tăng tỷ lệ TOXIC lên 30,00%; số CLEAN giữ nguyên 23.734. Validation và test mỗi split có 6.048 mẫu và khớp đầy đủ với N2.
+- Cả 5.675 mẫu augmentation thuộc train và trỏ tới 2.872 parent trong N2 train. Không có overlap exact hoặc theo khóa chuẩn hóa với validation và test.
+- Không có giá trị null hoặc chuỗi rỗng trên trường bắt buộc; `parent_id` null ở 28.231 dòng gốc N4 train theo thiết kế. Không có exact duplicate text. Có 364 nhóm khóa chuẩn hóa trùng trong split, không có overlap khóa chuẩn hóa giữa các split.
+- Chưa kiểm chứng near-duplicate ngữ nghĩa tổng quát hoặc thread leakage. Test không blind. Không huấn luyện mô hình và không kết luận augmentation cải thiện mô hình.

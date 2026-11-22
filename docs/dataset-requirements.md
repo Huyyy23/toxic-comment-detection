@@ -150,6 +150,22 @@ Sau bước Data Ingestion & Preprocessing, dữ liệu phải chuyển về sch
 - [ ] **5. Ghi nhận Báo cáo EDA**
   - Xuất `docs/eda_report.md` kèm biểu đồ phân bố nhãn và độ dài.
 
+### EDA nhị phân N2/N4, ngày 2026-11-23
+
+Notebook `notebooks/EXP-EDA-N2-N4.ipynb` lưu mã, bảng, biểu đồ, kết quả chạy và nhận xét. Checklist EDA dưới đây áp dụng cho candidate nhị phân; EDA G0 ba lớp vẫn được giữ riêng.
+
+- [x] Đọc N2/N4 theo từng split và đối chiếu số mẫu, phân bố CLEAN/TOXIC.
+- [x] Kiểm tra missing và chuỗi rỗng theo schema từng split. Các trường bắt buộc không có giá trị null hoặc chuỗi rỗng; `parent_id` null ở 28.231 dòng gốc N4 train theo thiết kế. Không có exact duplicate text; có 364 nhóm khóa chuẩn hóa trùng trong split.
+- [x] Kiểm tra overlap exact và khóa chuẩn hóa giữa mọi cặp train, validation và test. Không có overlap giữa các split; các nhóm trùng trong split được giữ nguyên.
+- [x] Đối chiếu N4 validation và test với N2. Hai split khớp đầy đủ theo bản ghi; 5.675 mẫu augmentation chỉ nằm trong train, đều mang nhãn TOXIC và có parent thuộc N2 train.
+- [x] So sánh mẫu augmentation với parent và kiểm tra nội dung augmentation không trùng exact hoặc theo khóa chuẩn hóa với validation và test.
+- [x] Lưu thống kê độ dài, từ vựng, bảng so sánh và biểu đồ trong notebook.
+- [ ] Chưa kiểm chứng trùng ngữ nghĩa tổng quát hoặc rò rỉ theo thread. Dataset không có thread ID; khóa chuẩn hóa không phải bộ dò near-duplicate tổng quát.
+
+N4 thêm 5.675 mẫu TOXIC vào train, giữ 23.734 mẫu CLEAN gốc, nên tỷ lệ TOXIC train tăng từ 15,93% lên 30,00%. Validation và test mỗi split có 6.048 mẫu và khớp N2. Đây là mô tả dữ liệu, không phải bằng chứng mô hình cải thiện. Test không blind; EDA không huấn luyện mô hình hay xác nhận giữ nguyên nhãn augmentation.
+
+Chạy notebook từ đầu đến cuối bằng Restart & Run All. Không sửa dữ liệu hoặc split trong EDA.
+
 ---
 
 ## 6. Rủi ro & Chiến lược Xử lý
