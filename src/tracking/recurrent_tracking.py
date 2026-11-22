@@ -43,7 +43,7 @@ def start_tracking(tracking_uri, *, architecture, resume, official=False, smoke=
     tags = {"exp": "EXP-03", "result_type": result_type,
             "research_result": "false" if smoke else "true",
             "entry_point": entry_point, "architecture": architecture,
-            "pretrained": "false", "prediction_checkpoint": "last"}
+            "pretrained": "false", "prediction_checkpoint": "best"}
     if resume is not None:
         tags["resumed_from_checkpoint"] = Path(resume).name
     tracker.start_run(run_name=f"{result_type}-{architecture}", tags=tags)
@@ -57,26 +57,27 @@ def log_run_metadata(tracker, *, config, model_config, data_metadata, device):
     tracker.log_environment()
 
 
-def finish_tracking(tracker, output, summary, *, config, data_metadata, duration_seconds):
-    """Persist provenance and checkpoints, plus ID-only predictions and run ID."""
+def finish_tracking(tracker, output, summary, *, config, data_metadata, duration_seconds,
+                    write_artifacts=True):
+    """Record run provenance and metrics; optionally write the legacy smoke artifacts."""
     output = Path(output)
     summary["run_id"] = tracker.run_id
     summary["experiment_id"] = tracker.experiment_id
     summary["data_metadata"] = data_metadata
-    summary["config"] = config
-    summary["prediction_checkpoint"] = "last"
+    summary["prediction_checkpoint"] = "best"
     summary["training_duration_seconds"] = duration_seconds
     for prediction in summary["last_validation"]["predictions"]:
         prediction["run_id"] = tracker.run_id
-    (output / "validation_predictions.json").write_text(
-        json.dumps(summary["last_validation"]["predictions"], ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8")
     tracker.log_metrics({"training_duration_seconds": duration_seconds,
                          "best_val_macro_f1": summary["training"]["best_macro_f1"],
                          "last_val_macro_f1": summary["last_validation"]["macro_f1"]})
-    (output / "config.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
-    (output / "data_metadata.json").write_text(
-        json.dumps(data_metadata, indent=2) + "\n", encoding="utf-8")
+    if write_artifacts:
+        (output / "validation_predictions.json").write_text(
+            json.dumps(summary["last_validation"]["predictions"], ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8")
+        (output / "config.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+        (output / "data_metadata.json").write_text(
+            json.dumps(data_metadata, indent=2) + "\n", encoding="utf-8")
 
 
 def log_run_artifacts(tracker, output):

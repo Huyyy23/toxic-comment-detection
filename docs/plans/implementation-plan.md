@@ -1,45 +1,43 @@
-# Implementation Plan — 4 thành viên làm song song
+# Implementation plan — binary toxic-comment detection
 
-**Version:** 4.0.0-SCRATCH-FIRST · **Ngày:** 2026-11-11 · **Trạng thái:** PLAN ONLY.
+**Status:** Plan only. The agreed D1–D4 decisions and N1–N15 sequence are maintained in [the team execution plan](../../tasks/plan.md). This page records how owners and integration should follow that source of truth.
 
-## Mục tiêu
-Bốn thành viên huấn luyện độc lập Logistic Regression, LinearSVC, LSTM/BiLSTM+Attention và TextCNN **từ đầu**. Nhóm trưởng (TV3) chốt Data Contract và làm PhoBERT pretrained **đối chứng mở rộng**. FastAPI minimal chỉ là demo sau nghiên cứu.
+## Scope and decisions
+The binary dataset is at `data/processed/binary_n2_v1/`; see `docs/dataset-requirements.md` for mappings, provenance and limitations. The user confirms the team sought UIT permission, but independent license evidence is not stored in the repo. The test is not blind.
 
-## Chốt trách nhiệm
-| Member | Làm chính | Thực nghiệm | Bàn giao |
-|---|---|---|---|
-| TV1 | EDA, preprocessing, Logistic Regression | EXP-01 | data analysis, LR, ablation, val predictions |
-| TV2 | TF-IDF, LinearSVC, tuning/feature selection | EXP-02 | SVM, ablation, val predictions |
-| TV3 — Lead | Gate G0, LSTM→BiLSTM→Attention, error analysis; optional PhoBERT | EXP-00,03,05,07 | split manifest, DL artifacts, comparative report |
-| TV4 | TextCNN variants, conditional ensemble | EXP-04,06 | CNN, val predictions, ensemble assessment |
+Train LR, SVM, LSTM, BiLSTM with attention, character CNN, and FastText without pretrained embeddings. PhoBERT fine-tuning is an accepted pretrained benchmark, separate from scratch models. Do not use LLMs or back-translation in the core comparison. Augment only training TOXIC samples, at most twice per original, targeting 30–35% without guaranteeing that proportion. Preserve toxic tokens and exclude validation/test duplicates. Select one imbalance method on validation from class weights, focal loss, or a sampler. Select checkpoints by validation Macro-F1; report TOXIC F1 and ECE as additional metrics.
 
-## Phụ thuộc tối thiểu: Data Contract Gate G0
-- **TV3 chịu trách nhiệm**, không phải chờ EDA chuyên sâu của TV1; phải xác thực labels/schema, dữ liệu trùng lặp, leakage và phù hợp của official split trước khi khóa.
-- Dataset ưu tiên UIT-ViHSD, ViCTSD chỉ là nguồn OOD/cross-dataset conditional. Nếu tự chia: stratified 70/15/15, seed lưu `split_manifest`; official split phù hợp được ưu tiên.
-- Cố định cùng IDs/split, nhãn, version, metrics (Macro-F1), output predictions contract; test locked.
-- Trước G0: TV1 EDA; TV2–TV4 **code skeleton/smoke test với fixture**. Sau G0: cả bốn train chính thức **song song**.
+## Ownership and work order
+| Task | Owner | Dependencies |
+|---|---|---|
+| N1 documentation | Cả nhóm | — |
+| N2 combined data and locked split | TV3 lead; TV1 hỗ trợ | N1 |
+| N3 leakage audit | Huy (TV3) | N2 |
+| N4 train-only augmentation | Huy (TV3) | N3 |
+| N5 FastText | Huy (TV3) | N2 |
+| N6 LR and SVM baselines | TV1 LR; TV2 SVM | N2 |
+| N7 scratch neural models | TV3 và TV4 | N4, N5 |
+| N8 validation calibration and threshold | Huy (TV3) | N6, N7, N13 |
+| N9 validation ablations | Huy (TV3) | N7, N8, N13 |
+| N10 one locked-test batch | TV1 điều phối; cả nhóm | N9, N14 if applicable |
+| N11 API and frontend integration | Huy (TV3) | N6, N8 |
+| N12 deployment | Huy (TV3) | N10, N11 |
+| N13 PhoBERT pretrained benchmark | TV3 | N2, N4 if augmentation is used |
+| N14 optional extras | Huy | N13, if applicable |
+| N15 error analysis | Huy (TV3) lead | N10 |
 
-## Lịch 4 tuần (gợi ý, tùy deadline)
-| Tuần | TV1 | TV2 | TV3 (Lead) | TV4 | Gate |
-|---|---|---|---|---|---|
-| 1 | EDA + LR skeleton | SVM skeleton | G0 manifest + LSTM skeleton | CNN skeleton | G0 |
-| 2 | LR 3 variants | LinearSVC 3 variants | LSTM/BiLSTM/Attention 3 variants | CNN 3 variants | G1: 4 official runs |
-| 3 | LR error review | SVM ablation | Error analysis; optional PhoBERT | CNN ablation; conditional ensemble | G2: best candidates frozen by val |
-| 4 | Coordinate locked test | Reproduction + SVM report | Review + overall research report | Ensemble/CNN report; API support | G3: final test, demo, documentation |
+TV1 là Tam, TV2 là Vinh, TV3 là Huy và TV4 là TheAnh, theo xác nhận của người dùng ngày 2026-11-23.
 
-GPU resource: nếu cùng RTX 4060 8GB, TV3 và TV4 **phát triển song song nhưng xếp lịch GPU**, không chạy đồng thời hai DL jobs lớn. PhoBERT chỉ chạy sau khi scratch deliverables đạt chuẩn.
+Integrate in this order: data, leakage audit, augmentation, embeddings, baselines, neural models, calibration, ablation, locked test, web and deployment. N5 and N6 may run in parallel after N2. This integration order does not add a dependency between them.
 
-## Branch/contract
-- `feature/data-logreg` (TV1); `feature/svm` (TV2); `feature/bilstm` (TV3); `feature/textcnn` (TV4). PR review trước merge.
-- Shared `id,text,label,split` data contract; prediction output `id,true_label,predicted_label,probabilities_if_available,run_id`.
-- Mỗi EXP có hypothesis, ≥3 meaningful variants, MLflow logs, metrics, plots, artifact, ablation + report. Checkpoints nặng lưu ngoài git, version trong metadata.
-- Không sửa split do một cá nhân tự ý. Contract changes cần nhóm trưởng phê duyệt và chạy lại các kết quả liên quan.
+## Reproducibility and final evaluation
+Use the same binary split for all models. Log source and dataset hashes, configuration, seed, run ID, checkpoint, and validation predictions. Run three seeds. Report class counts, per-class precision/recall/F1, Macro-F1, TOXIC F1, confusion matrix, calibration/ECE where applicable, runtime, and model size.
 
-## Các điểm chặn rõ ràng
-**G0:** split/schema/hash/seed/leakage checks đã chốt → official train mở.  
-**G1:** 4 mô hình scratch có official validation runs và artifacts.  
-**G2:** tuning, error analysis, ablation, optional ensemble/PhoBERT hoàn tất hoặc đánh dấu skipped; freeze final candidates.  
-**G3:** one-shot locked test, notebook và FastAPI minimal demo (khi triển khai sau).
+Compare LR with balanced weights, BiLSTM with random embeddings and cross-entropy, FastText, and character CNN. Test one imbalance treatment, augmentation, and calibration/threshold in separate ablations; change one factor at a time. Fix the architecture before ablation steps 5–7.
 
-## Chưa làm trong đợt cập nhật này
-Không sửa `src/`, `backend/`, `configs/`, `tests/`, `frontend/`; không download dataset, train, install packages, deploy, hay xóa file code. Đây chỉ là kế hoạch triển khai tương lai. Các tài liệu code/history cũ ngoài nhóm PLAN/SPEC có thể chưa đồng bộ; source of truth: SPEC v4 và docs/plans v4.
+PhoBERT is an accepted pretrained fine-tuning benchmark. P1 uses the default `phobert-base` configuration, P2 adds the selected imbalance treatment, and optional P3 changes one fine-tuning factor at a time on validation. Record the segmentation tool and version, use 128–160 tokens, learning rate `2e-5`, batch size 16, 10% warmup, weight decay `0.01`, 3–4 epochs, and early stopping on validation Macro-F1. Use fp16 and gradient accumulation when supported.
+
+Before any test access, freeze all candidates, configurations, thresholds, and analysis methods in a versioned lock file. Run one final test batch over that fixed list. Never use test metrics or errors to tune or select models. Report bootstrap confidence intervals or McNemar comparisons in that batch. Any known earlier test exposure must be disclosed. Consider ONNX only if measurements show a benefit.
+
+## Pending checks
+Source revision correspondence and locked-test access controls remain to verify. No new experiment results are asserted.

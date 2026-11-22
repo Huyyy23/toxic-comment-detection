@@ -1,9 +1,13 @@
 # TODO nhóm — Vietnamese Toxic Comment Detection
 
-Các checklist theo thành viên: [TV1](TV1.md) · [TV2](TV2.md) · [TV3](TV3.md) · [TV4](TV4.md).
+Checklist theo thành viên: [Tam (TV1)](TV1.md) · [Vinh (TV2)](TV2.md) · [Huy (TV3)](TV3.md) · [TheAnh (TV4)](TV4.md).
 
-**Protocol dùng chung:** [Data Contract v1](../DATA_CONTRACT_v1.md), candidate duy nhất `data/processed/vihsd_g0_v1/`; train/validation từ `train_val.jsonl`; `0=CLEAN`, `1=OFFENSIVE`, `2=HATE`; Macro-F1 validation; fit preprocessing/vocabulary/vectorizer/feature selection/calibration trên train hoặc train-fold; test chỉ mở một lần tại EXP-08. Mỗi TV phải có ≥3 cấu hình có giả thuyết, MLflow run IDs, config/seed/data hash, metrics và validation predictions. Fixture/smoke tests không tính là kết quả nghiên cứu.
-**Độ hạt checklist:** mỗi biến thể A/B/C hoặc architecture run là task riêng; setup, kiểm tra data contract, tracking, analysis và handoff được tách để có thể hoàn tất/kiểm chứng từng bước. `[x]` chỉ xuất hiện cho G0 đã được duyệt; các việc chưa có bằng chứng vẫn để `[ ]`.
+**Protocol hiện hành D1–D4:** ViHSD và ViCTSD dự kiến gộp thành `0=CLEAN`, `1=TOXIC`, có `source`, dedupe trước split 70/15/15 theo `(source,label)`. Split mới chưa được dựng; quyền UIT và khác biệt định nghĩa nhãn còn chờ xác nhận. Chọn checkpoint bằng val Macro-F1; calibration và threshold trên val. Freeze mọi candidate trước một đợt locked test, công bố lịch sử test exposure.
+
+PhoBERT pretrained fine-tune đã được chấp nhận theo xác nhận người dùng và là benchmark do Huy phụ trách. Huy phụ trách N3, N4, N5, N8, N9, N11 và N12; xem [checklist chung](../../tasks/todo.md). Deadline chưa xác định.
+
+Các mục `[x]` trong checklist cá nhân được giữ làm lịch sử, không chứng minh đã hoàn thành trên split nhị phân.
+## Lịch sử G0 trước D1–D4
 
 
 ## Audit hiện trạng

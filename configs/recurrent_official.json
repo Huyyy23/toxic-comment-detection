@@ -2,7 +2,7 @@
   "status": "OFFICIAL",
   "name": "recurrent_official_v1",
   "seed": 42,
-  "device": "cpu",
+  "device": "auto",
   "dataset_dir": "data/processed/vihsd_g0_v1",
   "train_val_file": "train_val.jsonl",
   "manifest_file": "manifest.json",

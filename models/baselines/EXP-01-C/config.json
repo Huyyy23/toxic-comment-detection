@@ -16,9 +16,13 @@
   "lr_C": 5.0,
   "lr_class_weight": "balanced",
   "seed": 42,
-  "dataset_path": "C:\\Đồ án máy học\\toxic-comment-detection\\data\\processed\\vihsd.jsonl",
-  "dataset_hash": "083a558325f3294d372c2f982b58b70407d106cf26ce2aa5caf67bd7fb013459",
-  "train_hash": "d1b25d12ee356f59189918d50b5a351b43caded55a64961f7d671de2eebebf31",
-  "n_train": 24048,
-  "n_val": 2672
+  "dataset_path": "C:\\Đồ án máy học\\toxic-comment-detection\\data\\processed\\vihsd_g0_v1\\train_val.jsonl",
+  "data_contract_version": "1.0",
+  "source_revision": "16c4f67cf509d4f9f36ca5b63c5503c7c8830557",
+  "data_file_sha256": "c17d920f788ff982775405d7031373dc2cd5525cbba5db6ed4e4f85e70159164",
+  "dataset_hash": "0e5592822e9be197bc59823d0c33fbc724e2f0ea93d2fbdc64bd9084eb88a5a8",
+  "train_hash": "b732b51e2d3331cdf4ab5b3a0c11956c90ac752e610c936e18501f21c738f2a8",
+  "val_hash": "52e7de35cb97bcdb8fbdc0be04c8a066a3351bd166a4a6c9ecbb11d538b76ab4",
+  "n_train": 23002,
+  "n_val": 4929
 }

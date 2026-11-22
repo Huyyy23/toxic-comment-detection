@@ -66,6 +66,18 @@ class MLflowTracker:
     def run_id(self) -> Optional[str]:
         return self._run_id
 
+    @property
+    def artifact_path(self) -> Path:
+        if self._run is None:
+            raise RuntimeError("No active run. Call start_run() first.")
+        parsed = urlparse(self._run.info.artifact_uri)
+        if parsed.scheme != "file":
+            raise ValueError("run artifacts must use a local file store")
+        local_path = url2pathname(parsed.path)
+        if parsed.netloc and parsed.netloc != "localhost":
+            local_path = f"//{parsed.netloc}{local_path}"
+        return Path(local_path)
+
     def start_run(
         self,
         run_name: Optional[str] = None,

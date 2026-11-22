@@ -40,6 +40,13 @@ models/transformer_best/*
 *.joblib
 *.onnx
 
+# Local caches and atomic checkpoint temporary files
+.cache/
+*.tmp
+
+# Vocabulary is already embedded in recurrent checkpoints
+models/recurrent_official/**/vocabulary.json
+
 # MLflow local tracking
 mlruns/
 *.db

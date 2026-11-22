@@ -157,6 +157,39 @@ def save_checkpoint(path, *, model, optimizer, epoch, best_macro_f1, bad_epochs,
             temporary_path.unlink(missing_ok=True)
 
 
+
+def save_run_checkpoint(output_dir, *, is_best=False, **state):
+    """Save this epoch, preserve best plus the two newest full checkpoints."""
+    output_dir = Path(output_dir)
+    epoch = state["epoch"]
+    staged = output_dir / f"checkpoint-epoch-{epoch}.pt"
+    last = output_dir / "last.pt"
+    save_checkpoint(staged, **state)
+
+    previous = output_dir / f"checkpoint-epoch-{epoch - 1}.pt"
+    moved_previous = False
+    if last.exists():
+        # fit invokes this once for each consecutive completed epoch.
+        os.replace(last, previous)
+        moved_previous = True
+    try:
+        os.replace(staged, last)
+    except BaseException:
+        if moved_previous and not last.exists():
+            os.replace(previous, last)
+        raise
+
+    archived = []
+    for path in output_dir.glob("checkpoint-epoch-*.pt"):
+        suffix = path.stem.removeprefix("checkpoint-epoch-")
+        if suffix.isdecimal():
+            archived.append((int(suffix), path))
+    for _, path in sorted(archived)[:-1]:
+        path.unlink()
+    if is_best:
+        save_checkpoint(output_dir / "best.pt", **state)
+
+
 def load_checkpoint(path, *, model, optimizer, expected_config,
                     expected_data_metadata, map_location="cpu"):
     """Validate provenance first, restore model/optimizer/RNG, return full state.
