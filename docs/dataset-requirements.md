@@ -40,7 +40,9 @@ Kiểm tra sau tạo cho thấy không trùng exact text giữa split và không
 
 Không có nhóm exact text hoặc nhóm trùng sau NFKC, casefold và loại ký tự không thuộc `\w` nằm trên nhiều split. Đối với text rỗng sau chuẩn hóa, phép kiểm tra dùng ID nội dung như builder. Đây không phải kiểm tra bao quát near-duplicate. Raw không có thread ID, nên audit không xác minh được thread leakage. Test đã được đọc để kiểm tra tính toàn vẹn split; không dùng nội dung hoặc nhãn test để chọn mô hình hay thay đổi split. Test không blind.
 
-N3 chưa hoàn thành. Còn mở rộng kiểm thử leakage có thể chạy lại và kiểm tra augmentation sau khi N4 tạo dữ liệu augmentation.
+N3 hoàn thành ngày 2026-11-23. `tests/test_n3_leakage.py` kiểm tra ba file N2, cùng fixture hợp lệ và các fixture rò rỉ exact text, text chuẩn hóa, parent không tồn tại hoặc augmentation ngoài train. Lệnh `.venv/Scripts/python.exe -m pytest -q` chạy toàn bộ suite và cho kết quả 328 passed, 1 skipped. Test bị skip là kiểm tra augmentation thật vì N4 chưa tạo dữ liệu.
+
+Sau khi N4 tạo augmentation, lưu các mẫu augmentation vào một file Parquet có các cột `id`, `text`, `label`, `split`, `is_augmented`, `parent_id`. Giá trị `parent_id` phải trỏ tới ID mẫu gốc trong N2. Trên PowerShell, chạy `$env:N3_AUGMENTATION_PARQUET = "<đường_dẫn>"; .venv/Scripts/python.exe -m pytest -q tests/test_n3_leakage.py` và xóa biến môi trường sau đó bằng `Remove-Item Env:N3_AUGMENTATION_PARQUET`. Test so sánh augmentation với cả ba split N2 và yêu cầu augmentation cùng parent thuộc train, mang nhãn TOXIC. Không dùng kết quả này để tuning trên test.
 
 ---
 

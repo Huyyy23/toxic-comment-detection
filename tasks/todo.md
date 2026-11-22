@@ -69,8 +69,8 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 - [ ] N13: TV3 phụ trách benchmark PhoBERT pretrained fine-tune đã được chấp nhận. Phụ thuộc N2, thêm N4 nếu augment. Lưu checkpoint/config/log, chạy ba seed và ghi VRAM.
 - [ ] N14: Nếu có thời gian, thử learning rate, epoch và chiến lược PhoBERT pretrained fine-tune trên val sau N13. Mỗi lần đổi một yếu tố, lưu `docs/experiments/phobert_extra_val.csv`.
 - [ ] N15: Lead phân tích lỗi sau N10. Viết `docs/experiments/error_analysis.md`, so sánh hai chiều, có ví dụ và số mẫu theo nguồn, độ dài và teencode.
-- [ ] N3: Mở rộng `test_leakage` sau N2 để kiểm tra split và augmentation.
-- [ ] N4: Sau N3, augment train-only TOXIC, thêm `is_augmented`, mục tiêu 30–35% nếu đạt được với giới hạn số bản; không điều chỉnh test.
+- [x] N3: Kiểm thử leakage split N2 và augmentation giả lập đã chạy. Xem kết quả và giới hạn trong `docs/dataset-requirements.md`.
+- [ ] N4: Đã mở khóa sau N3. Augment train-only TOXIC, thêm `is_augmented`, mục tiêu 30–35% nếu đạt được với giới hạn số bản. Bắt buộc chạy lại leakage tests trên augmentation thật, không dùng test để tuning.
 - [ ] N5: Sau N2, train FastText bằng gensim chỉ trên train, lưu embedding và báo kích thước.
 - [ ] N8: Sau N6, N7 và N13, calibration và chọn threshold trên val, báo ECE trước/sau.
 - [ ] N9: Sau N7, N8 và N13, ablation trên val và so sánh với PhoBERT pretrained fine-tune. Lưu `ablation_val.csv`.
