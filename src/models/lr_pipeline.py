@@ -72,7 +72,13 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def split_data(records: list[dict]) -> tuple[list[dict], list[dict]]:
-    """Tách train và val từ records (locked test không được load ở đây)."""
+    """Tách train và val từ records; từ chối nếu phát hiện split=='test'."""
+    test_records = [r for r in records if r.get("split") == "test"]
+    if test_records:
+        raise ValueError(
+            f"Phát hiện {len(test_records)} test records trong input. "
+            "Không được phép nạp locked test trong EXP-01."
+        )
     train = [r for r in records if r["split"] == "train"]
     val = [r for r in records if r["split"] == "val"]
     return train, val
@@ -88,6 +94,14 @@ def sha256_texts(texts: list[str]) -> str:
     h = hashlib.sha256()
     for t in texts:
         h.update(t.encode("utf-8"))
+    return h.hexdigest()
+
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
     return h.hexdigest()
 
 
@@ -215,6 +229,13 @@ def run_experiment(
 
     dataset_hash = sha256_texts(train_texts_raw + val_texts_raw)
     train_hash = sha256_texts(train_texts_raw)
+    val_hash = sha256_texts(val_texts_raw)
+    data_file_sha256 = sha256_file(data_path)
+
+    dataset_info: dict = {}
+    if dataset_info_path and dataset_info_path.exists():
+        with open(dataset_info_path, encoding="utf-8") as f:
+            dataset_info = json.load(f)
 
     # --- Preprocessing (fit không cần thiết — deterministic) ---
     print(f"Preprocessing variant: {cfg['preprocessing']}...")
@@ -288,8 +309,11 @@ def run_experiment(
     tfidf_path = artifacts_dir / "tfidf.joblib"
     save_tfidf(tfidf, tfidf_path, metadata={"mode": cfg["tfidf_mode"], "variant": variant})
 
-    # Validation predictions (schema v4)
+    metrics["model_size_bytes"] = int(model_path.stat().st_size + tfidf_path.stat().st_size)
+
+    # Validation predictions (schema v4 JSON)
     predictions = []
+    csv_rows = []
     for rec, pred, proba in zip(val_records, val_pred, prob_ordered.tolist()):
         predictions.append({
             "id": rec["id"],
@@ -301,9 +325,20 @@ def run_experiment(
                 "HATE": round(proba[2], 6),
             },
         })
+        csv_rows.append({
+            "sample_id": rec["id"],
+            "y_true": rec["label"],
+            "y_pred": pred,
+            "prob_CLEAN": round(proba[0], 6),
+            "prob_OFFENSIVE": round(proba[1], 6),
+            "prob_HATE": round(proba[2], 6),
+        })
     pred_path = artifacts_dir / "val_predictions.json"
     with open(pred_path, "w", encoding="utf-8") as f:
         json.dump(predictions, f, ensure_ascii=False, indent=2)
+
+    pred_csv_path = artifacts_dir / "predictions_val.csv"
+    pd.DataFrame(csv_rows).to_csv(pred_csv_path, index=False, encoding="utf-8")
 
     # Config snapshot
     config_path = artifacts_dir / "config.json"
@@ -322,8 +357,12 @@ def run_experiment(
                 "lr_class_weight": cfg["lr_class_weight"],
                 "seed": cfg["seed"],
                 "dataset_path": str(data_path),
+                "data_contract_version": dataset_info.get("data_contract_version"),
+                "source_revision": dataset_info.get("source_revision"),
+                "data_file_sha256": data_file_sha256,
                 "dataset_hash": dataset_hash,
                 "train_hash": train_hash,
+                "val_hash": val_hash,
                 "n_train": len(train_labels),
                 "n_val": len(val_labels),
             },
@@ -366,8 +405,11 @@ def run_experiment(
             "lr_C": cfg["lr_C"],
             "lr_class_weight": str(cfg["lr_class_weight"]),
             "seed": cfg["seed"],
+            "data_contract_version": str(dataset_info.get("data_contract_version", "unknown")),
+            "data_file_sha256": data_file_sha256[:16],
             "dataset_hash": dataset_hash[:16],
             "train_hash": train_hash[:16],
+            "val_hash": val_hash[:16],
             "n_train": len(train_labels),
             "n_val": len(val_labels),
         })
@@ -378,6 +420,7 @@ def run_experiment(
         mlflow.log_metric("n_features", metrics["n_features"])
         mlflow.log_metric("train_time_s", metrics["train_time_s"])
         mlflow.log_metric("inference_ms_per_sample", metrics["inference_ms_per_sample"])
+        mlflow.log_metric("model_size_bytes", metrics["model_size_bytes"])
 
         for label_name, pc in metrics["per_class"].items():
             mlflow.log_metric(f"val_f1_{label_name}", pc["f1"])
@@ -401,6 +444,26 @@ def run_experiment(
     }
 
 
+def load_and_predict(artifacts_dir: Path, texts: list[str]) -> tuple[list[int], np.ndarray]:
+    """Load lại model, TF-IDF và config đã lưu để dự đoán không cần train lại."""
+    from src.features.tfidf_pipeline import load_tfidf
+
+    with open(artifacts_dir / "config.json", encoding="utf-8") as f:
+        cfg = json.load(f)
+    lr = joblib.load(artifacts_dir / "lr_model.joblib")
+    tfidf, _ = load_tfidf(artifacts_dir / "tfidf.joblib")
+
+    processed = preprocess_series(texts, variant=cfg["preprocessing"])
+    X = tfidf.transform(processed)
+    preds = lr.predict(X).tolist()
+    raw_proba = lr.predict_proba(X)
+
+    prob_ordered = np.zeros((len(texts), 3))
+    for col_idx, cls in enumerate(list(lr.classes_)):
+        prob_ordered[:, int(cls)] = raw_proba[:, col_idx]
+    return preds, prob_ordered
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -416,8 +479,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--data-path",
         type=Path,
-        default=ROOT / "data" / "processed" / "vihsd.jsonl",
-        help="Đường dẫn JSONL processed",
+        default=ROOT / "data" / "processed" / "vihsd_g0_v1" / "train_val.jsonl",
+        help="Đường dẫn JSONL G0 train_val",
     )
     p.add_argument(
         "--artifacts-dir",
@@ -434,7 +497,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--dataset-info",
         type=Path,
-        default=ROOT / "data" / "processed" / "dataset_info.json",
+        default=ROOT / "data" / "processed" / "vihsd_g0_v1" / "dataset_info.json",
     )
     return p.parse_args()
 
@@ -443,7 +506,7 @@ def main() -> None:
     args = parse_args()
     if not args.data_path.exists():
         print(f"ERROR: Không tìm thấy data tại {args.data_path}")
-        print("Chạy trước: python -m src.data.download_dataset")
+        print("Chạy trước: python -m src.data.build_g0_dataset --raw-dir data/raw --output-dir data/processed/vihsd_g0_v1")
         sys.exit(1)
 
     variants = ["A", "B", "C"] if args.variant == "all" else [args.variant]

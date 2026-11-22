@@ -138,6 +138,43 @@ class TestLRPipelineSmoke:
                 assert "precision" in pc and "recall" in pc and "f1" in pc
             assert "confusion_matrix" in m
             assert len(m["confusion_matrix"]) == 3  # 3x3
+            assert m["model_size_bytes"] > 0
+
+    def test_rejects_test_split(self):
+        from src.models.lr_pipeline import split_data
+
+        records = ALL_RECORDS + [{"id": "test_0", "text": "test row", "label": 0, "split": "test"}]
+        with pytest.raises(ValueError, match="test"):
+            split_data(records)
+
+    def test_predictions_csv_and_load_and_predict(self):
+        import pandas as pd
+        from src.models.lr_pipeline import load_and_predict, run_experiment
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            data_path = tmpdir / "train_val.jsonl"
+            self._write_jsonl(data_path, ALL_RECORDS)
+
+            result = run_experiment(
+                variant="B",
+                data_path=data_path,
+                artifacts_dir=tmpdir / "models",
+                tracking_uri=f"file:///{(tmpdir / 'mlruns').as_posix()}",
+            )
+            art_dir = Path(result["artifacts_dir"])
+            csv_path = art_dir / "predictions_val.csv"
+            assert csv_path.exists()
+            df_pred = pd.read_csv(csv_path)
+            assert list(df_pred.columns) == [
+                "sample_id", "y_true", "y_pred", "prob_CLEAN", "prob_OFFENSIVE", "prob_HATE"
+            ]
+            assert len(df_pred) == len(SYNTHETIC_VAL)
+
+            val_texts = [r["text"] for r in SYNTHETIC_VAL]
+            loaded_preds, loaded_proba = load_and_predict(art_dir, val_texts)
+            assert loaded_preds == df_pred["y_pred"].tolist()
+            assert loaded_proba.shape == (len(SYNTHETIC_VAL), 3)
 
 
 class TestEdaUtilsSmoke:
