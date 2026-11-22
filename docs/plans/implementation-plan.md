@@ -3,7 +3,7 @@
 **Status:** Plan only. The agreed D1–D4 decisions and N1–N15 sequence are maintained in [the team execution plan](../../tasks/plan.md). This page records how owners and integration should follow that source of truth.
 
 ## Scope and decisions
-Combine UIT-ViHSD and ViCTSD as `CLEAN=0`, `TOXIC=1`. Map ViHSD labels greater than zero and ViCTSD Toxicity to TOXIC, retaining `vihsd` or `victsd` as `source`. Their label meanings differ, and UIT permission remains pending. Deduplicate before stratifying 70/15/15 by `(source, label)`; lock the test split. Verify existing G0 artifacts against this contract before reuse.
+The binary dataset is at `data/processed/binary_n2_v1/`; see `docs/dataset-requirements.md` for mappings, provenance and limitations. The user confirms the team sought UIT permission, but independent license evidence is not stored in the repo. The test is not blind.
 
 Train LR, SVM, LSTM, BiLSTM with attention, character CNN, and FastText without pretrained embeddings. PhoBERT fine-tuning is an accepted pretrained benchmark, separate from scratch models. Do not use LLMs or back-translation in the core comparison. Augment only training TOXIC samples, at most twice per original, targeting 30–35% without guaranteeing that proportion. Preserve toxic tokens and exclude validation/test duplicates. Select one imbalance method on validation from class weights, focal loss, or a sampler. Select checkpoints by validation Macro-F1; report TOXIC F1 and ECE as additional metrics.
 
@@ -40,4 +40,4 @@ PhoBERT is an accepted pretrained fine-tuning benchmark. P1 uses the default `ph
 Before any test access, freeze all candidates, configurations, thresholds, and analysis methods in a versioned lock file. Run one final test batch over that fixed list. Never use test metrics or errors to tune or select models. Report bootstrap confidence intervals or McNemar comparisons in that batch. Any known earlier test exposure must be disclosed. Consider ONNX only if measurements show a benefit.
 
 ## Pending checks
-UIT permission, source revisions and schemas, ViCTSD label encoding, source-specific mapping, correspondence of existing G0 artifacts with D1, test exposure history, and locked-test access controls remain to verify. This document does not claim that the revised dataset or results exist.
+Source revision correspondence and locked-test access controls remain to verify. No new experiment results are asserted.

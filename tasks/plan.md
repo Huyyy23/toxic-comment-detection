@@ -3,7 +3,7 @@
 **Version 4.0.0 · 2026-11-11 · PLAN ONLY**
 
 ## Quyết định hiện hành
-- **D1 — dataset and split:** Combine UIT-ViHSD and ViCTSD as a binary task with `CLEAN=0` and `TOXIC=1`. Map ViHSD labels greater than zero to TOXIC and map ViCTSD's Toxicity label to TOXIC. Record `vihsd` or `victsd` as `source`. Dataset meanings differ, and UIT permission remains pending. Deduplicate before a stratified 70/15/15 split by `(source, label)`. Lock the test split. Record source versions, mapping, dataset hashes, IDs, seed, and manifest. Do not treat unavailable data or results as verified.
+- **D1 — dataset and split:** Binary dataset `data/processed/binary_n2_v1/` uses `CLEAN=0`, `TOXIC=1`, with deduplication and a grouped, approximately 70/15/15 stratified split. The user confirms the team sought UIT permission; no independent license evidence is stored in the repo. Source label meanings differ. See `docs/dataset-requirements.md` for provenance and limitations.
 - **D2 — model scope:** Train LR and SVM from scratch, plus LSTM, BiLSTM, attention, character CNN, and FastText using train-only vocabulary or embeddings. PhoBERT fine-tuning is an accepted pretrained benchmark, separate from the core comparison. The core comparison uses no pretrained embeddings, LLMs, or back-translation.
 - **D3 — imbalance and augmentation:** Augment only TOXIC training samples, at most twice per original, targeting 30–35% of training data without promising that the target is reachable. Preserve toxic tokens and exclude generated text that duplicates validation or test text. Select exactly one of class weights, focal loss, or a sampler using validation. Fit calibration and choose any decision threshold on validation; report ECE.
 - **D4 — comparison and final test:** Compare models on the same split and binary labels. Select checkpoints by validation Macro-F1 for every model; report TOXIC F1 as a secondary metric. Run three seeds. Freeze all candidates and settings before one final test batch. Report bootstrap confidence intervals or McNemar comparisons. Perform final error analysis after test without tuning; run optional extras on validation only.
@@ -41,6 +41,6 @@ PhoBERT is an accepted pretrained fine-tuning benchmark. P1 is `phobert-base` wi
 Before opening the test set, freeze every candidate, configuration, threshold, and analysis method in a versioned file lock. Run one test batch across that complete list. Do not use test results to tune, choose candidates, or revise thresholds. Any later test access is a new, disclosed evaluation, not part of model development.
 
 ## Pending verification
-Confirm data access and UIT permission, source revisions and schemas, ViCTSD label encoding, the final source-specific mapping, and whether the existing G0 artifacts match D1. Check the split manifest and locked-test access controls before running experiments. No new dataset state or result is asserted here.
+Verify source revision correspondence and locked-test access controls before experiments. The new test is not blind; no experiment results are asserted here.
 
 **Đợt này chỉ sửa SPEC/PLAN; không code, train, download, sửa config, hay deploy.**

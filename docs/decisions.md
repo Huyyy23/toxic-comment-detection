@@ -1,6 +1,6 @@
 # Báo cáo Quyết định Kiến trúc & Phân tích Đánh đổi (Architecture Decisions & Trade-offs)
 
-Trạng thái: **DRAFT — PENDING USER REVIEW**  
+Trạng thái: **APPROVED — D1–D4 được cả nhóm duyệt, 2026-11-23**  
 Ngày cập nhật: 2026-11-23  
 Dự án: **Vietnamese Toxic Comment Detection**  
 Phương pháp: **ML-first, API-minimal, reproducibility-first**

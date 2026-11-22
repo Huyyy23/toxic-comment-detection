@@ -24,7 +24,7 @@
 TV1 là Tam, TV2 là Vinh, TV3 là Huy và TV4 là TheAnh, theo xác nhận của người dùng ngày 2026-11-23.
 
 ## Shared contract and experiment controls
-Use `id,text,label,source,split` as the dataset schema and `CLEAN=0`, `TOXIC=1` as labels. Keep source-specific mappings explicit because dataset meanings differ. UIT permission, source revisions, ViCTSD encoding, data availability, and correspondence of existing G0 outputs remain pending verification.
+Use `id,text,label,source,split` as the dataset schema and `CLEAN=0`, `TOXIC=1` as labels. The binary dataset is at `data/processed/binary_n2_v1/`. Source label meanings differ; the user confirms the team sought UIT permission, but independent license evidence is not in the repo. See `docs/dataset-requirements.md` for provenance and limitations.
 
 Use validation Macro-F1 for checkpoint and candidate selection. Report label counts, per-class precision/recall/F1, Macro-F1, TOXIC F1, confusion matrix, ECE when probabilities are available, runtime, and model size. Log three seeds, configs, dataset hashes, run IDs, checkpoints, and validation predictions.
 

@@ -4,25 +4,25 @@
 
 ## 1. Bài toán và trạng thái quyết định
 
-Phân loại bình luận tiếng Việt thành **CLEAN=0** và **TOXIC=1**. Hướng mới dự kiến gộp ViHSD và ViCTSD. Đây là quyết định đặc tả, không phải xác nhận pipeline đã chạy. Gộp nhãn chỉ có hiệu lực sau khi kiểm tra mapping và quyền sử dụng.
+Phân loại bình luận tiếng Việt thành **CLEAN=0** và **TOXIC=1**. Dataset nhị phân ViHSD và ViCTSD đã được tạo tại `data/processed/binary_n2_v1/`; xem `dataset-requirements.md` về nguồn và giới hạn.
 
 | Nguồn | Giá trị nguồn | Quy tắc nhãn dự kiến |
 |---|---|---|
 | ViHSD | `vihsd` | `label > 0` thành TOXIC=1; `label = 0` thành CLEAN=0 |
 | ViCTSD | `victsd` | `Toxicity` thành TOXIC=1 hoặc CLEAN=0 |
 
-Taxonomy gốc khác nhau. Phải xác minh ý nghĩa nhãn, schema thực và khả năng tương thích; không coi hai khái niệm là đồng nhất khi chưa có căn cứ. Permission UIT, mapping, yêu cầu bài tập và deadline đều pending. Lịch sử ba lớp CLEAN/OFFENSIVE/HATE ở v4 được giữ làm lịch sử superseded.
+Taxonomy gốc khác nhau và không được coi là tương đương hoàn toàn. Người dùng xác nhận nhóm đã xin phép UIT cho đồ án; repo chưa có bằng chứng giấy phép để kiểm chứng độc lập. Yêu cầu bài tập và deadline vẫn pending. Lịch sử ba lớp CLEAN/OFFENSIVE/HATE ở v4 được giữ làm lịch sử superseded.
 
 ### 1.2 Information Ledger
 
 - [Confirmed 2026-11-23] Người dùng xác nhận PhoBERT pretrained fine-tune đã được chấp nhận làm benchmark riêng.
-- [Pending] Xin phép UIT, thống nhất khác biệt định nghĩa Toxicity và OFFENSIVE/HATE, phân công còn thiếu và deadline.
-- [Pending] Xác minh schema nguồn, test exposure và hosting. Báo cáo theo `source` vì văn phong nguồn có thể tạo shortcut.
+- [Confirmed 2026-11-23] Người dùng xác nhận nhóm đã xin phép sử dụng dữ liệu UIT cho đồ án; chưa có bằng chứng giấy phép trong repo.
+- [Pending] Deadline, yêu cầu bài tập và hosting. Báo cáo theo `source` vì văn phong nguồn có thể tạo shortcut.
 
 ## 2. Dữ liệu, split và nguồn gốc
 Schema chuẩn gồm `id`, `text`, `source`, `label`, `split`. `label` chỉ nhận 0 hoặc 1; `source` nhận `vihsd` hoặc `victsd`; `split` nhận `train`, `val` hoặc `test`. Giữ source để báo cáo metric theo nguồn và giữ liên kết ID với bản ghi gốc.
 
-Sau khi xác minh dữ liệu, gộp hai nguồn, bỏ `Constructiveness`, `Title`, `Topic` khỏi pipeline train, deduplicate trong từng nguồn và giữa nguồn trước split, rồi tạo train/val/test tỷ lệ 70/15/15, stratified theo `(source,label)`. Ghi seed, source revision/hash, mapping và `id→split` vào manifest. Split mới chưa được tạo.
+Dataset đã deduplicate trong và giữa nguồn, loại 205 nhóm mâu thuẫn và chia gần 70/15/15 theo `(source,label)`, giữ nhóm text chuẩn hóa cùng split. Manifest và hashes nằm trong `data/processed/binary_n2_v1/`; test mới không blind.
 Validation Macro-F1 là tiêu chí thống nhất để chọn checkpoint và so sánh mọi mô hình; F1 TOXIC là metric bổ sung, không phải tiêu chí chọn riêng. Mọi biến đổi học được chỉ fit trên train. FastText phải được huấn luyện trên train, không nạp pretrained embeddings. Không dùng LLM hoặc backtranslation cho nhóm chính.
 
 Giữ riêng file test và giới hạn truy cập. Không dùng test để chọn mô hình, calibration hay threshold. Mọi bước bên dưới là dự kiến. Không khẳng định kết quả chưa đo.
@@ -82,14 +82,14 @@ Theo yêu cầu người dùng, kiến trúc ứng dụng dự kiến gồm Reac
 
 | Giai đoạn | Điều kiện dự kiến |
 |---|---|
-| **D1 Data** | Xác minh permission, source/schema/label mapping; hợp nhất theo source `vihsd`/`victsd`; deduplicate trước split; stratify 70/15/15 theo `(source,label)`; ghi seed, hashes, manifest; khóa test. Binary split mới chưa dựng. |
+| **D1 Data** | Dataset nhị phân đã tạo và kiểm tra cơ bản; N3 tiếp tục audit leakage. |
 | **D2 Models** | LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính; PhoBERT pretrained fine-tune là benchmark riêng đã được chấp nhận. |
 | **D3 Improvements** | TOXIC augmentation train-only theo giới hạn; chọn đúng một imbalance method; calibration, threshold và ECE; không dùng test. |
 | **D4 Evaluation** | Cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; artifacts và React/FastAPI/Docker/HF Spaces theo yêu cầu, sau khi xác minh deploy. |
 
 Test chỉ mở một đợt sau khi đóng băng mọi candidate, seed, threshold và protocol; file khóa ghi danh sách trước đợt đánh giá và ngăn chạy lại. Báo riêng nhóm tự huấn luyện và PhoBERT pretrained fine-tune. Phân tích lỗi sau test chỉ để báo cáo, không tuning. Ghi ví dụ, số mẫu, lỗi tiếng lóng, viết tắt bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode.
 
-Các điều kiện về quyền sử dụng, mapping, yêu cầu bài tập và deadline chưa được xác minh. Đây là tiêu chí dự kiến, không phải kết quả nghiệm thu.
+Giấy phép UIT chưa được kiểm chứng độc lập trong repo; yêu cầu bài tập và deadline chưa được xác minh. Các điều kiện còn lại là tiêu chí dự kiến, không phải kết quả nghiệm thu.
 
 ## 8. Tài liệu liên quan
 

@@ -1,7 +1,7 @@
 # Project TODO — Scratch-first v4.0
 **Plan only — 2026-11-11.** Trạng thái dưới đây chỉ phản ánh **kế hoạch mới**, không suy ra code/scaffold cũ đã bị xóa hoặc đã chạy thí nghiệm.
 
-**Cập nhật kế hoạch 2026-11-23:** D1–D4 thay contract ba lớp bằng dữ liệu gộp nhị phân. Các mục dưới giữ nguyên trạng thái và lịch sử G0; kết quả cũ không phải kết quả của split mới. Deadline và quan hệ giữa tên Huy với mã TV chưa được xác nhận.
+**Cập nhật kế hoạch 2026-11-23:** D1–D4 thay contract ba lớp bằng dữ liệu gộp nhị phân. Các mục dưới giữ nguyên trạng thái và lịch sử G0; kết quả cũ không phải kết quả của split mới. TV1 là Tam, TV2 là Vinh, TV3 là Huy, TV4 là TheAnh, theo xác nhận ngày 2026-11-23. Deadline chưa xác định.
 
 ## G0 — Data Contract (TV3 nhóm trưởng)
 - [ ] Kiểm chứng source/license/schema/label 3 lớp của UIT-ViHSD (TV1 hỗ trợ audit).
@@ -40,30 +40,30 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 
 ## D1–D4 — Cần làm lại / bị thay thế
 - [ ] G0 ba lớp và EXP-01–EXP-04 cần chạy lại theo D1/D2 trên split nhị phân mới. Các mục `[x]` phía trên vẫn là lịch sử đã hoàn thành, không chuyển thành chưa làm.
-- [ ] Kiểm tra lịch sử test exposure trước khi xây dựng split mới; không tuyên bố test hoàn toàn blind nếu dữ liệu đã lộ.
+- [x] Kiểm tra lịch sử test exposure trước khi xây dựng split mới; test mới không blind vì test cũ từng lộ.
 - [ ] Các công việc API-only, ensemble và TextCNN trước đây không thay thế yêu cầu React + FastAPI và neural mới. PhoBERT pretrained fine-tune đã được chấp nhận theo xác nhận người dùng.
 
 ## Checklist D1–D4 theo thành viên
 
 ### TV1 — Tam
-- [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
-- [ ] N2: Hỗ trợ TV3 kiểm tra nguồn, mapping nhãn, dedupe và thống kê split theo nguồn.
+- [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
+- [x] N2: Kiểm kê nguồn, mapping, dedupe và thống kê split theo nguồn được ghi tại `docs/dataset-requirements.md`.
 - [ ] N6: TF-IDF + Logistic Regression cùng TV2. Chọn checkpoint theo val Macro-F1, báo F1 TOXIC, xuất baseline calibrated `.joblib` dưới 15 MB. Phụ thuộc N2.
   - [ ] Chạy ít nhất ba seed trên split nhị phân; lưu config, hash dữ liệu, predictions, metrics và artifact.
   - [ ] Thực hiện preprocessing ablation và phân tích lỗi LR trên validation.
 - [ ] N10: Điều phối cả nhóm đánh giá locked test một đợt, sau N9 và N14 nếu có. Đóng băng candidate và ba seed trước khi mở, tạo file khóa và báo cáo `locked_test.md`.
 
 ### TV2 — Vinh
-- [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
+- [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
 - [ ] N6: TF-IDF + LinearSVC cùng TV1. Hiệu chuẩn margins, cùng protocol và điều kiện nghiệm thu N6.
   - [ ] Chạy ít nhất ba seed trên split nhị phân; lưu config, hash dữ liệu, predictions, metrics và artifact.
   - [ ] Thực hiện SVM feature/hyperparameter ablation và so sánh chi phí train trên validation.
 - [ ] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning.
 
 ### TV3 — Huy
-- [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
-- [ ] N2: Lead data pipeline với hỗ trợ TV1. Map nhị phân, lưu `source`, dedupe trong và giữa nguồn, split stratified theo `(source, label)`. Xuất Parquet và thống kê theo split × source sau N1.
-  - [ ] Lưu seed, hash và manifest ID→split. Ghi rõ quyền UIT và mapping khác biệt giữa hai nguồn đang chờ xác nhận.
+- [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
+- [x] N2: Dataset nhị phân `data/processed/binary_n2_v1/` đã tạo; seed, hash và manifest có trong artifacts.
+  - Người dùng xác nhận nhóm đã xin phép UIT; chưa có bằng chứng giấy phép trong repo. Khác biệt ngữ nghĩa nhãn và giới hạn near-duplicate được ghi tại `docs/dataset-requirements.md`.
 - [ ] N7: Phụ trách LSTM, BiLSTM và BiLSTM + Attention tự huấn luyện; phối hợp TV4 cho nhánh Char-CNN sau N4 và N5. Lưu checkpoint, config, ba seed và metrics validation.
 - [ ] N10: Duyệt danh sách candidate, threshold và protocol đã đóng băng trước đợt test.
 - [ ] N13: TV3 phụ trách benchmark PhoBERT pretrained fine-tune đã được chấp nhận. Phụ thuộc N2, thêm N4 nếu augment. Lưu checkpoint/config/log, chạy ba seed và ghi VRAM.
@@ -78,7 +78,7 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 - [ ] N12: Sau N10 và N11, Docker + HF Spaces, smoke test.
 
 ### TV4 — TheAnh
-- [ ] N1: Duyệt tài liệu D1–D4 cùng nhóm.
+- [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
 - [ ] N7: Phối hợp neural với TV3 theo vai trò recurrent và CNN hiện có. Sau N4, N5, thử BiGRU/BiLSTM + Char-CNN, checkpoint theo val Macro-F1, ghi F1 TOXIC và VRAM mục tiêu dưới 7 GB.
   - [ ] Thực hiện CNN ablation trên validation; lưu config, hash dữ liệu, ba seed và metrics.
 - [ ] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning.
@@ -88,6 +88,7 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 - [ ] N15: Phối hợp TV3 phân tích lỗi sau N10 như trên.
 
 ### Cả nhóm hoặc chưa phân công
-- [ ] N1: Cả nhóm duyệt spec, decisions, plan và todo D1–D4.
-- [ ] Deadline: Chưa xác định. Nhóm xác nhận quyền dùng UIT và mapping nhãn.
+- [x] N1: Cả nhóm duyệt spec, decisions, plan và todo D1–D4.
+  Hoàn thành 2026-11-23 — cả nhóm duyệt D1–D4. N2 đã được mở khóa.
+- [ ] Deadline: Chưa xác định.
 

@@ -3,7 +3,7 @@
 **Status:** Plan only. No new experiments or results are asserted. The N1–N15 task sequence and D1–D4 decisions are in [the team execution plan](../../tasks/plan.md).
 
 ## Data and evaluation protocol
-Combine ViHSD and ViCTSD as a binary task: `CLEAN=0`, `TOXIC=1`. Map ViHSD labels greater than zero and ViCTSD Toxicity to TOXIC. Record `source` as `vihsd` or `victsd`. The source label meanings differ, and UIT permission remains pending. Deduplicate before stratified 70/15/15 split by `(source,label)` and lock test. Verify data availability, source revisions, schema, ViCTSD encoding, mapping, and G0 artifact compatibility before use.
+Use the binary dataset at `data/processed/binary_n2_v1/`. Source label meanings differ. The user confirms the team sought UIT permission, but independent license evidence is not in the repo. See `docs/dataset-requirements.md` for the mapping, provenance and test exposure.
 
 Use validation Macro-F1 as the primary metric and checkpoint criterion. Report TOXIC F1, PR-AUC, per-class precision/recall/F1, confusion matrix, metrics by source, runtime, model size, and ECE. Use three seeds and retain configs, dataset hashes, run IDs, checkpoints, and validation predictions.
 

@@ -4,15 +4,15 @@
 
 ## Mục tiêu và trạng thái
 
-Đồ án phân loại bình luận tiếng Việt thành **CLEAN=0** hoặc **TOXIC=1**. Hướng nghiên cứu đã chốt là gộp ViHSD và ViCTSD sau khi xác minh permission và mapping nhãn. Đây là quyết định đặc tả mới, không phải mô tả dữ liệu hay pipeline đã triển khai. UIT permission, mapping tương thích, yêu cầu bài tập và deadline vẫn pending.
+Đồ án phân loại bình luận tiếng Việt thành **CLEAN=0** hoặc **TOXIC=1**. Người dùng xác nhận nhóm đã xin phép UIT cho đồ án; repo chưa có bằng chứng giấy phép để kiểm chứng độc lập. Yêu cầu bài tập và deadline còn pending.
 
-ViHSD dùng `label > 0` làm TOXIC; ViCTSD dùng `Toxicity` làm nhãn nhị phân. Hai taxonomy gốc khác nhau; cần kiểm tra ý nghĩa, schema và permission trước khi coi nhãn gộp tương đương. CLEAN luôn là 0, TOXIC là 1. Không dùng pretrained embeddings, LLM hay backtranslation cho nhóm mô hình chính.
+ViHSD dùng `label > 0` làm TOXIC; ViCTSD dùng `Toxicity` làm nhãn nhị phân. Hai taxonomy gốc khác nhau và không được coi là tương đương hoàn toàn. CLEAN luôn là 0, TOXIC là 1. Không dùng pretrained embeddings, LLM hay backtranslation cho nhóm mô hình chính.
 
 **Lịch sử:** đặc tả ba lớp CLEAN/OFFENSIVE/HATE ở v4 được giữ làm lịch sử đã superseded, không còn là taxonomy hiện hành.
 
 ## Dữ liệu và giao thức
 
-- Nguồn dự kiến gồm ViHSD (`vihsd`) và ViCTSD (`victsd`). Hợp nhất theo schema chung; deduplicate trước split; stratify theo `(source,label)` 70/15/15; ghi seed, source, hash và ID-split trong manifest. Split nhị phân mới chưa được xây dựng.
+- Dataset nhị phân ViHSD và ViCTSD tại `data/processed/binary_n2_v1/` đã deduplicate và chia gần 70/15/15 theo `(source,label)` với seed 42. Xem `docs/dataset-requirements.md` và manifest để biết provenance và giới hạn.
 - Validation Macro-F1 là tiêu chí thống nhất để chọn checkpoint và so sánh mọi mô hình; F1 TOXIC là metric bổ sung.
 - Fit mọi biến đổi học được chỉ trên train. Không dùng pretrained embeddings, LLM hoặc backtranslation cho nhóm chính.
 - Dùng 3 seed và báo metrics từng seed. Test khóa, chỉ một batch cuối cho candidates đã freeze. Dùng bootstrap CI hoặc McNemar theo protocol thống nhất trước khi mở test.
@@ -41,11 +41,11 @@ Artifacts dự kiến gồm `models/neural_best/`, `configs/neural_config.yaml`,
 
 Hệ thống ứng dụng theo yêu cầu người dùng dự kiến dùng React, FastAPI, Docker và Hugging Face Spaces. Đây là quyết định mới, trái với kiến trúc FastAPI-only trong tài liệu cũ; chưa có phần nào được xác nhận đã triển khai. HF eligibility và deploy vẫn pending.
 
-- **D1 Data:** xác minh permission, source/schema/label mapping; hợp nhất theo source `vihsd`/`victsd`; deduplicate trước split; stratify 70/15/15 theo `(source,label)`; lưu seed, hashes, manifest và khóa test. Split binary mới chưa được dựng.
+- **D1 Data:** Dataset nhị phân đã được tạo và kiểm tra cơ bản; test không blind. Kiểm tra leakage sâu hơn thuộc N3.
 - **D2 Models:** LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính. PhoBERT pretrained fine-tune đã được chấp nhận làm benchmark riêng.
 - **D3 Improvements:** augmentation TOXIC chỉ trên train theo giới hạn; chọn đúng một imbalance method; calibration, threshold và ECE; không dùng test.
 - **D4 Evaluation:** cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; artifacts và React/FastAPI/Docker/HF Spaces theo yêu cầu, sau khi xác minh deploy.
 
-Các điều kiện về permission, mapping, yêu cầu bài tập và deadline còn pending. Chỉ sửa đặc tả trong thay đổi này; không sửa code, dữ liệu hay cấu hình.
+Giấy phép UIT chưa được kiểm chứng độc lập trong repo; yêu cầu bài tập và deadline còn pending.
 
 Tài liệu liên quan: [Đặc tả chi tiết](docs/spec.md), [kế hoạch thí nghiệm](docs/plans/ml-experiments.md), [yêu cầu dữ liệu](docs/dataset-requirements.md), [deployment](docs/deployment-plan.md).
