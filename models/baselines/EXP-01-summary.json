@@ -1,160 +1,163 @@
 [
   {
     "variant": "A",
-    "run_id": "3124004f04554119863af59c553a2dc8",
+    "run_id": "d73305f8a5584b66877119f33b79c3ad",
     "metrics": {
-      "macro_f1": 0.5581792575043445,
-      "weighted_f1": 0.8322739299005627,
+      "macro_f1": 0.5806415822458888,
+      "weighted_f1": 0.8505521039354624,
       "per_class": {
         "CLEAN": {
-          "precision": 0.8812448812448812,
-          "recall": 0.982648401826484,
-          "f1": 0.9291882556131261,
-          "support": 2190.0
+          "precision": 0.8851996527777778,
+          "recall": 0.9929406037000974,
+          "f1": 0.9359798072510326,
+          "support": 4108.0
         },
         "OFFENSIVE": {
-          "precision": 0.6428571428571429,
-          "recall": 0.12735849056603774,
-          "f1": 0.2125984251968504,
-          "support": 212.0
+          "precision": 0.6770833333333334,
+          "recall": 0.20569620253164558,
+          "f1": 0.3155339805825243,
+          "support": 316.0
         },
         "HATE": {
-          "precision": 0.648936170212766,
-          "recall": 0.45185185185185184,
-          "f1": 0.5327510917030568,
-          "support": 270.0
+          "precision": 0.7955555555555556,
+          "recall": 0.35445544554455444,
+          "f1": 0.4904109589041096,
+          "support": 505.0
         }
       },
       "confusion_matrix": [
         [
-          2152,
-          8,
-          30
+          4079,
+          11,
+          18
         ],
         [
-          149,
-          27,
-          36
+          223,
+          65,
+          28
         ],
         [
-          141,
-          7,
-          122
+          306,
+          20,
+          179
         ]
       ],
-      "train_time_s": 1.243,
-      "preprocess_time_s": 0.04,
-      "tfidf_fit_time_s": 1.383,
+      "train_time_s": 1.404,
+      "preprocess_time_s": 0.013,
+      "tfidf_fit_time_s": 1.873,
       "inference_ms_per_sample": 0.0006,
-      "n_features": 37436,
-      "n_train": 24048,
-      "n_val": 2672
+      "n_features": 35436,
+      "n_train": 23002,
+      "n_val": 4929,
+      "model_size_bytes": 2237865
     },
     "artifacts_dir": "C:\\Đồ án máy học\\toxic-comment-detection\\models\\baselines\\EXP-01-A"
   },
   {
     "variant": "B",
-    "run_id": "9af764260dc64f638e70bc5affbaa693",
+    "run_id": "ae39ec2698ee4e028060155560cd09c3",
     "metrics": {
-      "macro_f1": 0.63433271533072,
-      "weighted_f1": 0.8570286119824414,
+      "macro_f1": 0.6650481168117812,
+      "weighted_f1": 0.8798139001773254,
       "per_class": {
         "CLEAN": {
-          "precision": 0.9126297577854672,
-          "recall": 0.9634703196347032,
-          "f1": 0.9373611728120835,
-          "support": 2190.0
+          "precision": 0.9178612059158134,
+          "recall": 0.9819863680623174,
+          "f1": 0.9488415853228273,
+          "support": 4108.0
         },
         "OFFENSIVE": {
-          "precision": 0.6018518518518519,
-          "recall": 0.30660377358490565,
-          "f1": 0.40625,
-          "support": 212.0
+          "precision": 0.5990338164251208,
+          "recall": 0.3924050632911392,
+          "f1": 0.47418738049713194,
+          "support": 316.0
         },
         "HATE": {
-          "precision": 0.5793650793650794,
-          "recall": 0.5407407407407407,
-          "f1": 0.5593869731800766,
-          "support": 270.0
+          "precision": 0.72782874617737,
+          "recall": 0.47128712871287126,
+          "f1": 0.5721153846153846,
+          "support": 505.0
         }
       },
       "confusion_matrix": [
         [
-          2110,
-          26,
-          54
+          4034,
+          30,
+          44
         ],
         [
-          95,
-          65,
-          52
+          147,
+          124,
+          45
         ],
         [
-          107,
-          17,
-          146
+          214,
+          53,
+          238
         ]
       ],
-      "train_time_s": 4.527,
-      "preprocess_time_s": 0.299,
-      "tfidf_fit_time_s": 5.661,
-      "inference_ms_per_sample": 0.0049,
-      "n_features": 67414,
-      "n_train": 24048,
-      "n_val": 2672
+      "train_time_s": 4.471,
+      "preprocess_time_s": 0.351,
+      "tfidf_fit_time_s": 6.679,
+      "inference_ms_per_sample": 0.001,
+      "n_features": 64732,
+      "n_train": 23002,
+      "n_val": 4929,
+      "model_size_bytes": 3950373
     },
     "artifacts_dir": "C:\\Đồ án máy học\\toxic-comment-detection\\models\\baselines\\EXP-01-B"
   },
   {
     "variant": "C",
-    "run_id": "acdb63cd38484d919287cfac180f02ab",
+    "run_id": "9506661e283f4137923349bbec7a8659",
     "metrics": {
-      "macro_f1": 0.6449353458208179,
-      "weighted_f1": 0.8534079441166408,
+      "macro_f1": 0.6738165778303121,
+      "weighted_f1": 0.8811721843686756,
       "per_class": {
         "CLEAN": {
-          "precision": 0.9477434679334917,
-          "recall": 0.910958904109589,
-          "f1": 0.9289871944121071,
-          "support": 2190.0
+          "precision": 0.9443368828654405,
+          "recall": 0.9498539435248295,
+          "f1": 0.9470873786407767,
+          "support": 4108.0
         },
         "OFFENSIVE": {
-          "precision": 0.4492753623188406,
-          "recall": 0.4386792452830189,
-          "f1": 0.4439140811455847,
-          "support": 212.0
+          "precision": 0.4588235294117647,
+          "recall": 0.4936708860759494,
+          "f1": 0.47560975609756095,
+          "support": 316.0
         },
         "HATE": {
-          "precision": 0.49166666666666664,
-          "recall": 0.6555555555555556,
-          "f1": 0.5619047619047619,
-          "support": 270.0
+          "precision": 0.6301969365426696,
+          "recall": 0.5702970297029702,
+          "f1": 0.5987525987525988,
+          "support": 505.0
         }
       },
       "confusion_matrix": [
         [
-          1995,
-          79,
-          116
+          3902,
+          100,
+          106
         ],
         [
-          52,
-          93,
-          67
+          97,
+          156,
+          63
         ],
         [
-          58,
-          35,
-          177
+          133,
+          84,
+          288
         ]
       ],
-      "train_time_s": 5.062,
-      "preprocess_time_s": 0.859,
-      "tfidf_fit_time_s": 8.785,
-      "inference_ms_per_sample": 0.0081,
-      "n_features": 95380,
-      "n_train": 24048,
-      "n_val": 2672
+      "train_time_s": 6.434,
+      "preprocess_time_s": 0.523,
+      "tfidf_fit_time_s": 9.357,
+      "inference_ms_per_sample": 0.0017,
+      "n_features": 88044,
+      "n_train": 23002,
+      "n_val": 4929,
+      "model_size_bytes": 5481439
     },
     "artifacts_dir": "C:\\Đồ án máy học\\toxic-comment-detection\\models\\baselines\\EXP-01-C"
   }

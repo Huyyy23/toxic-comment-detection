@@ -5,7 +5,9 @@
 experiment: EXP-01
 owner: TV1
 seed: 42
-dataset: data/processed/vihsd.jsonl
+dataset: data/processed/vihsd_g0_v1/train_val.jsonl
+dataset_info: data/processed/vihsd_g0_v1/dataset_info.json
+manifest: data/processed/vihsd_g0_v1/manifest.json
 tracking_uri: null  # null = default mlflow local store (mlruns/)
 
 variants:
