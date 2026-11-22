@@ -185,15 +185,13 @@ def _tag_error_patterns(text: str) -> list[str]:
 def build_error_handover(
     best_variant_dir: Path,
     val_records: list[dict],
-    samples_per_pair: int = 8,
 ) -> dict[str, Any]:
-    """Phân tích lỗi validation của mô hình SVM tốt nhất để bàn giao EXP-05 (TV3)."""
+    """Tổng hợp lỗi validation mà không xuất ID hoặc nội dung bình luận."""
     preds = json.loads((best_variant_dir / "val_predictions.json").read_text(encoding="utf-8"))
     rec_by_id = {r["id"]: r for r in val_records}
 
     pair_counts: Counter[str] = Counter()
     pattern_counts: Counter[str] = Counter()
-    pair_samples: dict[str, list[dict[str, Any]]] = defaultdict(list)
     total_errors = 0
 
     for p in preds:
@@ -209,21 +207,7 @@ def build_error_handover(
         tags = _tag_error_patterns(text)
         if {t_lbl, p_lbl} == {1, 2}:
             tags.append("offensive_hate_boundary")
-        for tag in tags:
-            pattern_counts[tag] += 1
-
-        if len(pair_samples[pair_key]) < samples_per_pair:
-            pair_samples[pair_key].append(
-                {
-                    "id": p["id"],
-                    "true_label": LABEL_NAMES[t_lbl],
-                    "predicted_label": LABEL_NAMES[p_lbl],
-                    "error_pair": pair_key,
-                    "pattern_tags": tags,
-                    "word_count": len(text.split()),
-                    "text": text,
-                }
-            )
+        pattern_counts.update(tags)
 
     return {
         "source_variant": best_variant_dir.name,
@@ -233,7 +217,6 @@ def build_error_handover(
         "error_rate": round(total_errors / max(1, len(preds)), 4),
         "confusion_pair_counts": dict(pair_counts.most_common()),
         "pattern_tag_counts_among_errors": dict(pattern_counts.most_common()),
-        "representative_samples_by_pair": dict(pair_samples),
     }
 
 
@@ -441,9 +424,7 @@ def generate_p1_report(
         "variants_comparison": variants_comparison,
         "tuning_ablation": tuning_ablation,
         "lineage_checks": lineage_checks,
-        "error_handover_exp05": {
-            k: v for k, v in error_handover.items() if k != "representative_samples_by_pair"
-        },
+        "error_handover_exp05": error_handover,
         "ensemble_handover_exp06": {
             "hard_predictions_path": "models/baselines/EXP-02-C/val_predictions.json",
             "hard_macro_f1": hard_m["macro_f1"],

@@ -24,6 +24,7 @@ import json
 import os
 import sys
 import time
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -473,8 +474,12 @@ def run_experiment(
     metrics["n_val"] = len(val_labels)
 
     resolved_name = artifact_name or f"EXP-02-{variant}"
-    variant_dir = resolved_artifacts_root / resolved_name
-    variant_dir.mkdir(parents=True, exist_ok=True)
+    run_root = resolved_artifacts_root
+    if artifact_name is None:
+        run_root = resolved_artifacts_root / f"EXP-02-run-{uuid.uuid4().hex}"
+        run_root.mkdir(parents=True, exist_ok=False)
+    variant_dir = run_root / resolved_name
+    variant_dir.mkdir(parents=True, exist_ok=False)
 
     # 5. Lưu model, TF-IDF và selector để đo kích thước thực tế
     model_path = variant_dir / "svm_model.joblib"
@@ -678,6 +683,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    base_artifacts_dir = args.artifacts_dir or (ROOT / "models" / "baselines")
+    run_group_dir = base_artifacts_dir / f"EXP-02-run-{uuid.uuid4().hex}"
+    run_group_dir.mkdir(parents=True, exist_ok=False)
     variants = ["A", "B", "C"] if args.variant == "all" else [args.variant]
     svm_overrides = {"C": args.C} if args.C is not None else None
     results = []
@@ -687,11 +695,11 @@ def main() -> None:
             config_path=args.config,
             data_path=args.data_path,
             manifest_path=args.manifest_path,
-            artifacts_dir=args.artifacts_dir,
+            artifacts_dir=run_group_dir,
             tracking_uri=args.tracking_uri,
             calibrate=True if args.calibrate else None,
             tune=args.tune,
-            artifact_name=args.output_name if len(variants) == 1 else None,
+            artifact_name=args.output_name or f"EXP-02-{v}",
             svm_overrides=svm_overrides,
         )
         results.append(res)
@@ -703,8 +711,7 @@ def main() -> None:
         )
 
     if args.variant == "all":
-        out_dir = args.artifacts_dir or (ROOT / "models" / "baselines")
-        summary_path = out_dir / "EXP-02-summary.json"
+        summary_path = run_group_dir / "EXP-02-summary.json"
         with open(summary_path, "w", encoding="utf-8") as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
         print(f"Summary saved: {summary_path}")

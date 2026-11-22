@@ -10,6 +10,7 @@ import json
 import sys
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -17,6 +18,8 @@ if str(ROOT) not in sys.path:
 
 import pytest
 
+from src.models import svm_pipeline
+from src.evaluation.svm_report import build_error_handover
 from src.models.svm_pipeline import (
     load_svm_artifacts,
     predict_from_artifacts,
@@ -155,3 +158,104 @@ class TestSvmPipelineSmoke:
                     tracking_uri=(tmp / "mlruns").as_uri(),
                     result_type="smoke",
                 )
+    def test_repeated_runs_preserve_distinct_outputs_and_metrics(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            data_path, manifest_path = _prepare_fixture(tmp)
+            kwargs = {
+                "variant": "A",
+                "data_path": data_path,
+                "manifest_path": manifest_path,
+                "artifacts_dir": tmp / "models",
+                "tracking_uri": (tmp / "mlruns").as_uri(),
+                "calibrate": False,
+                "result_type": "smoke",
+            }
+
+            first = run_experiment(**kwargs)
+            first_dir = Path(first["artifacts_dir"])
+            first_run_id = (first_dir / "run_id.txt").read_text(encoding="utf-8")
+            second = run_experiment(**kwargs)
+            second_dir = Path(second["artifacts_dir"])
+
+            assert first_dir != second_dir
+            assert (first_dir / "run_id.txt").read_text(encoding="utf-8") == first_run_id
+            assert first_run_id != second["run_id"]
+            for key in ("macro_f1", "weighted_f1", "balanced_accuracy", "per_class", "confusion_matrix"):
+                assert first["metrics"][key] == second["metrics"][key]
+
+    def test_error_handover_excludes_comment_text_and_record_ids(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            variant_dir = Path(tmpdir) / "EXP-02-C"
+            variant_dir.mkdir()
+            private_text = "unique comment text that must not be serialized"
+            record_id = "source-record-987"
+            (variant_dir / "val_predictions.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "id": record_id,
+                            "true_label": 1,
+                            "predicted_label": 2,
+                            "run_id": "run-123",
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            handover = build_error_handover(
+                variant_dir,
+                [{"id": record_id, "text": private_text, "label": 1, "split": "val"}],
+            )
+            serialized = json.dumps(handover, ensure_ascii=False)
+
+            assert private_text not in serialized
+            assert record_id not in serialized
+            assert "representative_samples_by_pair" not in handover
+            assert handover["n_errors_total"] == 1
+            assert handover["confusion_pair_counts"] == {"OFFENSIVE -> HATE": 1}
+            assert handover["pattern_tag_counts_among_errors"]["offensive_hate_boundary"] == 1
+
+    def test_cli_all_runs_use_unique_output_groups(self, monkeypatch, tmp_path):
+        args = SimpleNamespace(
+            variant="all",
+            config=svm_pipeline.DEFAULT_CONFIG_PATH,
+            data_path=None,
+            manifest_path=None,
+            artifacts_dir=tmp_path,
+            tracking_uri=None,
+            calibrate=False,
+            tune=False,
+            output_name=None,
+            C=None,
+        )
+        monkeypatch.setattr(svm_pipeline, "parse_args", lambda: args)
+
+        def fake_run_experiment(**kwargs):
+            output_dir = Path(kwargs["artifacts_dir"]) / kwargs["artifact_name"]
+            output_dir.mkdir(parents=True)
+            return {
+                "artifacts_dir": str(output_dir),
+                "run_id": output_dir.name,
+                "metrics": {
+                    "macro_f1": 0.5,
+                    "train_time_s": 0.1,
+                    "model_size_mb": 1.0,
+                },
+            }
+
+        monkeypatch.setattr(svm_pipeline, "run_experiment", fake_run_experiment)
+        svm_pipeline.main()
+        first_group = next(tmp_path.glob("EXP-02-run-*"))
+        first_summary = (first_group / "EXP-02-summary.json").read_bytes()
+
+        svm_pipeline.main()
+        groups = list(tmp_path.glob("EXP-02-run-*"))
+
+        assert len(groups) == 2
+        assert (first_group / "EXP-02-summary.json").read_bytes() == first_summary
+        assert all(
+            len(json.loads((group / "EXP-02-summary.json").read_text(encoding="utf-8"))) == 3
+            for group in groups
+        )
