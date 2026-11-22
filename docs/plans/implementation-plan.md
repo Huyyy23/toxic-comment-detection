@@ -12,16 +12,16 @@ Train LR, SVM, LSTM, BiLSTM with attention, character CNN, and FastText without 
 |---|---|---|
 | N1 documentation | Cả nhóm | — |
 | N2 combined data and locked split | TV3 lead; TV1 hỗ trợ | N1 |
-| N3 leakage audit | Chưa phân công | N2 |
-| N4 train-only augmentation | Chưa phân công | N3 |
-| N5 FastText | Chưa phân công | N2 |
+| N3 leakage audit | Huy (TV3) | N2 |
+| N4 train-only augmentation | Huy (TV3) | N3 |
+| N5 FastText | Huy (TV3) | N2 |
 | N6 LR and SVM baselines | TV1 LR; TV2 SVM | N2 |
 | N7 scratch neural models | TV3 và TV4 | N4, N5 |
-| N8 validation calibration and threshold | Chưa phân công | N6, N7, N13 if PhoBERT is permitted |
-| N9 validation ablations | Chưa phân công | N7, N8, N13 if permitted |
+| N8 validation calibration and threshold | Huy (TV3) | N6, N7, N13 if PhoBERT is permitted |
+| N9 validation ablations | Huy (TV3) | N7, N8, N13 if permitted |
 | N10 one locked-test batch | TV1 điều phối; cả nhóm | N9, N14 if applicable |
-| N11 API and frontend integration | Chưa phân công | N6, N8 |
-| N12 deployment | Chưa phân công | N10, N11 |
+| N11 API and frontend integration | Huy (TV3) | N6, N8 |
+| N12 deployment | Huy (TV3) | N10, N11 |
 | N13 optional PhoBERT | TV3 | N2, N4 if augmentation is used, instructor approval |
 | N14 optional extras | Huy | N13, if applicable |
 | N15 error analysis | Huy (TV3) lead | N10 |

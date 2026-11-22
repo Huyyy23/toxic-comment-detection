@@ -13,16 +13,16 @@
 |---|---|---|---|
 | N1 | Publish and obtain team approval of D1–D4 documentation. | — | Cả nhóm |
 | N2 | Build the combined, deduplicated binary dataset and locked 70/15/15 manifest. | N1 | TV3 lead; TV1 hỗ trợ |
-| N3 | Audit duplicate and split leakage after N2; document remaining limits. | N2 | Chưa phân công |
-| N4 | Create and validate train-only TOXIC augmentation under D3. | N3 | Chưa phân công |
-| N5 | Train and evaluate train-only FastText embeddings. | N2 | Chưa phân công |
+| N3 | Audit duplicate and split leakage after N2; document remaining limits. | N2 | Huy (TV3) |
+| N4 | Create and validate train-only TOXIC augmentation under D3. | N3 | Huy (TV3) |
+| N5 | Train and evaluate train-only FastText embeddings. | N2 | Huy (TV3) |
 | N6 | Train LR and SVM baselines on the shared split. | N2 | TV1 LR; TV2 SVM |
 | N7 | Train scratch LSTM, BiLSTM/attention, and character CNN models. | N4, N5 | TV3 và TV4 |
-| N8 | Calibrate and choose thresholds on validation for eligible models. PhoBERT is included only if N13 is allowed. | N6, N7, N13 when PhoBERT is allowed | Chưa phân công |
-| N9 | Run the controlled ablations in this plan. Include PhoBERT only if N13 is allowed. | N7, N8, N13 when PhoBERT is allowed | Chưa phân công |
+| N8 | Calibrate and choose thresholds on validation for eligible models. PhoBERT is included only if N13 is allowed. | N6, N7, N13 when PhoBERT is allowed | Huy (TV3) |
+| N9 | Run the controlled ablations in this plan. Include PhoBERT only if N13 is allowed. | N7, N8, N13 when PhoBERT is allowed | Huy (TV3) |
 | N10 | Run the single locked-test comparison after all candidates are frozen. | N9, N14 if applicable | TV1 điều phối; cả nhóm |
-| N11 | Integrate the selected model into the API and frontend. | N6, N8 | Chưa phân công |
-| N12 | Deploy after test and integration gates pass. Consider ONNX only if it offers a measured benefit. | N10, N11 | Chưa phân công |
+| N11 | Integrate the selected model into the API and frontend. | N6, N8 | Huy (TV3) |
+| N12 | Deploy after test and integration gates pass. Consider ONNX only if it offers a measured benefit. | N10, N11 | Huy (TV3) |
 | N13 | Run the optional pretrained PhoBERT fine-tuning benchmark after instructor approval. | N2, N4 if augmentation is used, instructor approval | TV3 |
 | N14 | Run optional pretrained PhoBERT fine-tuning extras on validation only. | N13, if applicable | Huy |
 | N15 | Analyze errors after the final locked-test batch without tuning candidates. | N10 | Huy (TV3) lead |

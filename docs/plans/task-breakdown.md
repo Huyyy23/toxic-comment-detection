@@ -7,16 +7,16 @@
 |---|---|---|---|
 | N1 | Document D1–D4 and obtain team approval. | — | Cả nhóm |
 | N2 | Create binary combined data, source tags, deduplication, stratified 70/15/15 split, Parquet and source/split statistics. Record unresolved permission and mapping checks. | N1 | TV3 lead; TV1 hỗ trợ |
-| N3 | Audit exact duplicates, conflicts, and split leakage; record near-duplicate/thread limitations and evidence. | N2 | Chưa phân công |
-| N4 | Generate augmentation from training TOXIC examples only, at most twice per original; preserve toxic tokens and reject validation/test duplicates. Report achieved proportion against the 30–35% target. | N3 | Chưa phân công |
-| N5 | Train FastText from training data only and publish three-seed validation predictions, configs, hashes, and metrics. | N2 | Chưa phân công |
+| N3 | Audit exact duplicates, conflicts, and split leakage; record near-duplicate/thread limitations and evidence. | N2 | Huy (TV3) |
+| N4 | Generate augmentation from training TOXIC examples only, at most twice per original; preserve toxic tokens and reject validation/test duplicates. Report achieved proportion against the 30–35% target. | N3 | Huy (TV3) |
+| N5 | Train FastText from training data only and publish three-seed validation predictions, configs, hashes, and metrics. | N2 | Huy (TV3) |
 | N6 | Train calibrated LR and SVM; select by validation Macro-F1, report TOXIC F1, export baseline `.joblib` under 15 MB. | N2 | TV1 LR; TV2 SVM |
 | N7 | Train scratch neural models including BiLSTM and Char-CNN; record VRAM under 7 GB target and select by validation Macro-F1. | N4, N5 | TV3 và TV4 |
-| N8 | Fit calibration and choose thresholds on validation only for eligible N6/N7/N13 models. Report ECE and record the selection rule. | N6, N7, N13 if PhoBERT is permitted | Chưa phân công |
-| N9 | Run controlled validation ablations. Change one factor at a time and use the specified baseline set. Fix the architecture before ablation steps 5–7. | N7, N8, N13 if permitted | Chưa phân công |
+| N8 | Fit calibration and choose thresholds on validation only for eligible N6/N7/N13 models. Report ECE and record the selection rule. | N6, N7, N13 if PhoBERT is permitted | Huy (TV3) |
+| N9 | Run controlled validation ablations. Change one factor at a time and use the specified baseline set. Fix the architecture before ablation steps 5–7. | N7, N8, N13 if permitted | Huy (TV3) |
 | N10 | Evaluate all frozen candidates and three seeds in one locked-test batch, create lock file and `locked_test.md`, report class metrics and bootstrap CI or McNemar. | N9, N14 if applicable | TV1 điều phối; cả nhóm |
-| N11 | Integrate the selected model into API and frontend. Keep model selection and thresholds from validation. | N6, N8 | Chưa phân công |
-| N12 | Deploy after N10 and N11 gates. Consider ONNX only if measured benefit warrants it. | N10, N11 | Chưa phân công |
+| N11 | Integrate the selected model into API and frontend. Keep model selection and thresholds from validation. | N6, N8 | Huy (TV3) |
+| N12 | Deploy after N10 and N11 gates. Consider ONNX only if measured benefit warrants it. | N10, N11 | Huy (TV3) |
 | N13 | Optional PhoBERT benchmark, only after instructor approval. Use `phobert-base`, word segmentation, 128–160 tokens, learning rate `2e-5`, batch size 16, 10% warmup, weight decay `0.01`, 3–4 epochs, validation Macro-F1 early stopping, and fp16 or accumulation when supported. | N2, N4 if augmentation is used, instructor approval | TV3 |
 | N14 | Optional extras, using validation only. | N13, if applicable | Huy |
 | N15 | Analyze errors after N10 without using test errors to change candidates or settings. | N10 | Huy (TV3) lead |

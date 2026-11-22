@@ -81,12 +81,5 @@ Source of truth: [spec](../docs/spec.md) · [experiment plan](../docs/plans/ml-e
 
 ### Cả nhóm hoặc chưa phân công
 - [ ] N1: Cả nhóm duyệt spec, decisions, plan và todo D1–D4.
-- [ ] N3: Chưa phân công. Mở rộng `test_leakage` sau N2 để kiểm tra split và augmentation.
-- [ ] N4: Chưa phân công. Sau N3, augment train-only TOXIC, thêm `is_augmented`, mục tiêu 30–35% nếu đạt được với giới hạn số bản; không điều chỉnh test.
-- [ ] N5: Chưa phân công. Sau N2, train FastText bằng gensim chỉ trên train, lưu embedding và báo kích thước.
-- [ ] N8: Chưa phân công. Sau N6, N7 và N13 nếu PhoBERT được phép, calibration và chọn threshold trên val, báo ECE trước/sau.
-- [ ] N9: Chưa phân công. Sau N7, N8 và N13 nếu được phép, ablation trên val và so sánh với PhoBERT pretrained fine-tune nếu được phép. Lưu `ablation_val.csv`.
-- [ ] N11: Chưa phân công. Sau N6 và N8, cập nhật inference/API/frontend nhị phân; test API và fallback `.joblib`.
-- [ ] N12: Chưa phân công. Sau N10 và N11, Docker + HF Spaces, smoke test.
-- [ ] Deadline: Chưa xác định. Nhóm xác nhận phân công còn thiếu, quyền dùng UIT, mapping nhãn và cho phép PhoBERT pretrained fine-tune.
+- [ ] Deadline: Chưa xác định. Nhóm xác nhận quyền dùng UIT, mapping nhãn và cho phép PhoBERT pretrained fine-tune.
 
