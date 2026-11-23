@@ -1,0 +1,121 @@
+# SVM config — EXP-02 TV2
+# Source of truth: Data Contract v1 (data/processed/vihsd_g0_v1/)
+# Quy tắc:
+#   - Chỉ đọc train_val.jsonl và kiểm chứng bằng manifest.json (không mở test_locked.jsonl).
+#   - Fit TF-IDF, feature selector và calibrator CHỈ trên train / train-fold.
+#   - Tuyệt đối không biến LinearSVC.decision_function thành probabilities.
+
+experiment: EXP-02
+owner: TV2
+seed: 42
+data_contract_version: "1.0"
+dataset: data/processed/vihsd_g0_v1/train_val.jsonl
+manifest: data/processed/vihsd_g0_v1/manifest.json
+dataset_info: data/processed/vihsd_g0_v1/dataset_info.json
+tracking_uri: null  # null = local store (mlruns/)
+
+calibration:
+  enabled: false
+  method: sigmoid  # Platt scaling (ADR-03)
+  cv: 5
+
+variants:
+  A:
+    description: "Baseline: raw text + word TF-IDF (1-2 gram) + LinearSVC (C=1.0)"
+    hypothesis: >
+      LinearSVC trên word TF-IDF 1-2 gram thiết lập baseline phân tách tuyến tính
+      chuẩn trên không gian biểu diễn thưa của bình luận tiếng Việt.
+    preprocessing: raw
+    tfidf:
+      mode: word
+      word_ngram_range: [1, 2]
+      char_ngram_range: [2, 4]
+      max_features: 100000
+      sublinear_tf: true
+      min_df: 2
+    feature_selection:
+      enabled: false
+      method: chi2
+      k: null
+    svm:
+      kernel: linear
+      C: 1.0
+      class_weight: null
+      max_iter: 2000
+      dual: auto
+
+  B:
+    description: "Basic cleanup + word+char TF-IDF + LinearSVC (C=1.0)"
+    hypothesis: >
+      Kết hợp basic cleanup (lowercase, strip URL/HTML) và char_wb n-grams (2-4)
+      giúp LinearSVC chống nhiễu tốt hơn trước viết tắt, sai chính tả và từ lóng.
+    preprocessing: basic
+    tfidf:
+      mode: "word+char"
+      word_ngram_range: [1, 2]
+      char_ngram_range: [2, 4]
+      max_features: 100000
+      sublinear_tf: true
+      min_df: 2
+    feature_selection:
+      enabled: false
+      method: chi2
+      k: null
+    svm:
+      kernel: linear
+      C: 1.0
+      class_weight: null
+      max_iter: 2000
+      dual: auto
+
+  C:
+    description: "Teencode norm + word+char TF-IDF + chi2 feature selection + tuned C/class_weight"
+    hypothesis: >
+      Chuẩn hóa teencode kết hợp chọn lọc đặc trưng chi2 (giảm chiều nhiễu) và
+      điều chỉnh C cùng class_weight giúp cải thiện Macro-F1 trên lớp thiểu số OFFENSIVE/HATE.
+    preprocessing: teencode
+    tfidf:
+      mode: "word+char"
+      word_ngram_range: [1, 3]
+      char_ngram_range: [2, 5]
+      max_features: 150000
+      sublinear_tf: true
+      min_df: 2
+    feature_selection:
+      enabled: true
+      method: chi2
+      k: 50000
+    svm:
+      kernel: linear
+      C: 0.5
+      class_weight: balanced
+      max_iter: 3000
+      dual: auto
+    tuning_grid:
+      k_candidates: [20000, 50000, 100000, null]
+      C_candidates: [0.1, 0.5, 1.0, 2.0, 5.0]
+      class_weight_candidates: [null, "balanced"]
+
+  D:
+    description: "Optional P2: RBF SVC trên không gian giảm chiều (chi phí cao)"
+    hypothesis: >
+      Kernel phi tuyến RBF có thể nắm bắt tương tác phi tuyến, nhưng chi phí
+      thời gian O(n^2..n^3) có thể không khả thi so với LinearSVC.
+    enabled_by_default: false
+    preprocessing: teencode
+    tfidf:
+      mode: "word+char"
+      word_ngram_range: [1, 2]
+      char_ngram_range: [2, 4]
+      max_features: 30000
+      sublinear_tf: true
+      min_df: 3
+    feature_selection:
+      enabled: true
+      method: chi2
+      k: 10000
+    svm:
+      kernel: rbf
+      C: 1.0
+      gamma: scale
+      class_weight: balanced

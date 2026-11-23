@@ -1,0 +1,111 @@
+{
+  "n_samples": 6048,
+  "macro_f1": 0.7739955357142857,
+  "f1_toxic": 0.6149553571428571,
+  "weighted_f1": 0.8823363981009071,
+  "balanced_accuracy": 0.7585460528678369,
+  "pr_auc": 0.6717319438254482,
+  "per_class": {
+    "CLEAN": {
+      "precision": 0.9208812260536399,
+      "recall": 0.9455153422501967,
+      "f1": 0.9330357142857143,
+      "support": 5084.0
+    },
+    "TOXIC": {
+      "precision": 0.6654589371980676,
+      "recall": 0.5715767634854771,
+      "f1": 0.6149553571428571,
+      "support": 964.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      4807,
+      277
+    ],
+    [
+      413,
+      551
+    ]
+  ],
+  "by_source": {
+    "victsd": {
+      "n_samples": 1489,
+      "macro_f1": 0.6383348359660281,
+      "f1_toxic": 0.3420074349442379,
+      "weighted_f1": 0.8689886021072335,
+      "balanced_accuracy": 0.6174906161310996,
+      "pr_auc": 0.3618824863739706,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9140794223826715,
+          "recall": 0.9561933534743202,
+          "f1": 0.9346622369878184,
+          "support": 1324.0
+        },
+        "TOXIC": {
+          "precision": 0.4423076923076923,
+          "recall": 0.2787878787878788,
+          "f1": 0.3420074349442379,
+          "support": 165.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1266,
+          58
+        ],
+        [
+          119,
+          46
+        ]
+      ]
+    },
+    "vihsd": {
+      "n_samples": 4559,
+      "macro_f1": 0.7978101845868291,
+      "f1_toxic": 0.6631648063033486,
+      "weighted_f1": 0.8852602756369246,
+      "balanced_accuracy": 0.7868976846057572,
+      "pr_auc": 0.7266378174858659,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9233376792698826,
+          "recall": 0.9417553191489362,
+          "f1": 0.9324555628703094,
+          "support": 3760.0
+        },
+        "TOXIC": {
+          "precision": 0.6975138121546961,
+          "recall": 0.6320400500625782,
+          "f1": 0.6631648063033486,
+          "support": 799.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          3541,
+          219
+        ],
+        [
+          294,
+          505
+        ]
+      ]
+    }
+  },
+  "loss": 0.3684056423328541,
+  "best_epoch": 11,
+  "epochs_completed": 15,
+  "raw_softmax_ece": 0.066492,
+  "is_calibrated": false,
+  "train_time_s": 64.8603,
+  "inference_ms_per_sample": 0.0755,
+  "peak_vram_mb": 105.82,
+  "num_params": 1307906,
+  "model_size_mb": 15.1238,
+  "n_train": 28231,
+  "n_val": 6048,
+  "device": "cuda"
+}

@@ -1,0 +1,96 @@
+{
+  "seed": 42,
+  "raw_sha256": {
+    "vihsd_train.jsonl": "42a4fb3a948e5a9018e0854a14653825437d10419c952704080835d75fc068e7",
+    "vihsd_validation.jsonl": "02155da4eafc7b7731da6ad2409463ce06ceab387302a0f369da101411404363",
+    "vihsd_test.jsonl": "f3f890659dae2fdace5ab3ae3229eeb642d543c887a0f1db46a15a294aa10f77",
+    "victsd_train.jsonl": "0638ff0a55b9cd3e786936b27cb56c36c719d98b453eea3aa04e5d5d31dbc935",
+    "victsd_validation.jsonl": "da4b0ef6a4087e3348e89dabc17645dd5349eed1f19287557b70fd3ba6676dc4",
+    "victsd_test.jsonl": "522e9983d920c572a6001e84994dfa6b5cd56ee4c4de2e59a26ece895d358b32"
+  },
+  "conflicting_groups": 205,
+  "excluded_records": 466,
+  "counts": [
+    {
+      "split": "test",
+      "source": "victsd",
+      "label": 0,
+      "count": 1325
+    },
+    {
+      "split": "test",
+      "source": "victsd",
+      "label": 1,
+      "count": 165
+    },
+    {
+      "split": "test",
+      "source": "vihsd",
+      "label": 0,
+      "count": 3759
+    },
+    {
+      "split": "test",
+      "source": "vihsd",
+      "label": 1,
+      "count": 799
+    },
+    {
+      "split": "train",
+      "source": "victsd",
+      "label": 0,
+      "count": 6185
+    },
+    {
+      "split": "train",
+      "source": "victsd",
+      "label": 1,
+      "count": 769
+    },
+    {
+      "split": "train",
+      "source": "vihsd",
+      "label": 0,
+      "count": 17549
+    },
+    {
+      "split": "train",
+      "source": "vihsd",
+      "label": 1,
+      "count": 3728
+    },
+    {
+      "split": "val",
+      "source": "victsd",
+      "label": 0,
+      "count": 1324
+    },
+    {
+      "split": "val",
+      "source": "victsd",
+      "label": 1,
+      "count": 165
+    },
+    {
+      "split": "val",
+      "source": "vihsd",
+      "label": 0,
+      "count": 3760
+    },
+    {
+      "split": "val",
+      "source": "vihsd",
+      "label": 1,
+      "count": 799
+    }
+  ],
+  "normalized_cross_split_groups": 0,
+  "near_duplicate_method": "NFKC, casefold, remove non-word characters; not a general near-duplicate search",
+  "test_blind": false,
+  "output_sha256": {
+    "manifest.json": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3",
+    "test.parquet": "d200be4a7ff2f2e725ba8e6c2c0ab835afd73612b9a5b2f14b528cb5c577be4e",
+    "train.parquet": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val.parquet": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "experiment": "TV4-CNN-Binary",
+  "variant": "CHAR-01",
+  "seed": 42,
+  "run_id": "c076b2f99ea9481bac5f8f3642ca090c",
+  "owner": "TV4",
+  "description": "Char-CNN multi-kernel [3, 4, 5, 7] (N7 SPEC v5, raw NFC text)",
+  "hypothesis": "Char-CNN xử lý trực tiếp chuỗi ký tự nguyên bản giúp chống nhiễu teencode, sai chính tả, ký tự né filter (vd: d.m, clgt) tốt hơn tách từ đơn thuần.",
+  "architecture": "char_cnn",
+  "preprocessing": "raw",
+  "use_augmentation": false,
+  "imbalance_method": "none",
+  "focal_gamma": null,
+  "batch_size": 64,
+  "epochs": 15,
+  "patience": 4,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0,
+  "grad_clip": 1.0,
+  "max_word_length": 128,
+  "max_char_length": 384,
+  "min_word_freq": 2,
+  "min_char_freq": 2,
+  "use_amp": false,
+  "model": {
+    "char_embedding_dim": 64,
+    "char_kernel_sizes": [
+      3,
+      4,
+      5,
+      7
+    ],
+    "num_filters": 128,
+    "dropout": 0.5
+  },
+  "word_vocab_size": null,
+  "char_vocab_size": 489,
+  "vocab_sha256": "f428ae1d10bfde5b8b130af0b05d99febb042990778811c7b8d1470cfb9394ce",
+  "data_hashes": {
+    "train_parquet_sha256": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "manifest_sha256": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3"
+  },
+  "n_train": 28231,
+  "n_val": 6048,
+  "device": "cuda"
+}

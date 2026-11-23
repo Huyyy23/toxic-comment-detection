@@ -1,0 +1,59 @@
+# LR config — EXP-01 TV1
+# Dùng cho tham chiếu; mỗi variant override giá trị mình cần
+# Fit TF-IDF ONLY on train split
+
+experiment: EXP-01
+owner: TV1
+seed: 42
+dataset: data/processed/vihsd_g0_v1/train_val.jsonl
+dataset_info: data/processed/vihsd_g0_v1/dataset_info.json
+manifest: data/processed/vihsd_g0_v1/manifest.json
+tracking_uri: null  # null = default mlflow local store (mlruns/)
+
+variants:
+  A:
+    description: "Raw text + word TF-IDF (1-2gram) + LR C=1"
+    preprocessing: raw
+    tfidf:
+      mode: word
+      word_ngram_range: [1, 2]
+      max_features: 100000
+      sublinear_tf: true
+      min_df: 2
+    lr:
+      C: 1.0
+      class_weight: null
+      max_iter: 1000
+      solver: lbfgs
+
+  B:
+    description: "Basic cleanup + word+char TF-IDF + LR C=5"
+    preprocessing: basic
+    tfidf:
+      mode: "word+char"
+      word_ngram_range: [1, 2]
+      char_ngram_range: [2, 4]
+      max_features: 100000
+      sublinear_tf: true
+      min_df: 2
+    lr:
+      C: 5.0
+      class_weight: null
+      max_iter: 1000
+      solver: lbfgs
+
+  C:
+    description: "Teencode norm + word+char TF-IDF + LR + class_weight=balanced"
+    preprocessing: teencode
+    tfidf:
+      mode: "word+char"
+      word_ngram_range: [1, 3]
+      char_ngram_range: [2, 5]
+      max_features: 150000
+      sublinear_tf: true
+      min_df: 2
+    lr:
+      C: 5.0
+      class_weight: balanced
+      max_iter: 1000
+      solver: lbfgs

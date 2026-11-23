@@ -1,0 +1,46 @@
+{
+  "experiment": "TV4-CNN-Binary",
+  "variant": "CNN-AUG-N4",
+  "seed": 43,
+  "run_id": "5882f9d2599b491faec284c19b5a39c7",
+  "owner": "TV4",
+  "description": "Ablation N4: Multi-kernel TextCNN trên train tăng cường (30.0% TOXIC)",
+  "hypothesis": "Huấn luyện trên binary_n4_training_v1 (5,675 mẫu TOXIC train-only) tăng tiếp xúc với biến thể teencode/lỗi dấu, kiểm chứng xem có cải thiện Validation Macro-F1 không.",
+  "architecture": "textcnn",
+  "preprocessing": "basic",
+  "use_augmentation": true,
+  "imbalance_method": "none",
+  "focal_gamma": null,
+  "batch_size": 64,
+  "epochs": 15,
+  "patience": 4,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0,
+  "grad_clip": 1.0,
+  "max_word_length": 128,
+  "max_char_length": 384,
+  "min_word_freq": 2,
+  "min_char_freq": 2,
+  "use_amp": false,
+  "model": {
+    "embedding_dim": 128,
+    "kernel_sizes": [
+      3,
+      4,
+      5
+    ],
+    "num_filters": 128,
+    "dropout": 0.5
+  },
+  "word_vocab_size": 12234,
+  "char_vocab_size": null,
+  "vocab_sha256": "3071b185e8c1f91e660f3538bd0d0431f18d9cf1446d0df97bba04754d9a471c",
+  "data_hashes": {
+    "train_parquet_sha256": "f57fbf0a55de6b08c8cba1cd366c3895bfed495f2817069f892ba27b5786542e",
+    "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "manifest_sha256": ""
+  },
+  "n_train": 33906,
+  "n_val": 6048,
+  "device": "cuda"
+}

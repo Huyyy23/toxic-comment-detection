@@ -1,0 +1,45 @@
+{
+  "dataset_name": "UIT-ViHSD",
+  "source": "ura-hcmut/UIT-ViHSD",
+  "huggingface_url": "https://huggingface.co/datasets/ura-hcmut/UIT-ViHSD",
+  "label_mapping": {
+    "0": "CLEAN",
+    "1": "OFFENSIVE",
+    "2": "HATE"
+  },
+  "text_column_used": "free_text",
+  "label_column_used": "label_id",
+  "split_map": {
+    "train": "train",
+    "val": "val",
+    "test": "test"
+  },
+  "split_stats": {
+    "train": {
+      "n": 23380,
+      "CLEAN": 19337,
+      "OFFENSIVE": 1583,
+      "HATE": 2460
+    },
+    "val": {
+      "n": 5010,
+      "CLEAN": 4144,
+      "OFFENSIVE": 339,
+      "HATE": 527
+    },
+    "test": {
+      "n": 5010,
+      "CLEAN": 4143,
+      "OFFENSIVE": 340,
+      "HATE": 527
+    }
+  },
+  "contract_version": "v4",
+  "processed_jsonl_hash": "bb0e773cbbe8b9bf246abff5fafaa27c7667ebb9c3d64749e6768d43ce404456",
+  "raw_split_hashes": {
+    "vihsd_train.jsonl": "42a4fb3a948e5a9018e0854a14653825437d10419c952704080835d75fc068e7",
+    "vihsd_validation.jsonl": "02155da4eafc7b7731da6ad2409463ce06ceab387302a0f369da101411404363",
+    "vihsd_test.jsonl": "f3f890659dae2fdace5ab3ae3229eeb642d543c887a0f1db46a15a294aa10f77"
+  },
+  "note": "Split DA DUOC CHIA LAI thanh 70-15-15 stratified theo label (seed=42), THAY DOI so voi official split goc cua UIT-ViHSD. Lock test da duoc chia lai, khong con la locked test goc. Vi phep nay vi SPEC v4 uu tien giu nguyen official split neu phu hop. Chi fit TF-IDF/vocabulary tren split=train."
+}

@@ -29,11 +29,7 @@ wheels/
 .coverage
 htmlcov/
 
-# Data & Models (Do NOT commit raw heavy data or huge model weights)
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
+# Data & Models (dataset committed for reproducibility; heavy model weights excluded)
 models/checkpoints/*
 !models/checkpoints/.gitkeep
 models/transformer_best/*
@@ -44,8 +40,17 @@ models/transformer_best/*
 *.joblib
 *.onnx
 
+# Local caches and atomic checkpoint temporary files
+.cache/
+*.tmp
+
+# Vocabulary is already embedded in recurrent checkpoints
+models/recurrent_official/**/vocabulary.json
+
 # MLflow local tracking
 mlruns/
+*.db
+mlflow.db
 
 npm-debug.log*
 yarn-debug.log*

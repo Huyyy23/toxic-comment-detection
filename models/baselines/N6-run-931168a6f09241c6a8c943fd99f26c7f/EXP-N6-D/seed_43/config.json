@@ -1,0 +1,51 @@
+{
+  "experiment": "N6-SVM-Binary",
+  "variant": "N6-D",
+  "seed": 43,
+  "run_id": "81b9bc413a2e4da1a53c659906d47282",
+  "owner": "TV2",
+  "data_contract_version": "binary_n2_v1",
+  "use_augmentation": true,
+  "preprocessing": "teencode",
+  "tfidf": {
+    "mode": "word+char",
+    "word_ngram_range": [
+      1,
+      3
+    ],
+    "char_ngram_range": [
+      2,
+      5
+    ],
+    "max_features": 150000,
+    "sublinear_tf": true,
+    "min_df": 2
+  },
+  "feature_selection": {
+    "enabled": true,
+    "method": "chi2",
+    "k_requested": 100000,
+    "k_effective": 100000
+  },
+  "svm": {
+    "kernel": "linear",
+    "C": 0.5,
+    "class_weight": "balanced",
+    "max_iter": 5000,
+    "dual": "auto"
+  },
+  "calibrated": false,
+  "calibration_method": null,
+  "calibration_cv": null,
+  "threshold": null,
+  "data_hashes": {
+    "train_parquet_sha256": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "manifest_sha256": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3",
+    "augmentation_parquet_sha256": "2f42eaaee33efe96a41816ecbb112df07473da20ef0641d7f3b6df2754bd488d"
+  },
+  "train_text_sha256": "79f9ad411d1af670309d76712e6e152650783768c138a436a883eedf0c321ab1",
+  "val_text_sha256": "4e5a9630d232a808148ae6f022b671dab558993aa1d8d5d70c7c3ac8d03532a3",
+  "n_train": 33906,
+  "n_val": 6048
+}

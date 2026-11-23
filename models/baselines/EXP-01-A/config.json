@@ -1,0 +1,28 @@
+{
+  "variant": "EXP-01-A",
+  "description": "Raw text + word TF-IDF (1-2gram) + LR C=1",
+  "hypothesis": "Baseline: LR với TF-IDF word n-gram trên text gốc; không có preprocessing đặc thù tiếng Việt.",
+  "preprocessing": "raw",
+  "tfidf_mode": "word",
+  "word_ngram_range": [
+    1,
+    2
+  ],
+  "char_ngram_range": [
+    2,
+    4
+  ],
+  "max_features": 100000,
+  "lr_C": 1.0,
+  "lr_class_weight": null,
+  "seed": 42,
+  "dataset_path": "C:\\Đồ án máy học\\toxic-comment-detection\\data\\processed\\vihsd_g0_v1\\train_val.jsonl",
+  "data_contract_version": "1.0",
+  "source_revision": "16c4f67cf509d4f9f36ca5b63c5503c7c8830557",
+  "data_file_sha256": "c17d920f788ff982775405d7031373dc2cd5525cbba5db6ed4e4f85e70159164",
+  "dataset_hash": "0e5592822e9be197bc59823d0c33fbc724e2f0ea93d2fbdc64bd9084eb88a5a8",
+  "train_hash": "b732b51e2d3331cdf4ab5b3a0c11956c90ac752e610c936e18501f21c738f2a8",
+  "val_hash": "52e7de35cb97bcdb8fbdc0be04c8a066a3351bd166a4a6c9ecbb11d538b76ab4",
+  "n_train": 23002,
+  "n_val": 4929
+}

@@ -1,0 +1,46 @@
+{
+  "model": {
+    "vocab_size": 24153,
+    "embedding_dim": 128,
+    "hidden_size": 128,
+    "dropout": 0.3,
+    "architecture": "lstm",
+    "pad_id": 0
+  },
+  "training": {
+    "status": "OFFICIAL",
+    "name": "recurrent_official_v1",
+    "seed": 42,
+    "device": "auto",
+    "dataset_dir": "data/processed/vihsd_g0_v1",
+    "train_val_file": "train_val.jsonl",
+    "manifest_file": "manifest.json",
+    "max_length": 48,
+    "batch_size": 32,
+    "epochs": 10,
+    "patience": 3,
+    "learning_rate": 0.001,
+    "grad_clip": 1.0,
+    "embedding_dim": 128,
+    "hidden_size": 128,
+    "dropout": 0.3,
+    "variants": [
+      "lstm",
+      "bilstm",
+      "bilstm_attention"
+    ],
+    "smoke": {
+      "train_size": 500,
+      "val_size": 100,
+      "epochs": 2,
+      "batch_size": 16
+    }
+  },
+  "data": {
+    "dataset_dir": "data/processed/vihsd_g0_v1",
+    "train_count": 23002,
+    "val_count": 4929,
+    "train_val_sha256": "20a00f47d09d3439de83d4b371b253bd5991bd3bf6ff61871176381868d9d778",
+    "manifest_sha256": "1a3364ae6dcdc50e4f55e4bda665c5b4065c2835d2d98db808e60f4932c2edb2"
+  }
+}

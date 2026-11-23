@@ -1,9 +1,8 @@
-"""Three-class training and validation, without dataset or tracking side effects.
+"""Training and validation with class-count-aware metrics.
 
-Metrics are JSON-compatible: ``per_class`` is a list ordered CLEAN/OFFENSIVE/HATE,
-with precision/recall/f1/support; confusion_matrix rows are true classes, columns
-predicted classes. Macro-F1 always averages all three classes, including absent
-classes. Evaluation probabilities are uncalibrated softmax scores.
+Metrics are JSON-compatible: ``per_class`` follows label order, with
+precision/recall/f1/support; confusion-matrix rows are true classes, columns
+predicted classes. Macro-F1 includes absent classes. Probabilities are uncalibrated.
 """
 
 from copy import deepcopy
@@ -52,8 +51,8 @@ def _tensorize(batch, device):
     count = len(batch["ids"])
     if inputs.ndim != 2 or inputs.shape[0] != count or inputs.shape[1] == 0:
         raise ValueError("input_ids must have nonempty shape [batch, tokens]")
-    if labels.shape != (count,) or ((labels < 0) | (labels > 2)).any().item():
-        raise ValueError("labels must have shape [batch] with class indices 0..2")
+    if labels.shape != (count,) or (labels < 0).any().item():
+        raise ValueError("labels must have shape [batch] with nonnegative class indices")
     if lengths.shape != (count,) or ((lengths < 1) | (lengths > inputs.shape[1])).any().item():
         raise ValueError("lengths must have shape [batch] and lie within token width")
     if (inputs < 0).any().item():
@@ -66,7 +65,7 @@ def _metrics(loss_sum, count, confusion):
         raise ValueError("cannot process empty batches iterable")
     matrix = confusion.cpu()
     per_class = []
-    for label in range(3):
+    for label in range(matrix.shape[0]):
         true_positive = matrix[label, label].item()
         predicted = matrix[:, label].sum().item()
         support = matrix[label, :].sum().item()
@@ -77,7 +76,7 @@ def _metrics(loss_sum, count, confusion):
                           "support": support})
     return {
         "loss": loss_sum / count,
-        "macro_f1": sum(row["f1"] for row in per_class) / 3,
+        "macro_f1": sum(row["f1"] for row in per_class) / len(per_class),
         "per_class": per_class,
         "confusion_matrix": matrix.tolist(),
     }
@@ -86,15 +85,18 @@ def _metrics(loss_sum, count, confusion):
 def _run_epoch(model, batches, device, optimizer=None, grad_clip=1.0):
     loss_sum = 0.0
     count = 0
-    confusion = torch.zeros((3, 3), dtype=torch.long, device=device)
+    num_classes = getattr(model, "num_classes", 3)
+    confusion = torch.zeros((num_classes, num_classes), dtype=torch.long, device=device)
     predictions = []
     for batch in batches:
         inputs, lengths, labels = _tensorize(batch, device)
+        if (labels >= num_classes).any().item():
+            raise ValueError(f"labels must be in the configured class range 0..{num_classes - 1}")
         if optimizer is not None:
             optimizer.zero_grad(set_to_none=True)
         logits = model(inputs, lengths)
-        if logits.shape != (labels.shape[0], 3):
-            raise ValueError("logits must have shape [batch, 3]")
+        if logits.shape != (labels.shape[0], num_classes):
+            raise ValueError(f"logits must have shape [batch, {num_classes}]")
         if not torch.isfinite(logits).all().item():
             raise ValueError("logits must be finite")
         loss = F.cross_entropy(logits, labels)
@@ -105,7 +107,9 @@ def _run_epoch(model, batches, device, optimizer=None, grad_clip=1.0):
             torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip, error_if_nonfinite=True)
             optimizer.step()
         predicted = logits.detach().argmax(dim=1)
-        confusion += torch.bincount(labels * 3 + predicted, minlength=9).reshape(3, 3)
+        confusion += torch.bincount(
+            labels * num_classes + predicted, minlength=num_classes * num_classes,
+        ).reshape(num_classes, num_classes)
         size = labels.shape[0]
         loss_sum += loss.detach().item() * size
         count += size
@@ -122,6 +126,8 @@ def _run_epoch(model, batches, device, optimizer=None, grad_clip=1.0):
     if optimizer is None:
         result["predictions"] = predictions
     return result
+
+
 
 
 def _validate_grad_clip(grad_clip):
@@ -187,7 +193,6 @@ def fit(model, train_batches, val_batches, optimizer, *, epochs, patience,
         raise ValueError("best_macro_f1 must be -1 or finite within [0, 1]")
     _validate_grad_clip(grad_clip)
     _resolve_device(device)
-    # Iterators are single-use; retain their batches for subsequent epochs.
     if iter(train_batches) is train_batches:
         train_batches = tuple(train_batches)
     if iter(val_batches) is val_batches:

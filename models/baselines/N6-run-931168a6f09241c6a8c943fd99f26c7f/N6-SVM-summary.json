@@ -1,0 +1,1782 @@
+[
+  {
+    "variant": "A",
+    "calibrated": false,
+    "use_augmentation": false,
+    "variant_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-A",
+    "aggregate": {
+      "n_seeds": 3,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "macro_f1": {
+        "mean": 0.7768,
+        "std": 0.0
+      },
+      "f1_toxic": {
+        "mean": 0.6145,
+        "std": 0.0
+      },
+      "pr_auc": {
+        "mean": 0.7018,
+        "std": 0.0
+      },
+      "train_time_s": {
+        "mean": 0.1365,
+        "std": 0.0177
+      },
+      "model_size_mb": {
+        "mean": 2.3394,
+        "std": 0.0
+      },
+      "by_source": {
+        "victsd": {
+          "macro_f1": {
+            "mean": 0.6578,
+            "std": 0.0
+          },
+          "f1_toxic": {
+            "mean": 0.3691,
+            "std": 0.0
+          }
+        },
+        "vihsd": {
+          "macro_f1": {
+            "mean": 0.7958,
+            "std": 0.0
+          },
+          "f1_toxic": {
+            "mean": 0.6549,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "runs": [
+      {
+        "variant": "A",
+        "seed": 42,
+        "run_id": "1164219e8ab448109eecd905860cf597",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-A\\seed_42",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.776839575204467,
+          "f1_toxic": 0.6144505160898603,
+          "weighted_f1": 0.8874617517177241,
+          "balanced_accuracy": 0.7450405796722939,
+          "pr_auc": 0.7017736476490857,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9146318732525629,
+              "recall": 0.9651848937844217,
+              "f1": 0.9392286343190736,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.7408491947291361,
+              "recall": 0.524896265560166,
+              "f1": 0.6144505160898603,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4907,
+              177
+            ],
+            [
+              458,
+              506
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.657773399939023,
+              "f1_toxic": 0.36909871244635195,
+              "weighted_f1": 0.8824704871143121,
+              "balanced_accuracy": 0.6208619426897373,
+              "pr_auc": 0.427177398440084,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9141449683321604,
+                  "recall": 0.9811178247734139,
+                  "f1": 0.946448087431694,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.6323529411764706,
+                  "recall": 0.2606060606060606,
+                  "f1": 0.36909871244635195,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1299,
+                  25
+                ],
+                [
+                  122,
+                  43
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.795768028071165,
+              "f1_toxic": 0.6548797736916548,
+              "weighted_f1": 0.8872727706063106,
+              "balanced_accuracy": 0.7695244055068836,
+              "pr_auc": 0.7488083439466626,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9148073022312373,
+                  "recall": 0.9595744680851064,
+                  "f1": 0.936656282450675,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.7528455284552845,
+                  "recall": 0.5794743429286608,
+                  "f1": 0.6548797736916548,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3608,
+                  152
+                ],
+                [
+                  336,
+                  463
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.1184,
+          "feature_selection_time_s": 0.0,
+          "inference_ms_per_sample": 0.0002,
+          "n_features_raw": 56328,
+          "n_features_selected": 56328,
+          "preprocess_time_s": 0.01,
+          "tfidf_fit_time_s": 1.7012,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 2.3394,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 1.0,
+          "class_weight": null,
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": false,
+          "method": null,
+          "k_requested": null,
+          "k_effective": null
+        }
+      },
+      {
+        "variant": "A",
+        "seed": 43,
+        "run_id": "00d2c2a20382485fa8223c7c68d23d3a",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-A\\seed_43",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.776839575204467,
+          "f1_toxic": 0.6144505160898603,
+          "weighted_f1": 0.8874617517177241,
+          "balanced_accuracy": 0.7450405796722939,
+          "pr_auc": 0.7017734866601021,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9146318732525629,
+              "recall": 0.9651848937844217,
+              "f1": 0.9392286343190736,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.7408491947291361,
+              "recall": 0.524896265560166,
+              "f1": 0.6144505160898603,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4907,
+              177
+            ],
+            [
+              458,
+              506
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.657773399939023,
+              "f1_toxic": 0.36909871244635195,
+              "weighted_f1": 0.8824704871143121,
+              "balanced_accuracy": 0.6208619426897373,
+              "pr_auc": 0.427177398440084,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9141449683321604,
+                  "recall": 0.9811178247734139,
+                  "f1": 0.946448087431694,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.6323529411764706,
+                  "recall": 0.2606060606060606,
+                  "f1": 0.36909871244635195,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1299,
+                  25
+                ],
+                [
+                  122,
+                  43
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.795768028071165,
+              "f1_toxic": 0.6548797736916548,
+              "weighted_f1": 0.8872727706063106,
+              "balanced_accuracy": 0.7695244055068836,
+              "pr_auc": 0.7488083439466626,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9148073022312373,
+                  "recall": 0.9595744680851064,
+                  "f1": 0.936656282450675,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.7528455284552845,
+                  "recall": 0.5794743429286608,
+                  "f1": 0.6548797736916548,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3608,
+                  152
+                ],
+                [
+                  336,
+                  463
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.1605,
+          "feature_selection_time_s": 0.0,
+          "inference_ms_per_sample": 0.0002,
+          "n_features_raw": 56328,
+          "n_features_selected": 56328,
+          "preprocess_time_s": 0.0102,
+          "tfidf_fit_time_s": 1.6597,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 2.3394,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 1.0,
+          "class_weight": null,
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": false,
+          "method": null,
+          "k_requested": null,
+          "k_effective": null
+        }
+      },
+      {
+        "variant": "A",
+        "seed": 44,
+        "run_id": "6baedad0ae3245aab56b5c191e83370a",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-A\\seed_44",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.776839575204467,
+          "f1_toxic": 0.6144505160898603,
+          "weighted_f1": 0.8874617517177241,
+          "balanced_accuracy": 0.7450405796722939,
+          "pr_auc": 0.7017751301459412,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9146318732525629,
+              "recall": 0.9651848937844217,
+              "f1": 0.9392286343190736,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.7408491947291361,
+              "recall": 0.524896265560166,
+              "f1": 0.6144505160898603,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4907,
+              177
+            ],
+            [
+              458,
+              506
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.657773399939023,
+              "f1_toxic": 0.36909871244635195,
+              "weighted_f1": 0.8824704871143121,
+              "balanced_accuracy": 0.6208619426897373,
+              "pr_auc": 0.427177398440084,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9141449683321604,
+                  "recall": 0.9811178247734139,
+                  "f1": 0.946448087431694,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.6323529411764706,
+                  "recall": 0.2606060606060606,
+                  "f1": 0.36909871244635195,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1299,
+                  25
+                ],
+                [
+                  122,
+                  43
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.795768028071165,
+              "f1_toxic": 0.6548797736916548,
+              "weighted_f1": 0.8872727706063106,
+              "balanced_accuracy": 0.7695244055068836,
+              "pr_auc": 0.7488103196075915,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9148073022312373,
+                  "recall": 0.9595744680851064,
+                  "f1": 0.936656282450675,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.7528455284552845,
+                  "recall": 0.5794743429286608,
+                  "f1": 0.6548797736916548,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3608,
+                  152
+                ],
+                [
+                  336,
+                  463
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.1307,
+          "feature_selection_time_s": 0.0,
+          "inference_ms_per_sample": 0.0002,
+          "n_features_raw": 56328,
+          "n_features_selected": 56328,
+          "preprocess_time_s": 0.0103,
+          "tfidf_fit_time_s": 1.6995,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 2.3394,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 1.0,
+          "class_weight": null,
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": false,
+          "method": null,
+          "k_requested": null,
+          "k_effective": null
+        }
+      }
+    ]
+  },
+  {
+    "variant": "B",
+    "calibrated": false,
+    "use_augmentation": false,
+    "variant_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-B",
+    "aggregate": {
+      "n_seeds": 3,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "macro_f1": {
+        "mean": 0.7875,
+        "std": 0.0
+      },
+      "f1_toxic": {
+        "mean": 0.6351,
+        "std": 0.0
+      },
+      "pr_auc": {
+        "mean": 0.718,
+        "std": 0.0
+      },
+      "train_time_s": {
+        "mean": 0.603,
+        "std": 0.0285
+      },
+      "model_size_mb": {
+        "mean": 3.7149,
+        "std": 0.0
+      },
+      "by_source": {
+        "victsd": {
+          "macro_f1": {
+            "mean": 0.6516,
+            "std": 0.0
+          },
+          "f1_toxic": {
+            "mean": 0.3614,
+            "std": 0.0
+          }
+        },
+        "vihsd": {
+          "macro_f1": {
+            "mean": 0.8104,
+            "std": 0.0
+          },
+          "f1_toxic": {
+            "mean": 0.6817,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "runs": [
+      {
+        "variant": "B",
+        "seed": 42,
+        "run_id": "5ccb305b95e94151bed0e77d1eb0ed61",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-B\\seed_42",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7874742375764776,
+          "f1_toxic": 0.6351430239346176,
+          "weighted_f1": 0.8912448394621363,
+          "balanced_accuracy": 0.7619963860259671,
+          "pr_auc": 0.7180478559474883,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9207397622192867,
+              "recall": 0.9596774193548387,
+              "f1": 0.9398054512183377,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.7263017356475301,
+              "recall": 0.5643153526970954,
+              "f1": 0.6351430239346176,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4879,
+              205
+            ],
+            [
+              420,
+              544
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6515913415479433,
+              "f1_toxic": 0.3614457831325301,
+              "weighted_f1": 0.8774333175072879,
+              "balanced_accuracy": 0.6216355396868992,
+              "pr_auc": 0.4081680373531388,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9145907473309609,
+                  "recall": 0.9705438066465257,
+                  "f1": 0.9417368999633565,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.5357142857142857,
+                  "recall": 0.2727272727272727,
+                  "f1": 0.3614457831325301,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1285,
+                  39
+                ],
+                [
+                  120,
+                  45
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8104053953716832,
+              "f1_toxic": 0.6816939890710383,
+              "weighted_f1": 0.8940014633813805,
+              "balanced_accuracy": 0.7901908635794743,
+              "pr_auc": 0.769843070069233,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9229583975346687,
+                  "recall": 0.9558510638297872,
+                  "f1": 0.9391168016723282,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.750375939849624,
+                  "recall": 0.6245306633291614,
+                  "f1": 0.6816939890710383,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3594,
+                  166
+                ],
+                [
+                  300,
+                  499
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.5771,
+          "feature_selection_time_s": 0.0,
+          "inference_ms_per_sample": 0.0008,
+          "n_features_raw": 93893,
+          "n_features_selected": 93893,
+          "preprocess_time_s": 0.2977,
+          "tfidf_fit_time_s": 6.3589,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 3.7149,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 1.0,
+          "class_weight": null,
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": false,
+          "method": null,
+          "k_requested": null,
+          "k_effective": null
+        }
+      },
+      {
+        "variant": "B",
+        "seed": 43,
+        "run_id": "d7d03f956674476db97e99303909e6f0",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-B\\seed_43",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7874742375764776,
+          "f1_toxic": 0.6351430239346176,
+          "weighted_f1": 0.8912448394621363,
+          "balanced_accuracy": 0.7619963860259671,
+          "pr_auc": 0.7180481841072257,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9207397622192867,
+              "recall": 0.9596774193548387,
+              "f1": 0.9398054512183377,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.7263017356475301,
+              "recall": 0.5643153526970954,
+              "f1": 0.6351430239346176,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4879,
+              205
+            ],
+            [
+              420,
+              544
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6515913415479433,
+              "f1_toxic": 0.3614457831325301,
+              "weighted_f1": 0.8774333175072879,
+              "balanced_accuracy": 0.6216355396868992,
+              "pr_auc": 0.4081707441792621,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9145907473309609,
+                  "recall": 0.9705438066465257,
+                  "f1": 0.9417368999633565,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.5357142857142857,
+                  "recall": 0.2727272727272727,
+                  "f1": 0.3614457831325301,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1285,
+                  39
+                ],
+                [
+                  120,
+                  45
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8104053953716832,
+              "f1_toxic": 0.6816939890710383,
+              "weighted_f1": 0.8940014633813805,
+              "balanced_accuracy": 0.7901908635794743,
+              "pr_auc": 0.7698433357480609,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9229583975346687,
+                  "recall": 0.9558510638297872,
+                  "f1": 0.9391168016723282,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.750375939849624,
+                  "recall": 0.6245306633291614,
+                  "f1": 0.6816939890710383,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3594,
+                  166
+                ],
+                [
+                  300,
+                  499
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.6428,
+          "feature_selection_time_s": 0.0,
+          "inference_ms_per_sample": 0.0008,
+          "n_features_raw": 93893,
+          "n_features_selected": 93893,
+          "preprocess_time_s": 0.2539,
+          "tfidf_fit_time_s": 6.0617,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 3.7149,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 1.0,
+          "class_weight": null,
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": false,
+          "method": null,
+          "k_requested": null,
+          "k_effective": null
+        }
+      },
+      {
+        "variant": "B",
+        "seed": 44,
+        "run_id": "18722af948594e4cb786578ade333740",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-B\\seed_44",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7874742375764776,
+          "f1_toxic": 0.6351430239346176,
+          "weighted_f1": 0.8912448394621363,
+          "balanced_accuracy": 0.7619963860259671,
+          "pr_auc": 0.7180481546970152,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9207397622192867,
+              "recall": 0.9596774193548387,
+              "f1": 0.9398054512183377,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.7263017356475301,
+              "recall": 0.5643153526970954,
+              "f1": 0.6351430239346176,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4879,
+              205
+            ],
+            [
+              420,
+              544
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6515913415479433,
+              "f1_toxic": 0.3614457831325301,
+              "weighted_f1": 0.8774333175072879,
+              "balanced_accuracy": 0.6216355396868992,
+              "pr_auc": 0.4081707441792621,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9145907473309609,
+                  "recall": 0.9705438066465257,
+                  "f1": 0.9417368999633565,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.5357142857142857,
+                  "recall": 0.2727272727272727,
+                  "f1": 0.3614457831325301,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1285,
+                  39
+                ],
+                [
+                  120,
+                  45
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8104053953716832,
+              "f1_toxic": 0.6816939890710383,
+              "weighted_f1": 0.8940014633813805,
+              "balanced_accuracy": 0.7901908635794743,
+              "pr_auc": 0.7698432811791259,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9229583975346687,
+                  "recall": 0.9558510638297872,
+                  "f1": 0.9391168016723282,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.750375939849624,
+                  "recall": 0.6245306633291614,
+                  "f1": 0.6816939890710383,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3594,
+                  166
+                ],
+                [
+                  300,
+                  499
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.5892,
+          "feature_selection_time_s": 0.0,
+          "inference_ms_per_sample": 0.0006,
+          "n_features_raw": 93893,
+          "n_features_selected": 93893,
+          "preprocess_time_s": 0.2588,
+          "tfidf_fit_time_s": 6.0564,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 3.7149,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 1.0,
+          "class_weight": null,
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": false,
+          "method": null,
+          "k_requested": null,
+          "k_effective": null
+        }
+      }
+    ]
+  },
+  {
+    "variant": "C",
+    "calibrated": false,
+    "use_augmentation": false,
+    "variant_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-C",
+    "aggregate": {
+      "n_seeds": 3,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "macro_f1": {
+        "mean": 0.7892,
+        "std": 0.0
+      },
+      "f1_toxic": {
+        "mean": 0.6502,
+        "std": 0.0
+      },
+      "pr_auc": {
+        "mean": 0.7217,
+        "std": 0.0
+      },
+      "train_time_s": {
+        "mean": 0.8182,
+        "std": 0.0313
+      },
+      "model_size_mb": {
+        "mean": 7.3492,
+        "std": 0.0
+      },
+      "by_source": {
+        "victsd": {
+          "macro_f1": {
+            "mean": 0.6879,
+            "std": 0.0
+          },
+          "f1_toxic": {
+            "mean": 0.4471,
+            "std": 0.0
+          }
+        },
+        "vihsd": {
+          "macro_f1": {
+            "mean": 0.8091,
+            "std": 0.0
+          },
+          "f1_toxic": {
+            "mean": 0.6903,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "runs": [
+      {
+        "variant": "C",
+        "seed": 42,
+        "run_id": "ce69da1f0d1a406aaa686330f762f189",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-C\\seed_42",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7891606451655016,
+          "f1_toxic": 0.6501698204754973,
+          "weighted_f1": 0.8838435482281366,
+          "balanced_accuracy": 0.805515880918413,
+          "pr_auc": 0.7216916225942803,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9406180569581902,
+              "recall": 0.9160110149488592,
+              "f1": 0.9281514698555058,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.6107566089334548,
+              "recall": 0.6950207468879668,
+              "f1": 0.6501698204754973,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4657,
+              427
+            ],
+            [
+              294,
+              670
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6878963564197476,
+              "f1_toxic": 0.4470588235294118,
+              "weighted_f1": 0.8753582104290821,
+              "balanced_accuracy": 0.6929163233543898,
+              "pr_auc": 0.4206079543080415,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9322678843226788,
+                  "recall": 0.925226586102719,
+                  "f1": 0.9287338893100834,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.4342857142857143,
+                  "recall": 0.46060606060606063,
+                  "f1": 0.4470588235294118,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1225,
+                  99
+                ],
+                [
+                  89,
+                  76
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8091200501608886,
+              "f1_toxic": 0.6902963393375944,
+              "weighted_f1": 0.8862942128605539,
+              "balanced_accuracy": 0.8280976220275345,
+              "pr_auc": 0.7721592348634755,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9436348638988177,
+                  "recall": 0.9127659574468086,
+                  "f1": 0.9279437609841827,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.6442516268980477,
+                  "recall": 0.7434292866082604,
+                  "f1": 0.6902963393375944,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3432,
+                  328
+                ],
+                [
+                  205,
+                  594
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.7897,
+          "feature_selection_time_s": 0.155,
+          "inference_ms_per_sample": 0.0005,
+          "n_features_raw": 135402,
+          "n_features_selected": 100000,
+          "preprocess_time_s": 0.5631,
+          "tfidf_fit_time_s": 8.2576,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 7.3492,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 0.5,
+          "class_weight": "balanced",
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": true,
+          "method": "chi2",
+          "k_requested": 100000,
+          "k_effective": 100000
+        }
+      },
+      {
+        "variant": "C",
+        "seed": 43,
+        "run_id": "62202f94d5f74c118ef8679be5cc16dd",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-C\\seed_43",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7891606451655016,
+          "f1_toxic": 0.6501698204754973,
+          "weighted_f1": 0.8838435482281366,
+          "balanced_accuracy": 0.805515880918413,
+          "pr_auc": 0.7216914323472383,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9406180569581902,
+              "recall": 0.9160110149488592,
+              "f1": 0.9281514698555058,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.6107566089334548,
+              "recall": 0.6950207468879668,
+              "f1": 0.6501698204754973,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4657,
+              427
+            ],
+            [
+              294,
+              670
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6878963564197476,
+              "f1_toxic": 0.4470588235294118,
+              "weighted_f1": 0.8753582104290821,
+              "balanced_accuracy": 0.6929163233543898,
+              "pr_auc": 0.4206079543080415,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9322678843226788,
+                  "recall": 0.925226586102719,
+                  "f1": 0.9287338893100834,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.4342857142857143,
+                  "recall": 0.46060606060606063,
+                  "f1": 0.4470588235294118,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1225,
+                  99
+                ],
+                [
+                  89,
+                  76
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8091200501608886,
+              "f1_toxic": 0.6902963393375944,
+              "weighted_f1": 0.8862942128605539,
+              "balanced_accuracy": 0.8280976220275345,
+              "pr_auc": 0.7721588990964919,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9436348638988177,
+                  "recall": 0.9127659574468086,
+                  "f1": 0.9279437609841827,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.6442516268980477,
+                  "recall": 0.7434292866082604,
+                  "f1": 0.6902963393375944,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3432,
+                  328
+                ],
+                [
+                  205,
+                  594
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.8618,
+          "feature_selection_time_s": 0.1531,
+          "inference_ms_per_sample": 0.0008,
+          "n_features_raw": 135402,
+          "n_features_selected": 100000,
+          "preprocess_time_s": 0.5483,
+          "tfidf_fit_time_s": 8.1783,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 7.3492,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 0.5,
+          "class_weight": "balanced",
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": true,
+          "method": "chi2",
+          "k_requested": 100000,
+          "k_effective": 100000
+        }
+      },
+      {
+        "variant": "C",
+        "seed": 44,
+        "run_id": "2bda1466c7d8417d85115f258591cd90",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-C\\seed_44",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7891606451655016,
+          "f1_toxic": 0.6501698204754973,
+          "weighted_f1": 0.8838435482281366,
+          "balanced_accuracy": 0.805515880918413,
+          "pr_auc": 0.7216916225942803,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9406180569581902,
+              "recall": 0.9160110149488592,
+              "f1": 0.9281514698555058,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.6107566089334548,
+              "recall": 0.6950207468879668,
+              "f1": 0.6501698204754973,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4657,
+              427
+            ],
+            [
+              294,
+              670
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6878963564197476,
+              "f1_toxic": 0.4470588235294118,
+              "weighted_f1": 0.8753582104290821,
+              "balanced_accuracy": 0.6929163233543898,
+              "pr_auc": 0.4206079543080415,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9322678843226788,
+                  "recall": 0.925226586102719,
+                  "f1": 0.9287338893100834,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.4342857142857143,
+                  "recall": 0.46060606060606063,
+                  "f1": 0.4470588235294118,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1225,
+                  99
+                ],
+                [
+                  89,
+                  76
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8091200501608886,
+              "f1_toxic": 0.6902963393375944,
+              "weighted_f1": 0.8862942128605539,
+              "balanced_accuracy": 0.8280976220275345,
+              "pr_auc": 0.7721592348634755,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9436348638988177,
+                  "recall": 0.9127659574468086,
+                  "f1": 0.9279437609841827,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.6442516268980477,
+                  "recall": 0.7434292866082604,
+                  "f1": 0.6902963393375944,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3432,
+                  328
+                ],
+                [
+                  205,
+                  594
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.803,
+          "feature_selection_time_s": 0.1531,
+          "inference_ms_per_sample": 0.0007,
+          "n_features_raw": 135402,
+          "n_features_selected": 100000,
+          "preprocess_time_s": 0.5538,
+          "tfidf_fit_time_s": 8.261,
+          "n_train": 28231,
+          "n_val": 6048,
+          "train_toxic_share": 0.1593,
+          "model_size_mb": 7.3492,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 0.5,
+          "class_weight": "balanced",
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": true,
+          "method": "chi2",
+          "k_requested": 100000,
+          "k_effective": 100000
+        }
+      }
+    ]
+  },
+  {
+    "variant": "D",
+    "calibrated": false,
+    "use_augmentation": true,
+    "variant_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-D",
+    "aggregate": {
+      "n_seeds": 3,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "macro_f1": {
+        "mean": 0.7833,
+        "std": 0.0
+      },
+      "f1_toxic": {
+        "mean": 0.6294,
+        "std": 0.0
+      },
+      "pr_auc": {
+        "mean": 0.712,
+        "std": 0.0
+      },
+      "train_time_s": {
+        "mean": 0.5885,
+        "std": 0.0216
+      },
+      "model_size_mb": {
+        "mean": 11.0249,
+        "std": 0.0
+      },
+      "by_source": {
+        "victsd": {
+          "macro_f1": {
+            "mean": 0.6428,
+            "std": 0.0
+          },
+          "f1_toxic": {
+            "mean": 0.3454,
+            "std": 0.0
+          }
+        },
+        "vihsd": {
+          "macro_f1": {
+            "mean": 0.8062,
+            "std": 0.0
+          },
+          "f1_toxic": {
+            "mean": 0.6764,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "runs": [
+      {
+        "variant": "D",
+        "seed": 42,
+        "run_id": "2320dfd50f9b405b8d386f9b79d74425",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-D\\seed_42",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7832839797952222,
+          "f1_toxic": 0.629418472063854,
+          "weighted_f1": 0.8880997687921199,
+          "balanced_accuracy": 0.762900287616181,
+          "pr_auc": 0.7120341594711928,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9216432103461392,
+              "recall": 0.9531864673485445,
+              "f1": 0.9371494875265906,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.6987341772151898,
+              "recall": 0.5726141078838174,
+              "f1": 0.629418472063854,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4846,
+              238
+            ],
+            [
+              412,
+              552
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6428263438510362,
+              "f1_toxic": 0.3453815261044177,
+              "weighted_f1": 0.8743498789540121,
+              "balanced_accuracy": 0.6148196466172298,
+              "pr_auc": 0.41126885564567295,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9131672597864768,
+                  "recall": 0.9690332326283988,
+                  "f1": 0.9402711615976548,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.5119047619047619,
+                  "recall": 0.2606060606060606,
+                  "f1": 0.3453815261044177,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1283,
+                  41
+                ],
+                [
+                  122,
+                  43
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8062212171608889,
+              "f1_toxic": 0.6764119601328904,
+              "weighted_f1": 0.8905303222409292,
+              "balanced_accuracy": 0.7923263454317897,
+              "pr_auc": 0.7626093310420137,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9247339735271217,
+                  "recall": 0.9476063829787233,
+                  "f1": 0.9360304741888874,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.7209631728045326,
+                  "recall": 0.6370463078848561,
+                  "f1": 0.6764119601328904,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3563,
+                  197
+                ],
+                [
+                  290,
+                  509
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.6068,
+          "feature_selection_time_s": 0.2906,
+          "inference_ms_per_sample": 0.0005,
+          "n_features_raw": 206196,
+          "n_features_selected": 100000,
+          "preprocess_time_s": 0.6553,
+          "tfidf_fit_time_s": 9.8856,
+          "n_train": 33906,
+          "n_val": 6048,
+          "train_toxic_share": 0.3,
+          "model_size_mb": 11.0249,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 0.5,
+          "class_weight": "balanced",
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": true,
+          "method": "chi2",
+          "k_requested": 100000,
+          "k_effective": 100000
+        }
+      },
+      {
+        "variant": "D",
+        "seed": 43,
+        "run_id": "81b9bc413a2e4da1a53c659906d47282",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-D\\seed_43",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7832839797952222,
+          "f1_toxic": 0.629418472063854,
+          "weighted_f1": 0.8880997687921199,
+          "balanced_accuracy": 0.762900287616181,
+          "pr_auc": 0.7120341594711928,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9216432103461392,
+              "recall": 0.9531864673485445,
+              "f1": 0.9371494875265906,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.6987341772151898,
+              "recall": 0.5726141078838174,
+              "f1": 0.629418472063854,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4846,
+              238
+            ],
+            [
+              412,
+              552
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6428263438510362,
+              "f1_toxic": 0.3453815261044177,
+              "weighted_f1": 0.8743498789540121,
+              "balanced_accuracy": 0.6148196466172298,
+              "pr_auc": 0.41126885564567295,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9131672597864768,
+                  "recall": 0.9690332326283988,
+                  "f1": 0.9402711615976548,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.5119047619047619,
+                  "recall": 0.2606060606060606,
+                  "f1": 0.3453815261044177,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1283,
+                  41
+                ],
+                [
+                  122,
+                  43
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8062212171608889,
+              "f1_toxic": 0.6764119601328904,
+              "weighted_f1": 0.8905303222409292,
+              "balanced_accuracy": 0.7923263454317897,
+              "pr_auc": 0.7626093310420137,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9247339735271217,
+                  "recall": 0.9476063829787233,
+                  "f1": 0.9360304741888874,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.7209631728045326,
+                  "recall": 0.6370463078848561,
+                  "f1": 0.6764119601328904,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3563,
+                  197
+                ],
+                [
+                  290,
+                  509
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.6004,
+          "feature_selection_time_s": 0.2961,
+          "inference_ms_per_sample": 0.0005,
+          "n_features_raw": 206196,
+          "n_features_selected": 100000,
+          "preprocess_time_s": 0.6396,
+          "tfidf_fit_time_s": 9.9897,
+          "n_train": 33906,
+          "n_val": 6048,
+          "train_toxic_share": 0.3,
+          "model_size_mb": 11.0249,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 0.5,
+          "class_weight": "balanced",
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": true,
+          "method": "chi2",
+          "k_requested": 100000,
+          "k_effective": 100000
+        }
+      },
+      {
+        "variant": "D",
+        "seed": 44,
+        "run_id": "1488e8c007a849e198f4bf2d46cd7ef4",
+        "seed_dir": "D:\\Projects\\toxic-comment-detection-master\\models\\baselines\\N6-run-931168a6f09241c6a8c943fd99f26c7f\\EXP-N6-D\\seed_44",
+        "metrics": {
+          "n_samples": 6048,
+          "macro_f1": 0.7832839797952222,
+          "f1_toxic": 0.629418472063854,
+          "weighted_f1": 0.8880997687921199,
+          "balanced_accuracy": 0.762900287616181,
+          "pr_auc": 0.7120341594711928,
+          "per_class": {
+            "CLEAN": {
+              "precision": 0.9216432103461392,
+              "recall": 0.9531864673485445,
+              "f1": 0.9371494875265906,
+              "support": 5084.0
+            },
+            "TOXIC": {
+              "precision": 0.6987341772151898,
+              "recall": 0.5726141078838174,
+              "f1": 0.629418472063854,
+              "support": 964.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              4846,
+              238
+            ],
+            [
+              412,
+              552
+            ]
+          ],
+          "by_source": {
+            "victsd": {
+              "n_samples": 1489,
+              "macro_f1": 0.6428263438510362,
+              "f1_toxic": 0.3453815261044177,
+              "weighted_f1": 0.8743498789540121,
+              "balanced_accuracy": 0.6148196466172298,
+              "pr_auc": 0.41126885564567295,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9131672597864768,
+                  "recall": 0.9690332326283988,
+                  "f1": 0.9402711615976548,
+                  "support": 1324.0
+                },
+                "TOXIC": {
+                  "precision": 0.5119047619047619,
+                  "recall": 0.2606060606060606,
+                  "f1": 0.3453815261044177,
+                  "support": 165.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  1283,
+                  41
+                ],
+                [
+                  122,
+                  43
+                ]
+              ]
+            },
+            "vihsd": {
+              "n_samples": 4559,
+              "macro_f1": 0.8062212171608889,
+              "f1_toxic": 0.6764119601328904,
+              "weighted_f1": 0.8905303222409292,
+              "balanced_accuracy": 0.7923263454317897,
+              "pr_auc": 0.7626093310420137,
+              "per_class": {
+                "CLEAN": {
+                  "precision": 0.9247339735271217,
+                  "recall": 0.9476063829787233,
+                  "f1": 0.9360304741888874,
+                  "support": 3760.0
+                },
+                "TOXIC": {
+                  "precision": 0.7209631728045326,
+                  "recall": 0.6370463078848561,
+                  "f1": 0.6764119601328904,
+                  "support": 799.0
+                }
+              },
+              "confusion_matrix": [
+                [
+                  3563,
+                  197
+                ],
+                [
+                  290,
+                  509
+                ]
+              ]
+            }
+          },
+          "train_time_s": 0.5582,
+          "feature_selection_time_s": 0.3032,
+          "inference_ms_per_sample": 0.0006,
+          "n_features_raw": 206196,
+          "n_features_selected": 100000,
+          "preprocess_time_s": 0.6531,
+          "tfidf_fit_time_s": 10.0456,
+          "n_train": 33906,
+          "n_val": 6048,
+          "train_toxic_share": 0.3,
+          "model_size_mb": 11.0249,
+          "within_15mb_fallback_limit": true
+        },
+        "effective_svm_cfg": {
+          "kernel": "linear",
+          "C": 0.5,
+          "class_weight": "balanced",
+          "max_iter": 5000,
+          "dual": "auto"
+        },
+        "effective_fs_cfg": {
+          "enabled": true,
+          "method": "chi2",
+          "k_requested": 100000,
+          "k_effective": 100000
+        }
+      }
+    ]
+  }
+]

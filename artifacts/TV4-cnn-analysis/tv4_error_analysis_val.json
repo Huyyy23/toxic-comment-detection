@@ -1,0 +1,1682 @@
+{
+  "primary": {
+    "variant": "HYBRID-RNN-01",
+    "seed": 42,
+    "run_id": "aa229a56a51a45bc8a1a0e3e82ad60ad",
+    "privacy_note": "All representative examples are redacted (<USER>, <URL>, <EMAIL>, <NUM>, <NAME>) and capped at 84 chars with SHA-256 sample_id only.",
+    "aggregate_error_summary": {
+      "n_val_total": 6048,
+      "n_errors_total": 691,
+      "error_rate": 0.1143,
+      "confusion_pair_counts": {
+        "TOXIC -> CLEAN": 379,
+        "CLEAN -> TOXIC": 312
+      },
+      "errors_by_source": {
+        "vihsd": 498,
+        "victsd": 193
+      },
+      "pattern_tag_counts_among_errors": {
+        "contains_teencode": 274,
+        "contains_negation": 210,
+        "context_or_lexical_nuance": 209,
+        "short_text_le_5_words": 108,
+        "contains_emoji_or_punct": 71,
+        "contains_url_or_mention": 4
+      }
+    },
+    "high_confidence_error_counts": {
+      "fn_prob_le_020": 274,
+      "fp_prob_ge_080": 160
+    },
+    "error_rate_by_tag": {
+      "contains_emoji_or_punct": {
+        "n_samples": 762,
+        "n_errors": 71,
+        "error_rate": 0.0932
+      },
+      "contains_negation": {
+        "n_samples": 1640,
+        "n_errors": 258,
+        "error_rate": 0.1573
+      },
+      "contains_teencode": {
+        "n_samples": 1156,
+        "n_errors": 179,
+        "error_rate": 0.1548
+      },
+      "contains_url_or_mention": {
+        "n_samples": 23,
+        "n_errors": 4,
+        "error_rate": 0.1739
+      },
+      "context_or_lexical_nuance": {
+        "n_samples": 1836,
+        "n_errors": 180,
+        "error_rate": 0.098
+      },
+      "long_text_ge_35_words": {
+        "n_samples": 638,
+        "n_errors": 114,
+        "error_rate": 0.1787
+      },
+      "obfuscated_or_repeated_chars": {
+        "n_samples": 1031,
+        "n_errors": 145,
+        "error_rate": 0.1406
+      },
+      "short_text_le_5_words": {
+        "n_samples": 1438,
+        "n_errors": 108,
+        "error_rate": 0.0751
+      }
+    },
+    "error_rate_by_length_bucket": {
+      "16_to_30_words": {
+        "n_samples": 1127,
+        "n_errors": 187,
+        "error_rate": 0.1659
+      },
+      "6_to_15_words": {
+        "n_samples": 2700,
+        "n_errors": 258,
+        "error_rate": 0.0956
+      },
+      "gt_30_words": {
+        "n_samples": 783,
+        "n_errors": 138,
+        "error_rate": 0.1762
+      },
+      "le_5_words": {
+        "n_samples": 1438,
+        "n_errors": 108,
+        "error_rate": 0.0751
+      }
+    },
+    "n_representative_examples": 40,
+    "sampled_example_tag_counts": {
+      "short_text_le_5_words": 5,
+      "contains_emoji_or_punct": 6,
+      "contains_teencode": 14,
+      "obfuscated_or_repeated_chars": 13,
+      "context_or_lexical_nuance": 9,
+      "contains_negation": 15,
+      "long_text_ge_35_words": 7
+    },
+    "representative_examples": [
+      {
+        "sample_id": "c85bb3e9846e56f7f367ec9e3c9456361fdafd6bd9470f4134dceeb730bb2305",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 1.4e-05,
+        "word_count": 5,
+        "char_count": 28,
+        "tags": [
+          "short_text_le_5_words",
+          "contains_emoji_or_punct"
+        ],
+        "redacted_snippet": "ANH NGHỊ TRẺ <USER> <USER>😂🤣😅😄🤣😂"
+      },
+      {
+        "sample_id": "8ff99af4a2c9e6b8b5646f1b589cb95fb6bef6d29b6f1618447cf184a3e02e72",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 6.4e-05,
+        "word_count": 9,
+        "char_count": 37,
+        "tags": [
+          "contains_teencode",
+          "contains_emoji_or_punct",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "<NAME> vãi cả <NAME> lên fan cứng. 🤣🤣🤣"
+      },
+      {
+        "sample_id": "d314176ee848e62ed5703407a44112437b45081dc441a27fe3250268ef776b90",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 6.6e-05,
+        "word_count": 16,
+        "char_count": 65,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "Dương vật của team :)) à em nhầm linh vật ớ lại nhầm linh hồn :))"
+      },
+      {
+        "sample_id": "c7bb23448a7b70ba119b095020af8973d803140dc113e02d57e8d75a2f85eacc",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.479717,
+        "word_count": 9,
+        "char_count": 40,
+        "tags": [
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "<NAME> mấy anh trên núi tởm thậttt"
+      },
+      {
+        "sample_id": "ad47a4cdb074785c55dc50993605b844c6d98def396b72b8df385d7748c20447",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.479135,
+        "word_count": 8,
+        "char_count": 35,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "Cuộc sống thú vị hơn khi bạn xamlol"
+      },
+      {
+        "sample_id": "0c28763f77945bc82033b1c1cc047bc5a582320166c8759f0805210444f443ff",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 6.1e-05,
+        "word_count": 12,
+        "char_count": 55,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "Kế hoạch lãi 10tr <NAME> nhưng khi thực hiện thành 140 tỷ"
+      },
+      {
+        "sample_id": "0f3eeb826f4548914c41aa36fe8cb8611c767cdce498a066134afe586d33a4a9",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.000194,
+        "word_count": 42,
+        "char_count": 182,
+        "tags": [
+          "contains_negation",
+          "long_text_ge_35_words"
+        ],
+        "redacted_snippet": "Hoá ra từ \"bigcityboy\" từ <NAME> mà ra. Tôi vào xem thấy MV <NAME>, <NAME> tư. Nh..."
+      },
+      {
+        "sample_id": "061f3ad0214b7639e04cf96dbdf43fcd5d012a94b3700fa0c15217efde659769",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.000276,
+        "word_count": 26,
+        "char_count": 116,
+        "tags": [
+          "contains_negation"
+        ],
+        "redacted_snippet": "Sao mình thấy bây giờ <NAME> hơn lúc <NAME> hậu 10 năm trước nhỉ? Không biết có n..."
+      },
+      {
+        "sample_id": "5ed0440002c362c6baf15e8fd3828e8eeda544837ad290edfe53d35e855f6e4a",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.473717,
+        "word_count": 125,
+        "char_count": 580,
+        "tags": [
+          "long_text_ge_35_words",
+          "contains_emoji_or_punct",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "Đây mới là lớp 1, mà <NAME> dụng như kiểu cho sinh viên cao <NAME>, <NAME> học!!!..."
+      },
+      {
+        "sample_id": "6fc2c0e5f2fc9c71f03eb19b98ab062b4faa0dcba8126f8c7a37b0d2ad2975d6",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.450736,
+        "word_count": 3,
+        "char_count": 10,
+        "tags": [
+          "short_text_le_5_words"
+        ],
+        "redacted_snippet": "Hôi pen à?"
+      },
+      {
+        "sample_id": "5f719f6c7e1ef416f2d6a9eaab751a7155803175f465ffbd7f0cbfd3a2bb0d9e",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.999886,
+        "word_count": 10,
+        "char_count": 44,
+        "tags": [
+          "contains_teencode",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "Đm thua vcl :)))) phim hài à :)))) <NAME> vcl"
+      },
+      {
+        "sample_id": "4a91605985742187f240edd4e34a83801b4cee01876434910361844292b92b06",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.998349,
+        "word_count": 17,
+        "char_count": 68,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "vay toàn lảnh <NAME> hết cmnr <NAME> lúc hoàn nợ thì <NAME> dân ra <NAME> thuế"
+      },
+      {
+        "sample_id": "0faac4718bb3f7bf9a6531e5d58dc87e902ec81ecf0e8802c83d8dae37e082b9",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.998268,
+        "word_count": 38,
+        "char_count": 182,
+        "tags": [
+          "contains_teencode",
+          "contains_negation",
+          "long_text_ge_35_words"
+        ],
+        "redacted_snippet": "<NAME> pha<NAME> viên nhé, nhưg côg ty tao có khoa<NAME> chu<NAME> viên, họ ph..."
+      },
+      {
+        "sample_id": "32fd35f1c4f1232159a7134f7cc2c87ed661420ad382b515a386e662cc8b86e9",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.50045,
+        "word_count": 5,
+        "char_count": 18,
+        "tags": [
+          "short_text_le_5_words"
+        ],
+        "redacted_snippet": "<NAME> nghe <NAME> :)"
+      },
+      {
+        "sample_id": "9704bb96c95be1e75210a1e510fd37eccf150bd3987d81ec08ffd8c455043037",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.500468,
+        "word_count": 18,
+        "char_count": 74,
+        "tags": [
+          "contains_teencode"
+        ],
+        "redacted_snippet": "<NAME> :3 méo tin dc page này có cả cmt của TDQ"
+      },
+      {
+        "sample_id": "175c9c814491e8bab94aa88c3fa3ac4a315459b2191bf995f6dc96bf77406328",
+        "source": "victsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.999104,
+        "word_count": 54,
+        "char_count": 247,
+        "tags": [
+          "contains_negation",
+          "long_text_ge_35_words"
+        ],
+        "redacted_snippet": "Chó không chỉ là vật nuôi mà còn là người bạn thân thiết của gia <NAME>. <NAME> n..."
+      },
+      {
+        "sample_id": "cd34a51831a52352d11e643d22144f16e67cdb7bb0bb172b869c67a96c4f33c0",
+        "source": "victsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.996121,
+        "word_count": 38,
+        "char_count": 153,
+        "tags": [
+          "contains_negation",
+          "long_text_ge_35_words",
+          "contains_emoji_or_punct",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "ham cho vay quá ,mà thủ tục lỏng lẻo dễ qua mặt nên mất tiền vay không <NAME> là..."
+      },
+      {
+        "sample_id": "8090d35728d8089ef2f56703896c936bdaff7b18922ffd1cc87790ec848c24a1",
+        "source": "victsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.994554,
+        "word_count": 7,
+        "char_count": 24,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "Ác nhân <NAME> sẽ có <NAME> báo!"
+      },
+      {
+        "sample_id": "2dbef82259a6e975a36cb53d8ee109867ec2ed2ae25e500de8220c7e0ae7c575",
+        "source": "victsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.504961,
+        "word_count": 14,
+        "char_count": 61,
+        "tags": [
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "Khoảnh khắc <NAME>, mặt con cá <NAME> to thẫn thờ thấy tội... :') :P"
+      },
+      {
+        "sample_id": "7e6d2e6243ad8c2aaf87131bd63f6ee49065a7265351b834c68759cffa32037b",
+        "source": "victsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.512355,
+        "word_count": 27,
+        "char_count": 108,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "Ca ngộ <NAME> tiên này <NAME> xảy ra từ lâu rồi mà sao giờ vận còn người <NAME> n..."
+      },
+      {
+        "sample_id": "a179bc25dc146c24a56fc684c364a8714d70139efd57ca928cd83da92cc60a8a",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.814514,
+        "word_count": 11,
+        "char_count": 46,
+        "tags": [
+          "contains_teencode"
+        ],
+        "redacted_snippet": "<NAME> vl mà thấy chê nhiều nhở. Thót tim vl."
+      },
+      {
+        "sample_id": "f184f328c7f6da672f80eafb78bfedc209b0e5d93e5354bc339b85ff35a46606",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.647142,
+        "word_count": 411,
+        "char_count": 1762,
+        "tags": [
+          "contains_teencode",
+          "contains_negation",
+          "long_text_ge_35_words",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "Trong thới giới thứ 3 những người <NAME> tôn trọng và <NAME> tuyên vương rất nhiề..."
+      },
+      {
+        "sample_id": "8874d016a7a7a1a189b42178df71e306dfd8a52c3ad80abe0934160ea5bf47c8",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.007111,
+        "word_count": 21,
+        "char_count": 100,
+        "tags": [
+          "contains_negation"
+        ],
+        "redacted_snippet": "Thiệt không thể hiểu nổi, dịch <NAME> bùng phát , mà mọi người <NAME> không <NAME..."
+      },
+      {
+        "sample_id": "a001d3c62e6ec48f40e690c4d350fc753db6d577e2591a417435cdfda7ecf411",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.0644,
+        "word_count": 4,
+        "char_count": 16,
+        "tags": [
+          "short_text_le_5_words"
+        ],
+        "redacted_snippet": "Tóm lại là nhạt."
+      },
+      {
+        "sample_id": "25f94f9a9aa39e528f9bc62b8047deb8d2718745eee2cf732e395c41225ef881",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.068575,
+        "word_count": 67,
+        "char_count": 289,
+        "tags": [
+          "contains_teencode",
+          "contains_negation",
+          "long_text_ge_35_words"
+        ],
+        "redacted_snippet": "Thật ko thể tin <NAME>: nhỏ con hơn <USER> vậy mà thi <NAME> 731 trận ghi 634 bàn..."
+      },
+      {
+        "sample_id": "f3364f7c23dcd29f46c6d796155b7129c636ac5f090474201e59e161d1974e3d",
+        "source": "victsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.050911,
+        "word_count": 29,
+        "char_count": 131,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "Nghe các bạn online phán mất mệt..hông ai sát <NAME> bắt sát sinh lấy gì cho mấy..."
+      },
+      {
+        "sample_id": "09e48015a0f17cc23dfc512c6eea26dcd506bfeb685e9ce7b9e757676f0759ca",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.662538,
+        "word_count": 9,
+        "char_count": 34,
+        "tags": [
+          "contains_negation",
+          "contains_emoji_or_punct"
+        ],
+        "redacted_snippet": "Chưa kịp hết dỗi <NAME> dỗi cái thứ 2😄"
+      },
+      {
+        "sample_id": "29997aff954b167c919b35d448e8bc49cb0bce7e5a9be358b96057ee565578ad",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.980778,
+        "word_count": 24,
+        "char_count": 109,
+        "tags": [
+          "contains_teencode",
+          "contains_negation"
+        ],
+        "redacted_snippet": "Buồn nhỉ, cộng sản vô thần thì lấy <NAME> ra thiên <NAME>. Muốn thiên <NAME> thì..."
+      },
+      {
+        "sample_id": "988061284f01f8a7b2e276fa98257cef188a1bfc5c063d5a11171ae1f40d374c",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.855822,
+        "word_count": 18,
+        "char_count": 72,
+        "tags": [
+          "contains_teencode",
+          "contains_negation"
+        ],
+        "redacted_snippet": "Cái miệng nói vậy, chứ m không thấy hả. Nó mê tk <NAME> như chết <NAME> sống lại"
+      },
+      {
+        "sample_id": "e4432885f8bdcc7f7a61fa9cb2e33ee56bca7bcbe3b8da4582484a163df48208",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.918606,
+        "word_count": 17,
+        "char_count": 84,
+        "tags": [
+          "contains_teencode",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "Cô này chủ vlxd giàu có và chuyên từ thiện luôn nhaaa bạn,bơ<NAME> nói cho bơ<NAM..."
+      },
+      {
+        "sample_id": "6f3de4888f0deba5aabe862082a8dcf751650ea26b56e2c0ab3bc02754fc7f58",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.345067,
+        "word_count": 20,
+        "char_count": 103,
+        "tags": [
+          "contains_teencode",
+          "contains_negation"
+        ],
+        "redacted_snippet": "Tui thâ<NAME> mâ<NAME> chô<NAME> cô<NAME> chă<NAME> na<NAME> co<NAME> ti<NAME> ta..."
+      },
+      {
+        "sample_id": "685dad248242535cb9a6b863d902007c375cd95483a013f5f97c5d726bd24871",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.018814,
+        "word_count": 2,
+        "char_count": 9,
+        "tags": [
+          "short_text_le_5_words",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "đắng =)))"
+      },
+      {
+        "sample_id": "5385394f6e90854acbc195d8fb7aee2a3a25d836844ab358b4a24b668f18fe95",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.815535,
+        "word_count": 19,
+        "char_count": 73,
+        "tags": [
+          "contains_teencode",
+          "contains_negation"
+        ],
+        "redacted_snippet": "Vinh lũ lụt hả. Sao lại gửi tiền cho mấy cái giáo xứ vùng <NAME> k lũ nhỷ :-D"
+      },
+      {
+        "sample_id": "3a9598dcdaf5c0bba8caf168378523404f2edc148f3591be47ff6834546c8bda",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.988563,
+        "word_count": 23,
+        "char_count": 103,
+        "tags": [
+          "contains_emoji_or_punct",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "Mún giết hả mại. Chơi mất dại... dừa... hahaha 😂 kao bị quài nên kao bít... bớt <..."
+      },
+      {
+        "sample_id": "428ea70aa1e54b27334c5e1cbac0931cca582ef8ace3ee3b1c93cc0f8ab7b571",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.004492,
+        "word_count": 6,
+        "char_count": 30,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "Trấn thành <NAME> trai <NAME> hariwon"
+      },
+      {
+        "sample_id": "ba4b24b925d3e926f5884143a18d4ed5c4fc756bd50480cb31778ade9ba8c40f",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.133908,
+        "word_count": 15,
+        "char_count": 66,
+        "tags": [
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "CON QUI CAI CHUYEN DI LUA GAT... MAY GAT CHI MINH HIEU ... SAO LON"
+      },
+      {
+        "sample_id": "782b8138ec3e2c73d64e1ef204eb9ea36c55ebd9f7264e61184ac3c30c1a62d7",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.80948,
+        "word_count": 18,
+        "char_count": 77,
+        "tags": [
+          "contains_teencode",
+          "contains_negation",
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "<NAME> nhạc lấn phần giọng quá , nghe lại bạc phận mà cảm thấy tội chú k-icm"
+      },
+      {
+        "sample_id": "1debabf8e9a3d91fa8c7d79230ac829bc4acb9982786989ed037dd439fc0ebc4",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.060795,
+        "word_count": 34,
+        "char_count": 135,
+        "tags": [
+          "obfuscated_or_repeated_chars"
+        ],
+        "redacted_snippet": "<NAME> hiện có kênh con <USER> chửi cả DÂN <USER> <USER> NAM NGU VÌ <USER> <USER>..."
+      },
+      {
+        "sample_id": "873876dccaacf1e3e6e6671b04b889a7b02959f48a7f650fff19f8b5e0f11576",
+        "source": "vihsd",
+        "true_label": "CLEAN",
+        "pred_label": "TOXIC",
+        "error_type": "CLEAN -> TOXIC",
+        "prob_toxic": 0.985288,
+        "word_count": 30,
+        "char_count": 120,
+        "tags": [
+          "context_or_lexical_nuance"
+        ],
+        "redacted_snippet": "trần <NAME> là e linda ai mà <NAME> tới nó là linda chửi phụ mà vụ này linda biết..."
+      },
+      {
+        "sample_id": "1baec0dca32fba9b5b38bb139b970d2ceb9f1aa801692d4d5ff33426764709da",
+        "source": "vihsd",
+        "true_label": "TOXIC",
+        "pred_label": "CLEAN",
+        "error_type": "TOXIC -> CLEAN",
+        "prob_toxic": 0.222221,
+        "word_count": 24,
+        "char_count": 95,
+        "tags": [
+          "contains_teencode",
+          "contains_negation"
+        ],
+        "redacted_snippet": "Thấy cái <NAME> là xỉu vậy giờ bà cũng có cái <NAME> cuối xuống nhìn có bị xỉu k,..."
+      }
+    ]
+  },
+  "secondary_references": {
+    "CNN-01": {
+      "variant": "CNN-01",
+      "seed": 42,
+      "run_id": "b47f640f72ce4c1b824d68fa9eb71d1a",
+      "privacy_note": "All representative examples are redacted (<USER>, <URL>, <EMAIL>, <NUM>, <NAME>) and capped at 84 chars with SHA-256 sample_id only.",
+      "aggregate_error_summary": {
+        "n_val_total": 6048,
+        "n_errors_total": 690,
+        "error_rate": 0.1141,
+        "confusion_pair_counts": {
+          "TOXIC -> CLEAN": 413,
+          "CLEAN -> TOXIC": 277
+        },
+        "errors_by_source": {
+          "vihsd": 513,
+          "victsd": 177
+        },
+        "pattern_tag_counts_among_errors": {
+          "contains_teencode": 259,
+          "context_or_lexical_nuance": 221,
+          "contains_negation": 198,
+          "short_text_le_5_words": 116,
+          "contains_emoji_or_punct": 75,
+          "contains_url_or_mention": 3
+        }
+      },
+      "high_confidence_error_counts": {
+        "fn_prob_le_020": 323,
+        "fp_prob_ge_080": 131
+      },
+      "error_rate_by_tag": {
+        "contains_emoji_or_punct": {
+          "n_samples": 762,
+          "n_errors": 76,
+          "error_rate": 0.0997
+        },
+        "contains_negation": {
+          "n_samples": 1640,
+          "n_errors": 236,
+          "error_rate": 0.1439
+        },
+        "contains_teencode": {
+          "n_samples": 1156,
+          "n_errors": 169,
+          "error_rate": 0.1462
+        },
+        "contains_url_or_mention": {
+          "n_samples": 23,
+          "n_errors": 3,
+          "error_rate": 0.1304
+        },
+        "context_or_lexical_nuance": {
+          "n_samples": 1836,
+          "n_errors": 200,
+          "error_rate": 0.1089
+        },
+        "long_text_ge_35_words": {
+          "n_samples": 638,
+          "n_errors": 105,
+          "error_rate": 0.1646
+        },
+        "obfuscated_or_repeated_chars": {
+          "n_samples": 1031,
+          "n_errors": 136,
+          "error_rate": 0.1319
+        },
+        "short_text_le_5_words": {
+          "n_samples": 1438,
+          "n_errors": 116,
+          "error_rate": 0.0807
+        }
+      },
+      "error_rate_by_length_bucket": {
+        "16_to_30_words": {
+          "n_samples": 1127,
+          "n_errors": 178,
+          "error_rate": 0.1579
+        },
+        "6_to_15_words": {
+          "n_samples": 2700,
+          "n_errors": 269,
+          "error_rate": 0.0996
+        },
+        "gt_30_words": {
+          "n_samples": 783,
+          "n_errors": 127,
+          "error_rate": 0.1622
+        },
+        "le_5_words": {
+          "n_samples": 1438,
+          "n_errors": 116,
+          "error_rate": 0.0807
+        }
+      },
+      "n_representative_examples": 15,
+      "sampled_example_tag_counts": {
+        "context_or_lexical_nuance": 3,
+        "contains_emoji_or_punct": 2,
+        "short_text_le_5_words": 4,
+        "obfuscated_or_repeated_chars": 2,
+        "contains_teencode": 2,
+        "contains_negation": 7,
+        "long_text_ge_35_words": 3
+      },
+      "representative_examples": [
+        {
+          "sample_id": "71808ce187dfbacba7f25c796adf3fc0bdf8802aadeb98e96b79c006c48e3cc9",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 5.7e-05,
+          "word_count": 7,
+          "char_count": 25,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Tao sẽ ghé <NAME> 1 bãi ngay"
+        },
+        {
+          "sample_id": "da48b0a8b21d7aead6fe7c01a338d716675d0981a39ca1691e723b16060ec875",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 6.9e-05,
+          "word_count": 19,
+          "char_count": 78,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Sao anh bảo là người ta viết <NAME> cho anh. Đó là hiểu hiện của sự lươn lẹo dồi"
+        },
+        {
+          "sample_id": "5b8f78e2e39eb88c8abff42fdaec184c0e30f01fc5bc09b202c96dab3db4e510",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 7.1e-05,
+          "word_count": 10,
+          "char_count": 43,
+          "tags": [
+            "contains_emoji_or_punct"
+          ],
+          "redacted_snippet": "<NAME> ơ chị mặt nhiều lớp thế 😂"
+        },
+        {
+          "sample_id": "d58ae8c6657ca1582c5d0463c92f18ac29322cbc4cd193684822ccaa87882e3e",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.498361,
+          "word_count": 4,
+          "char_count": 18,
+          "tags": [
+            "short_text_le_5_words",
+            "contains_emoji_or_punct",
+            "obfuscated_or_repeated_chars"
+          ],
+          "redacted_snippet": "Thâm hết cả hậu!!!"
+        },
+        {
+          "sample_id": "4538d1b51acd5ef05f11d03523e3b8579a280c241c08f3fca781039b5a3b0049",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.498184,
+          "word_count": 18,
+          "char_count": 75,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Hai con súc vật này trước kia <NAME> nhau <NAME> bây giờ quay lại cắn nhau hả"
+        },
+        {
+          "sample_id": "0f860d51d5c4683d4ebdd3927e6d51b94d6f0c0cf179a0389445c4ce51017468",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 4.6e-05,
+          "word_count": 5,
+          "char_count": 20,
+          "tags": [
+            "short_text_le_5_words"
+          ],
+          "redacted_snippet": "Tài năng có hạn quá."
+        },
+        {
+          "sample_id": "d2496b69f0faef3a26ff089b585432e2a34313023664aeb48229993f5ca20950",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 4.9e-05,
+          "word_count": 24,
+          "char_count": 106,
+          "tags": [
+            "contains_teencode",
+            "contains_negation"
+          ],
+          "redacted_snippet": "Trong phim <NAME> tình cảm thế.. <NAME> lại ko thể hiện <NAME> tình cảm như vậy....."
+        },
+        {
+          "sample_id": "8874d016a7a7a1a189b42178df71e306dfd8a52c3ad80abe0934160ea5bf47c8",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 7.1e-05,
+          "word_count": 21,
+          "char_count": 100,
+          "tags": [
+            "contains_negation"
+          ],
+          "redacted_snippet": "Thiệt không thể hiểu nổi, dịch <NAME> bùng phát , mà mọi người <NAME> không <NAME..."
+        },
+        {
+          "sample_id": "10f755df7b271dd0f4667197f4cb2e434f4e61e20f628e440b8d06d6faeca058",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.499589,
+          "word_count": 54,
+          "char_count": 236,
+          "tags": [
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "Cháu tôi <NAME> học lớp một , ngày nào cô cũng nhắn các phụ huynh kèm cháu <NAME>..."
+        },
+        {
+          "sample_id": "5aebbd6f5f7b3fe33d5818d8e818f46f0287721890bd0f3aeb9082d138aa7aed",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.49012,
+          "word_count": 39,
+          "char_count": 177,
+          "tags": [
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "Sáng thứ bảy,thấy các bé lớp 1đeo cặp <NAME> học thêm, mặt vẫn ngây ngủ, tay mang..."
+        },
+        {
+          "sample_id": "6fdae42ac4716eb5e8bdc82cfd056f03b128bc2d39ccb27d783425effd6fdd00",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.999848,
+          "word_count": 5,
+          "char_count": 19,
+          "tags": [
+            "short_text_le_5_words"
+          ],
+          "redacted_snippet": "<NAME> mẹ chết cười"
+        },
+        {
+          "sample_id": "6abe851e2c47fa176c31a7d0b17ed25c03a227129f8cc5ec9a3954e27370893e",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.999797,
+          "word_count": 21,
+          "char_count": 85,
+          "tags": [
+            "contains_negation",
+            "obfuscated_or_repeated_chars"
+          ],
+          "redacted_snippet": "kkkkkk bị bà tam cung dụ hết mớ rồi nên lên <NAME> dám nói sợ ngta chửi ngu như c..."
+        },
+        {
+          "sample_id": "9fb6984cfdeb1e2f24a3d8ad5ffa0ca7f8de543e8e57cc15821c60f60982b4ab",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.999682,
+          "word_count": 58,
+          "char_count": 227,
+          "tags": [
+            "contains_teencode",
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "Thì bây giờ khu vực sông của mình là hạ nguồn rồi , còn của bọn khựa thì là thượn..."
+        },
+        {
+          "sample_id": "0aff407e3a3484780a24726f3a5bb2f2cc7b10a51570b69d8fe4176ba28a3417",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.500252,
+          "word_count": 4,
+          "char_count": 18,
+          "tags": [
+            "short_text_le_5_words"
+          ],
+          "redacted_snippet": "Đường tăng hơi béo"
+        },
+        {
+          "sample_id": "fa7e9bbc473d259c3b0eeebeb30e36087e4c28d4561b3e4c2f2bb1b7c09826d3",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.501385,
+          "word_count": 28,
+          "char_count": 121,
+          "tags": [
+            "contains_negation"
+          ],
+          "redacted_snippet": "<NAME> chức lớn mà cậy, chẳng hiểu cán bộ lãnh <NAME> làm như vậy có <NAME> noi g..."
+        }
+      ]
+    },
+    "CNN-01-WD": {
+      "variant": "CNN-01-WD",
+      "seed": 42,
+      "run_id": "f6858c2ccc6247c6a3f6ce0d570c4771",
+      "privacy_note": "All representative examples are redacted (<USER>, <URL>, <EMAIL>, <NUM>, <NAME>) and capped at 84 chars with SHA-256 sample_id only.",
+      "aggregate_error_summary": {
+        "n_val_total": 6048,
+        "n_errors_total": 669,
+        "error_rate": 0.1106,
+        "confusion_pair_counts": {
+          "TOXIC -> CLEAN": 438,
+          "CLEAN -> TOXIC": 231
+        },
+        "errors_by_source": {
+          "vihsd": 502,
+          "victsd": 167
+        },
+        "pattern_tag_counts_among_errors": {
+          "contains_teencode": 254,
+          "context_or_lexical_nuance": 215,
+          "contains_negation": 189,
+          "short_text_le_5_words": 113,
+          "contains_emoji_or_punct": 76,
+          "contains_url_or_mention": 2
+        }
+      },
+      "high_confidence_error_counts": {
+        "fn_prob_le_020": 324,
+        "fp_prob_ge_080": 94
+      },
+      "error_rate_by_tag": {
+        "contains_emoji_or_punct": {
+          "n_samples": 762,
+          "n_errors": 77,
+          "error_rate": 0.101
+        },
+        "contains_negation": {
+          "n_samples": 1640,
+          "n_errors": 225,
+          "error_rate": 0.1372
+        },
+        "contains_teencode": {
+          "n_samples": 1156,
+          "n_errors": 162,
+          "error_rate": 0.1401
+        },
+        "contains_url_or_mention": {
+          "n_samples": 23,
+          "n_errors": 2,
+          "error_rate": 0.087
+        },
+        "context_or_lexical_nuance": {
+          "n_samples": 1836,
+          "n_errors": 191,
+          "error_rate": 0.104
+        },
+        "long_text_ge_35_words": {
+          "n_samples": 638,
+          "n_errors": 107,
+          "error_rate": 0.1677
+        },
+        "obfuscated_or_repeated_chars": {
+          "n_samples": 1031,
+          "n_errors": 127,
+          "error_rate": 0.1232
+        },
+        "short_text_le_5_words": {
+          "n_samples": 1438,
+          "n_errors": 113,
+          "error_rate": 0.0786
+        }
+      },
+      "error_rate_by_length_bucket": {
+        "16_to_30_words": {
+          "n_samples": 1127,
+          "n_errors": 167,
+          "error_rate": 0.1482
+        },
+        "6_to_15_words": {
+          "n_samples": 2700,
+          "n_errors": 259,
+          "error_rate": 0.0959
+        },
+        "gt_30_words": {
+          "n_samples": 783,
+          "n_errors": 130,
+          "error_rate": 0.166
+        },
+        "le_5_words": {
+          "n_samples": 1438,
+          "n_errors": 113,
+          "error_rate": 0.0786
+        }
+      },
+      "n_representative_examples": 15,
+      "sampled_example_tag_counts": {
+        "contains_emoji_or_punct": 1,
+        "context_or_lexical_nuance": 6,
+        "contains_negation": 5,
+        "long_text_ge_35_words": 3,
+        "short_text_le_5_words": 2,
+        "contains_teencode": 3,
+        "obfuscated_or_repeated_chars": 1
+      },
+      "representative_examples": [
+        {
+          "sample_id": "5b8f78e2e39eb88c8abff42fdaec184c0e30f01fc5bc09b202c96dab3db4e510",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.000315,
+          "word_count": 10,
+          "char_count": 43,
+          "tags": [
+            "contains_emoji_or_punct"
+          ],
+          "redacted_snippet": "<NAME> ơ chị mặt nhiều lớp thế 😂"
+        },
+        {
+          "sample_id": "71808ce187dfbacba7f25c796adf3fc0bdf8802aadeb98e96b79c006c48e3cc9",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.00041,
+          "word_count": 7,
+          "char_count": 25,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Tao sẽ ghé <NAME> 1 bãi ngay"
+        },
+        {
+          "sample_id": "888c30b0a04b2765915f454c4a5b43d9f0265277397fd527c08aa7d4ed2557fa",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.000415,
+          "word_count": 8,
+          "char_count": 33,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "<NAME> stream <NAME> phò <NAME> thầy <NAME>"
+        },
+        {
+          "sample_id": "94944d9966e9d5e5280c4a0167494981b6c3e9e0651026967d017f50b99c7c46",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.498031,
+          "word_count": 67,
+          "char_count": 294,
+          "tags": [
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "Bóng gió sao nó hõn thấy ghê <NAME> là người không <NAME> may mắn sao không biết..."
+        },
+        {
+          "sample_id": "708d70ea8291f38881da5c763eb168fdc566b47e9bb5a60a2736688e30806b67",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.496329,
+          "word_count": 8,
+          "char_count": 32,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Bài hát phải nói là như con cac."
+        },
+        {
+          "sample_id": "8874d016a7a7a1a189b42178df71e306dfd8a52c3ad80abe0934160ea5bf47c8",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.000262,
+          "word_count": 21,
+          "char_count": 100,
+          "tags": [
+            "contains_negation"
+          ],
+          "redacted_snippet": "Thiệt không thể hiểu nổi, dịch <NAME> bùng phát , mà mọi người <NAME> không <NAME..."
+        },
+        {
+          "sample_id": "0f860d51d5c4683d4ebdd3927e6d51b94d6f0c0cf179a0389445c4ce51017468",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.000377,
+          "word_count": 5,
+          "char_count": 20,
+          "tags": [
+            "short_text_le_5_words"
+          ],
+          "redacted_snippet": "Tài năng có hạn quá."
+        },
+        {
+          "sample_id": "061f3ad0214b7639e04cf96dbdf43fcd5d012a94b3700fa0c15217efde659769",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.000502,
+          "word_count": 26,
+          "char_count": 116,
+          "tags": [
+            "contains_negation"
+          ],
+          "redacted_snippet": "Sao mình thấy bây giờ <NAME> hơn lúc <NAME> hậu 10 năm trước nhỉ? Không biết có n..."
+        },
+        {
+          "sample_id": "34a8ea8657b20092eec39c9d2caca835783f00e62962308c377a4eca33895e0b",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.487407,
+          "word_count": 14,
+          "char_count": 58,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Nhìn 2 bộ mắt này sát nhân quá, xử thật nghiêm cho nó chừa"
+        },
+        {
+          "sample_id": "e9a2db39b320a2b331e923417461ba66a871e585009f484134aa2df6ce39cbae",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.450585,
+          "word_count": 42,
+          "char_count": 174,
+          "tags": [
+            "contains_teencode",
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "<NAME> hèn. những tưởng lấy dc 1 tấm chồng <NAME> nương tựa, sẻ chia. ai dè lấy n..."
+        },
+        {
+          "sample_id": "6fdae42ac4716eb5e8bdc82cfd056f03b128bc2d39ccb27d783425effd6fdd00",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.999457,
+          "word_count": 5,
+          "char_count": 19,
+          "tags": [
+            "short_text_le_5_words"
+          ],
+          "redacted_snippet": "<NAME> mẹ chết cười"
+        },
+        {
+          "sample_id": "5f719f6c7e1ef416f2d6a9eaab751a7155803175f465ffbd7f0cbfd3a2bb0d9e",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.999194,
+          "word_count": 10,
+          "char_count": 44,
+          "tags": [
+            "contains_teencode",
+            "obfuscated_or_repeated_chars"
+          ],
+          "redacted_snippet": "Đm thua vcl :)))) phim hài à :)))) <NAME> vcl"
+        },
+        {
+          "sample_id": "9fb6984cfdeb1e2f24a3d8ad5ffa0ca7f8de543e8e57cc15821c60f60982b4ab",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.999052,
+          "word_count": 58,
+          "char_count": 227,
+          "tags": [
+            "contains_teencode",
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "Thì bây giờ khu vực sông của mình là hạ nguồn rồi , còn của bọn khựa thì là thượn..."
+        },
+        {
+          "sample_id": "94c5d28214844497ca73e4ad4a25a6b1574aa40f5e1521e3c83dc5c497a16b3e",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.500302,
+          "word_count": 33,
+          "char_count": 132,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Đúng tui sống ở <USER> 3 năm nay <NAME> dù sáng hay tối hay các giờ cao <NAME> có..."
+        },
+        {
+          "sample_id": "5c17eb9607cf2f068a91109ca95f8e0e661a3ce1251e45a36765f868eeb3576a",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.504969,
+          "word_count": 22,
+          "char_count": 88,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Hèn gì ai cũng cố gắng bán nhà bán <NAME> bán ruộng bán trâu <NAME> cho con em và..."
+        }
+      ]
+    },
+    "CHAR-02": {
+      "variant": "CHAR-02",
+      "seed": 44,
+      "run_id": "f90189cf60d346ce8503475b621e330f",
+      "privacy_note": "All representative examples are redacted (<USER>, <URL>, <EMAIL>, <NUM>, <NAME>) and capped at 84 chars with SHA-256 sample_id only.",
+      "aggregate_error_summary": {
+        "n_val_total": 6048,
+        "n_errors_total": 757,
+        "error_rate": 0.1252,
+        "confusion_pair_counts": {
+          "TOXIC -> CLEAN": 423,
+          "CLEAN -> TOXIC": 334
+        },
+        "errors_by_source": {
+          "vihsd": 551,
+          "victsd": 206
+        },
+        "pattern_tag_counts_among_errors": {
+          "contains_teencode": 306,
+          "context_or_lexical_nuance": 233,
+          "contains_negation": 219,
+          "short_text_le_5_words": 113,
+          "contains_emoji_or_punct": 88,
+          "contains_url_or_mention": 4
+        }
+      },
+      "high_confidence_error_counts": {
+        "fn_prob_le_020": 240,
+        "fp_prob_ge_080": 91
+      },
+      "error_rate_by_tag": {
+        "contains_emoji_or_punct": {
+          "n_samples": 762,
+          "n_errors": 88,
+          "error_rate": 0.1155
+        },
+        "contains_negation": {
+          "n_samples": 1640,
+          "n_errors": 265,
+          "error_rate": 0.1616
+        },
+        "contains_teencode": {
+          "n_samples": 1156,
+          "n_errors": 191,
+          "error_rate": 0.1652
+        },
+        "contains_url_or_mention": {
+          "n_samples": 23,
+          "n_errors": 4,
+          "error_rate": 0.1739
+        },
+        "context_or_lexical_nuance": {
+          "n_samples": 1836,
+          "n_errors": 202,
+          "error_rate": 0.11
+        },
+        "long_text_ge_35_words": {
+          "n_samples": 638,
+          "n_errors": 127,
+          "error_rate": 0.1991
+        },
+        "obfuscated_or_repeated_chars": {
+          "n_samples": 1031,
+          "n_errors": 160,
+          "error_rate": 0.1552
+        },
+        "short_text_le_5_words": {
+          "n_samples": 1438,
+          "n_errors": 113,
+          "error_rate": 0.0786
+        }
+      },
+      "error_rate_by_length_bucket": {
+        "16_to_30_words": {
+          "n_samples": 1127,
+          "n_errors": 201,
+          "error_rate": 0.1783
+        },
+        "6_to_15_words": {
+          "n_samples": 2700,
+          "n_errors": 287,
+          "error_rate": 0.1063
+        },
+        "gt_30_words": {
+          "n_samples": 783,
+          "n_errors": 156,
+          "error_rate": 0.1992
+        },
+        "le_5_words": {
+          "n_samples": 1438,
+          "n_errors": 113,
+          "error_rate": 0.0786
+        }
+      },
+      "n_representative_examples": 15,
+      "sampled_example_tag_counts": {
+        "contains_teencode": 6,
+        "contains_negation": 9,
+        "long_text_ge_35_words": 7,
+        "obfuscated_or_repeated_chars": 4,
+        "contains_emoji_or_punct": 2,
+        "context_or_lexical_nuance": 3,
+        "short_text_le_5_words": 1
+      },
+      "representative_examples": [
+        {
+          "sample_id": "354dceb296ac5709262d3d4f33678f53b1550ad53db569e5609792ba1d009deb",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.00018,
+          "word_count": 43,
+          "char_count": 188,
+          "tags": [
+            "contains_teencode",
+            "contains_negation",
+            "long_text_ge_35_words",
+            "obfuscated_or_repeated_chars"
+          ],
+          "redacted_snippet": "còn nhớ vụ gài <NAME> 100usd <NAME> \" tịch thu \" cả tiệm vàng nhà người ta năm 20..."
+        },
+        {
+          "sample_id": "53e693ff64e9e7df40b54df81d835220d9d84ce9799d4a18e369012bd4619fc9",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.002045,
+          "word_count": 42,
+          "char_count": 185,
+          "tags": [
+            "contains_negation",
+            "long_text_ge_35_words",
+            "obfuscated_or_repeated_chars"
+          ],
+          "redacted_snippet": "<NAME> không cố ý nhưng chị N vô ý <NAME> kỷ gây hậu quả nghiêm trọng là <NAME> k..."
+        },
+        {
+          "sample_id": "a880113faf4763438eb45628551b71b66c95db435b7400d8e1c404108bd58f45",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.002682,
+          "word_count": 13,
+          "char_count": 51,
+          "tags": [
+            "contains_teencode",
+            "obfuscated_or_repeated_chars"
+          ],
+          "redacted_snippet": "Nghe một hồi xong vẫn đ hiểu phụ nữ cần cc gì :(((("
+        },
+        {
+          "sample_id": "6530c9f8189e65e1e92c50313aded7b1a5251d9338ade03af72d0e27621bb132",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.498638,
+          "word_count": 53,
+          "char_count": 222,
+          "tags": [
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "Ông này nói bậy nhiều lần , máy năm về trước tiên <NAME> sẻ giải thể <NAME> cho h..."
+        },
+        {
+          "sample_id": "4c7961fdbe3f1b8b175da08c359b42d9f3493b1e8873e23d05e3ad29c5010086",
+          "source": "vihsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.498491,
+          "word_count": 39,
+          "char_count": 165,
+          "tags": [
+            "contains_negation",
+            "long_text_ge_35_words",
+            "contains_emoji_or_punct",
+            "obfuscated_or_repeated_chars"
+          ],
+          "redacted_snippet": "ở xứ <NAME> lào này chẳng có thành công nào mà thiếu <NAME> bàn chân của <NAME> !..."
+        },
+        {
+          "sample_id": "0c28763f77945bc82033b1c1cc047bc5a582320166c8759f0805210444f443ff",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.001295,
+          "word_count": 12,
+          "char_count": 55,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Kế hoạch lãi 10tr <NAME> nhưng khi thực hiện thành 140 tỷ"
+        },
+        {
+          "sample_id": "dc4b0e512c02d1bd89e1d8844d832ab80f08282305de262b94051c8b85dd09e8",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.00151,
+          "word_count": 82,
+          "char_count": 373,
+          "tags": [
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "<NAME>: \"<NAME> chúng tôi có thể có thực lực <NAME> tốt, chúng tôi có thể nghiêm..."
+        },
+        {
+          "sample_id": "7e1db0a2b4ce44b6f358a424b982dd5c747d15ee317fbd0aaf9295b016d6321f",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.001614,
+          "word_count": 17,
+          "char_count": 86,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "\"<USER> nhận xét <NAME> coi thường tính mạng của chính mình và người khác\". Vầng!..."
+        },
+        {
+          "sample_id": "5c7b61e08cc301842a51345b3dce6d735bba97572d1a47919369cff0b662d325",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.491219,
+          "word_count": 21,
+          "char_count": 90,
+          "tags": [
+            "context_or_lexical_nuance"
+          ],
+          "redacted_snippet": "Đúng là tường <NAME> made in <NAME> chất lượng kém thật. Mới 600 năm mà <NAME> ta..."
+        },
+        {
+          "sample_id": "b82ae5e870647437360811db806144fc2331b567c8d4825fae9dc0dc1c363e22",
+          "source": "victsd",
+          "true_label": "TOXIC",
+          "pred_label": "CLEAN",
+          "error_type": "TOXIC -> CLEAN",
+          "prob_toxic": 0.485707,
+          "word_count": 34,
+          "char_count": 153,
+          "tags": [
+            "contains_negation"
+          ],
+          "redacted_snippet": "lũ người này phải cho <NAME> tù mọt gông ,lười lao <NAME> ,bạo hành ,lọi dụng trẻ..."
+        },
+        {
+          "sample_id": "9fb6984cfdeb1e2f24a3d8ad5ffa0ca7f8de543e8e57cc15821c60f60982b4ab",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.997867,
+          "word_count": 58,
+          "char_count": 227,
+          "tags": [
+            "contains_teencode",
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "Thì bây giờ khu vực sông của mình là hạ nguồn rồi , còn của bọn khựa thì là thượn..."
+        },
+        {
+          "sample_id": "7f8025f248f30905f823e3d245287603a278215930ce5f586c3abb8bcb17aa5d",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.99751,
+          "word_count": 61,
+          "char_count": 252,
+          "tags": [
+            "contains_teencode",
+            "contains_negation",
+            "long_text_ge_35_words"
+          ],
+          "redacted_snippet": "các bạn không hiểu con mẹ gì cả. dân chịu thiệt thì tất nhiên dân ở dưới thế. khi..."
+        },
+        {
+          "sample_id": "013e50306c8d1673a15c3b10ea1fe51d72f86daa5290b4b33f2e09189ed18d77",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.993389,
+          "word_count": 20,
+          "char_count": 83,
+          "tags": [
+            "contains_teencode",
+            "contains_negation"
+          ],
+          "redacted_snippet": "Thế sao bọn mỹ nợ công mấy nghìn tỉ thì ko có thằng dân nào <NAME> giết tổng thốn..."
+        },
+        {
+          "sample_id": "d28dc2882aab2005e44073e13675b8eb2c3bf260eb937772c59b4fcfc9d09e54",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.501233,
+          "word_count": 13,
+          "char_count": 50,
+          "tags": [
+            "contains_teencode"
+          ],
+          "redacted_snippet": "Anh nói hay vl! Kiêu thì nghỉ mẹ <NAME> còn gì nữa :))"
+        },
+        {
+          "sample_id": "6b1fbfc29dfcb40a974b0a6d0935493695f46736f80f4afbea3f169a677370f6",
+          "source": "vihsd",
+          "true_label": "CLEAN",
+          "pred_label": "TOXIC",
+          "error_type": "CLEAN -> TOXIC",
+          "prob_toxic": 0.501647,
+          "word_count": 5,
+          "char_count": 19,
+          "tags": [
+            "short_text_le_5_words",
+            "contains_emoji_or_punct"
+          ],
+          "redacted_snippet": "Cái bút 🤣🤣 hài vlin"
+        }
+      ]
+    }
+  }
+}

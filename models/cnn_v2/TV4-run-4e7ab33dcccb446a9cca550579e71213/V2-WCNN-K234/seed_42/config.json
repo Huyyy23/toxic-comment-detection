@@ -1,0 +1,51 @@
+{
+  "experiment": "TV4-CNN-V2",
+  "variant": "V2-WCNN-K234",
+  "seed": 42,
+  "run_id": "a4d80f4c5f574753ab78d10b38345dba",
+  "owner": "TV4",
+  "description": "Word TextCNN kernels=[2,3,4], filters=128, v2_word_norm, SpatialDropout=0.15, CosineLR",
+  "hypothesis": "Adding bigram kernel=2 on punctuation-separated v2_word_norm captures 2-word Vietnamese compound slurs and negation pairs ('không ngu', 'đồ chó').",
+  "architecture": "textcnn",
+  "preprocessing": "v2_word_norm",
+  "word_preprocessing": "v2_word_norm",
+  "char_preprocessing": "v2_word_norm",
+  "train_aug_mode": "none",
+  "lr_scheduler": "cosine",
+  "use_augmentation": false,
+  "imbalance_method": "none",
+  "focal_gamma": null,
+  "batch_size": 128,
+  "epochs": 10,
+  "patience": 3,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "grad_clip": 1.0,
+  "max_word_length": 128,
+  "max_char_length": 384,
+  "min_word_freq": 2,
+  "min_char_freq": 2,
+  "use_amp": false,
+  "model": {
+    "embedding_dim": 128,
+    "kernel_sizes": [
+      2,
+      3,
+      4
+    ],
+    "num_filters": 128,
+    "dropout": 0.45,
+    "spatial_dropout": 0.15
+  },
+  "word_vocab_size": 6689,
+  "char_vocab_size": null,
+  "vocab_sha256": "b1341785afe1fd02fab8219589b02127feb9e286da0deb5a73251d47dac928b2",
+  "data_hashes": {
+    "train_parquet_sha256": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "manifest_sha256": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3"
+  },
+  "n_train": 28231,
+  "n_val": 6048,
+  "device": "cuda"
+}

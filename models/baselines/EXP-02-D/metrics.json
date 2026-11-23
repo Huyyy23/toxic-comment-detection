@@ -1,0 +1,52 @@
+{
+  "macro_f1": 0.6607816739630419,
+  "weighted_f1": 0.8739891974494284,
+  "balanced_accuracy": 0.6440240567386827,
+  "per_class": {
+    "CLEAN": {
+      "precision": 0.9317641464574418,
+      "recall": 0.9539922103213242,
+      "f1": 0.9427471734423863,
+      "support": 4108.0
+    },
+    "OFFENSIVE": {
+      "precision": 0.505338078291815,
+      "recall": 0.44936708860759494,
+      "f1": 0.47571189279731996,
+      "support": 316.0
+    },
+    "HATE": {
+      "precision": 0.6040723981900452,
+      "recall": 0.5287128712871287,
+      "f1": 0.5638859556494192,
+      "support": 505.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      3919,
+      70,
+      119
+    ],
+    [
+      118,
+      142,
+      56
+    ],
+    [
+      169,
+      69,
+      267
+    ]
+  ],
+  "train_time_s": 538.0203,
+  "feature_selection_time_s": 0.0918,
+  "inference_ms_per_sample": 10.7627,
+  "n_features_raw": 41399,
+  "n_features_selected": 10000,
+  "preprocess_time_s": 0.3405,
+  "tfidf_fit_time_s": 4.4109,
+  "n_train": 23002,
+  "n_val": 4929,
+  "model_size_mb": 12.922
+}

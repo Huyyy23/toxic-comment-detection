@@ -1,0 +1,17 @@
+{
+  "experiment": "TV4-EXP06-Ensemble",
+  "ensemble_name": "ENS-CROSS-DIVERSE-050",
+  "seed": 43,
+  "run_id": "tv4-exp06-ens-cross-diverse-050-s43",
+  "protocol": "fixed_cutoff_050",
+  "weights": {
+    "EXP-N6-C-calibrated": 0.48,
+    "HYBRID-RNN-01": 0.18,
+    "HYBRID-RNN-WD": 0.14,
+    "CNN-01-WD": 0.1,
+    "CNN-04b": 0.05,
+    "CHAR-02": 0.05
+  },
+  "threshold": 0.5,
+  "is_calibrated": false
+}

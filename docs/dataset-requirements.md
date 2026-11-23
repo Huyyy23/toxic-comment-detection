@@ -5,6 +5,63 @@ Ngày cập nhật: 2026-11-11
 Dự án: **Hệ thống Nhận dạng Bình luận Độc hại (Vietnamese Toxic Comment Detection)**  
 Phương pháp: **ML-first, reproducibility-first**
 
+## Kiểm kê N2 ngày 2026-11-23
+
+**N2 hoàn thành về tạo dữ liệu và kiểm tra cơ bản.** Người dùng xác nhận nhóm đã xin phép UIT cho đồ án; repo chưa có bằng chứng cấp phép để kiểm chứng độc lập. Các mục ba lớp bên dưới là lịch sử.
+
+Sáu file trong `data/raw/` đọc được bằng UTF-8 và mỗi dòng là một JSON object. ViHSD có `id` (str), `text` (str), `label` (int), `split` (str). ViCTSD có `Comment`, `Title`, `Topic`, `_split` (str), `Toxicity`, `Constructiveness`, `Unnamed: 0`, `_idx` (int).
+
+| File | Số dòng | Phân bố nhãn nguồn | SHA-256 |
+|---|---:|---|---|
+| `vihsd_train.jsonl` | 24048 | 0: 19886; 1: 1606; 2: 2556 | `42a4fb3a948e5a9018e0854a14653825437d10419e952704080835d75fc068e7` |
+| `vihsd_validation.jsonl` | 2672 | 0: 2190; 1: 212; 2: 270 | `02155da4eafc7b7731da6ad2409463ce06ceab387302a0f369da101411404363` |
+| `vihsd_test.jsonl` | 6680 | 0: 5548; 1: 444; 2: 688 | `f3f890659dae2fdace5ab3ae3229eeb642d543c887a0f1db46a15a294aa10f77` |
+| `victsd_train.jsonl` | 7000 | 0: 6241; 1: 759 | `0638ff0a55b9cd3e786936b27cb56c36c719d98b453eea3aa04e5d5d31dbc935` |
+| `victsd_validation.jsonl` | 2000 | 0: 1768; 1: 232 | `da4b0ef6a4087e3348e89dabc17645dd5349eed1f19287557b70fd3ba6676dc4` |
+| `victsd_test.jsonl` | 1000 | 0: 890; 1: 110 | `522e9983d920c572a6001e84994dfa6b5cd56ee4c4de2e59a26ece895d358b32` |
+
+ViHSD: metadata G0 ghi mirror `ura-hcmut/UIT-ViHSD` revision `16c4f67cf509d4f9f36ca5b63c5503c7c8830557`; ba hash raw khớp metadata G0. Chưa chứng minh thời điểm tải tương ứng revision này. [Mirror](https://huggingface.co/datasets/ura-hcmut/UIT-ViHSD) yêu cầu xin phép UIT trước khi dùng; tag CC-BY-NC-SA-4.0 của mirror không chứng minh quyền từ UIT. Trang `https://nlp.uit.edu.vn/datasets` chuyển tới trang chủ UIT và không cung cấp bằng chứng cấp phép cho dự án.
+
+ViCTSD: [dataset card chính thức](https://huggingface.co/datasets/tarudesu/ViCTSD) ghi chỉ dùng cho nghiên cứu; không thấy giấy phép cụ thể. [API](https://huggingface.co/api/datasets/tarudesu/ViCTSD) trả revision `65a073f2c48401410b264213229a6c52417f367a` khi kiểm tra; chưa chứng minh raw local được tải từ revision đó. [Kho tác giả](https://github.com/tarudesu/ViCTSD) nhận đây là dataset chính thức. Quyền phân phối lại và sử dụng ngoài nghiên cứu chưa được xác minh.
+
+Mapping áp dụng theo yêu cầu người dùng: ViHSD `0→0`, `1/2→1`; ViCTSD `Toxicity 0→0`, `1→1`. [Bài báo ViHSD](https://arxiv.org/html/2103.11528) định nghĩa OFFENSIVE theo harassment không nhắm đối tượng và HATE theo nội dung lạm dụng nhắm đối tượng. [Bài báo ViCTSD](https://arxiv.org/html/2103.10069) gộp cả mức quite toxic, gồm nội dung có thể gây hại trong ngữ cảnh, vào toxic. Hai định nghĩa có giao nhau nhưng không chứng minh tương đương; đây là giới hạn của nhãn gộp.
+
+Kiểm tra exact text trên sáu file: 2698 nhóm trùng, gồm 2659 nhóm chỉ ViHSD, 33 nhóm chỉ ViCTSD và 6 nhóm giữa hai nguồn. Đã loại 205 nhóm, 466 bản ghi mang nhãn nhị phân mâu thuẫn: 203 nhóm ViHSD, 1 nhóm ViCTSD và 1 nhóm giữa hai nguồn. Không sửa raw. Các nhóm còn lại giữ một bản, manifest giữ liên kết mọi ID nguồn; source của bản giữ là nguồn của ID đầu tiên theo thứ tự từ điển.
+
+[G0 review](G0_FINAL_REVIEW.md) ghi test của lần chia lại trước đã có trong artifacts chia sẻ. Chưa chứng minh split tương lai độc lập với dữ liệu đã lộ; không gọi split tương lai là blind. G0 là dữ liệu ba lớp, không phải dataset nhị phân mới.
+
+Dataset nhị phân nằm tại `data/processed/binary_n2_v1/`: train 28231, val 6048, test 6048. Seed 42; 20 fold stratified theo `(source,label)`, gộp 14/3/3 fold và giữ các text trùng sau chuẩn hóa cùng split. `manifest.json` ánh xạ ID nguồn sang ID nội dung và split, hoặc đánh dấu conflict; `dataset_info.json` ghi hash và thống kê. Tái tạo vào thư mục chưa tồn tại bằng `.venv/Scripts/python.exe -m src.data.build_binary_dataset --output-dir <thư_mục_mới>`.
+
+Kiểm tra sau tạo cho thấy không trùng exact text giữa split và không trùng sau NFKC, casefold và bỏ ký tự không thuộc `\w`. Phương pháp này không phát hiện mọi near-duplicate hoặc thread leakage. Test mới không blind do test cũ từng lộ.
+
+### Audit N3 ngày 2026-11-23
+
+Đối chiếu độc lập sáu file raw, manifest và ba file Parquet với SHA-256 trong `dataset_info.json`. Hash khớp. Audit đối chiếu 43.400 ID nguồn, 40.327 bản ghi đầu ra, 205 nhóm nhãn mâu thuẫn và 466 bản ghi bị loại. Mỗi ID còn lại trỏ đúng ID nội dung và split trong manifest; nhãn và nguồn của bản đại diện khớp bản ghi nguồn đầu tiên theo thứ tự ID.
+
+Không có nhóm exact text hoặc nhóm trùng sau NFKC, casefold và loại ký tự không thuộc `\w` nằm trên nhiều split. Đối với text rỗng sau chuẩn hóa, phép kiểm tra dùng ID nội dung như builder. Đây không phải kiểm tra bao quát near-duplicate. Raw không có thread ID, nên audit không xác minh được thread leakage. Test đã được đọc để kiểm tra tính toàn vẹn split; không dùng nội dung hoặc nhãn test để chọn mô hình hay thay đổi split. Test không blind.
+
+N3 hoàn thành ngày 2026-11-23. `tests/test_n3_leakage.py` kiểm tra ba file N2, cùng fixture hợp lệ và các fixture rò rỉ exact text, text chuẩn hóa, parent không tồn tại hoặc augmentation ngoài train. Lệnh `.venv/Scripts/python.exe -m pytest -q` chạy toàn bộ suite và cho kết quả 328 passed, 1 skipped. Test bị skip là kiểm tra augmentation thật vì N4 chưa tạo dữ liệu.
+
+### Audit N4 ngày 2026-11-23
+
+`src/data/augment_binary_train.py` tạo `data/processed/binary_n4_v1/augmentation.parquet` chỉ từ mẫu TOXIC của train N2. Mỗi biến thể dùng xóa/đổi chỗ ký tự, bỏ dấu hoặc ánh xạ teencode hai chiều; từ vựng bảo vệ được ước lượng chỉ trên train và không bị sửa. Giữ tối đa hai biến thể cho mỗi parent, loại exact/normalized trùng với N2 train, val, test và các biến thể đã tạo. Split/nhãn val/test không được dùng; chỉ nội dung để kiểm tra overlap.
+
+Artifact có 5.675 dòng thuộc 2.872 parent; mỗi dòng mang `label=1`, `split=train`, `is_augmented=true` và `parent_id` trỏ tới ID N2. Tỉ lệ TOXIC của train sau ghép là 30,0%, đạt ngưỡng tối thiểu mục tiêu D3. SHA-256: `2f42eaaee33efe96a41816ecbb112df07473da20ef0641d7f3b6df2754bd488d`.
+
+Kiểm tra: `N3_AUGMENTATION_PARQUET=data/processed/binary_n4_v1/augmentation.parquet .venv/Scripts/python.exe -m pytest -q tests/test_n3_leakage.py` — 10 passed. Kiểm tra bao gồm cả split N2 và artifact thật; không dùng nhãn/nội dung test để chọn biến thể hay tham số.
+
+Đây là augmentation heuristic, chưa được đánh giá qua huấn luyện hoặc review thủ công về giữ nguyên nghĩa/nhãn. Chưa chứng minh loại bỏ near-duplicate tổng quát hoặc thread leakage; test N2 không blind. Không xem các kết quả này là bằng chứng chất lượng mô hình tăng.
+
+### G1 nhị phân với augmentation N4
+
+Gói huấn luyện bất biến nằm tại `data/processed/binary_n4_training_v1/`. Tạo gói vào thư mục chưa tồn tại bằng `.venv/Scripts/python.exe -m src.data.build_binary_training_dataset`. Builder ghép `binary_n2_v1` với `binary_n4_v1/augmentation.parquet`, giữ nguyên byte của `val.parquet` và `test.parquet`, ghi hash/thống kê trong `dataset_info.json`, kiểm tra nguồn cha và leakage chuẩn hóa, rồi công bố bằng đổi tên thư mục trên cùng volume. Nếu đích đã có, builder từ chối ghi đè.
+
+Artifact đã tạo với seed 42: train 33.906 mẫu, validation 6.048, test 6.048; train có 5.675 mẫu augmentation. `tests/test_n3_leakage.py` với N4 thật đạt 10/10. Theo chuẩn hóa NFKC/casefold/bỏ ký tự ngoài `\w`, có 248/57/59 key lặp tương ứng trong train/validation/test và không có key chung giữa các split; các mẫu lặp trong cùng split được giữ nguyên. Near-duplicate tổng quát và thread leakage chưa được loại trừ.
+
+Runner recurrent giữ nguyên G0 khi không truyền `--dataset-dir`. Với gói nhị phân, dùng `--dataset-dir data/processed/binary_n4_training_v1`; runner chỉ đọc train và val, suy ra số lớp từ nhãn train và không nạp test. Classifier và metric hỗ trợ số lớp cấu hình được; mặc định ba lớp giữ tương thích với caller G0.
+
+Chuẩn hóa duplicate dùng NFKC, casefold và bỏ ký tự không thuộc `\w`. Phép kiểm tra không phát hiện mọi near-duplicate hoặc thread leakage. `test_blind` là false.
+
 ---
 
 ## 1. Nguồn Dữ liệu Được Cung cấp (Input Datasets)
@@ -92,6 +149,22 @@ Sau bước Data Ingestion & Preprocessing, dữ liệu phải chuyển về sch
   - Kiểm tra trùng lặp ngữ cảnh / cùng thread thảo luận.
 - [ ] **5. Ghi nhận Báo cáo EDA**
   - Xuất `docs/eda_report.md` kèm biểu đồ phân bố nhãn và độ dài.
+
+### EDA nhị phân N2/N4, ngày 2026-11-23
+
+Notebook `notebooks/EXP-EDA-N2-N4.ipynb` lưu mã, bảng, biểu đồ, kết quả chạy và nhận xét. Checklist EDA dưới đây áp dụng cho candidate nhị phân; EDA G0 ba lớp vẫn được giữ riêng.
+
+- [x] Đọc N2/N4 theo từng split và đối chiếu số mẫu, phân bố CLEAN/TOXIC.
+- [x] Kiểm tra missing và chuỗi rỗng theo schema từng split. Các trường bắt buộc không có giá trị null hoặc chuỗi rỗng; `parent_id` null ở 28.231 dòng gốc N4 train theo thiết kế. Không có exact duplicate text; có 364 nhóm khóa chuẩn hóa trùng trong split.
+- [x] Kiểm tra overlap exact và khóa chuẩn hóa giữa mọi cặp train, validation và test. Không có overlap giữa các split; các nhóm trùng trong split được giữ nguyên.
+- [x] Đối chiếu N4 validation và test với N2. Hai split khớp đầy đủ theo bản ghi; 5.675 mẫu augmentation chỉ nằm trong train, đều mang nhãn TOXIC và có parent thuộc N2 train.
+- [x] So sánh mẫu augmentation với parent và kiểm tra nội dung augmentation không trùng exact hoặc theo khóa chuẩn hóa với validation và test.
+- [x] Lưu thống kê độ dài, từ vựng, bảng so sánh và biểu đồ trong notebook.
+- [ ] Chưa kiểm chứng trùng ngữ nghĩa tổng quát hoặc rò rỉ theo thread. Dataset không có thread ID; khóa chuẩn hóa không phải bộ dò near-duplicate tổng quát.
+
+N4 thêm 5.675 mẫu TOXIC vào train, giữ 23.734 mẫu CLEAN gốc, nên tỷ lệ TOXIC train tăng từ 15,93% lên 30,00%. Validation và test mỗi split có 6.048 mẫu và khớp N2. Đây là mô tả dữ liệu, không phải bằng chứng mô hình cải thiện. Test không blind; EDA không huấn luyện mô hình hay xác nhận giữ nguyên nhãn augmentation.
+
+Chạy notebook từ đầu đến cuối bằng Restart & Run All. Không sửa dữ liệu hoặc split trong EDA.
 
 ---
 

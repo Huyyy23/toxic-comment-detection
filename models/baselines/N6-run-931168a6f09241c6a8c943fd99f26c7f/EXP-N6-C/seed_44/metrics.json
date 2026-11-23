@@ -1,0 +1,110 @@
+{
+  "n_samples": 6048,
+  "macro_f1": 0.7891606451655016,
+  "f1_toxic": 0.6501698204754973,
+  "weighted_f1": 0.8838435482281366,
+  "balanced_accuracy": 0.805515880918413,
+  "pr_auc": 0.7216916225942803,
+  "per_class": {
+    "CLEAN": {
+      "precision": 0.9406180569581902,
+      "recall": 0.9160110149488592,
+      "f1": 0.9281514698555058,
+      "support": 5084.0
+    },
+    "TOXIC": {
+      "precision": 0.6107566089334548,
+      "recall": 0.6950207468879668,
+      "f1": 0.6501698204754973,
+      "support": 964.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      4657,
+      427
+    ],
+    [
+      294,
+      670
+    ]
+  ],
+  "by_source": {
+    "victsd": {
+      "n_samples": 1489,
+      "macro_f1": 0.6878963564197476,
+      "f1_toxic": 0.4470588235294118,
+      "weighted_f1": 0.8753582104290821,
+      "balanced_accuracy": 0.6929163233543898,
+      "pr_auc": 0.4206079543080415,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9322678843226788,
+          "recall": 0.925226586102719,
+          "f1": 0.9287338893100834,
+          "support": 1324.0
+        },
+        "TOXIC": {
+          "precision": 0.4342857142857143,
+          "recall": 0.46060606060606063,
+          "f1": 0.4470588235294118,
+          "support": 165.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1225,
+          99
+        ],
+        [
+          89,
+          76
+        ]
+      ]
+    },
+    "vihsd": {
+      "n_samples": 4559,
+      "macro_f1": 0.8091200501608886,
+      "f1_toxic": 0.6902963393375944,
+      "weighted_f1": 0.8862942128605539,
+      "balanced_accuracy": 0.8280976220275345,
+      "pr_auc": 0.7721592348634755,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9436348638988177,
+          "recall": 0.9127659574468086,
+          "f1": 0.9279437609841827,
+          "support": 3760.0
+        },
+        "TOXIC": {
+          "precision": 0.6442516268980477,
+          "recall": 0.7434292866082604,
+          "f1": 0.6902963393375944,
+          "support": 799.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          3432,
+          328
+        ],
+        [
+          205,
+          594
+        ]
+      ]
+    }
+  },
+  "train_time_s": 0.803,
+  "feature_selection_time_s": 0.1531,
+  "inference_ms_per_sample": 0.0007,
+  "n_features_raw": 135402,
+  "n_features_selected": 100000,
+  "preprocess_time_s": 0.5538,
+  "tfidf_fit_time_s": 8.261,
+  "n_train": 28231,
+  "n_val": 6048,
+  "train_toxic_share": 0.1593,
+  "model_size_mb": 7.3492,
+  "within_15mb_fallback_limit": true
+}

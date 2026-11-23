@@ -1,0 +1,17 @@
+{
+  "experiment": "TV4-EXP06-Ensemble",
+  "ensemble_name": "ENS-CROSS-OOF-PLATT",
+  "seed": 42,
+  "run_id": "tv4-exp06-ens-cross-oof-platt-s42",
+  "protocol": "oof_5fold_platt_calibrated",
+  "weights": {
+    "EXP-N6-C-calibrated": 0.48,
+    "HYBRID-RNN-01": 0.18,
+    "HYBRID-RNN-WD": 0.14,
+    "CNN-01-WD": 0.1,
+    "CNN-04b": 0.05,
+    "CHAR-02": 0.05
+  },
+  "threshold": 0.338,
+  "is_calibrated": true
+}

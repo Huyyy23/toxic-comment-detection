@@ -1,0 +1,25 @@
+{
+  "status": "OFFICIAL",
+  "name": "recurrent_official_v1",
+  "seed": 42,
+  "device": "auto",
+  "dataset_dir": "data/processed/vihsd_g0_v1",
+  "train_val_file": "train_val.jsonl",
+  "manifest_file": "manifest.json",
+  "max_length": 48,
+  "batch_size": 32,
+  "epochs": 10,
+  "patience": 3,
+  "learning_rate": 0.001,
+  "grad_clip": 1.0,
+  "embedding_dim": 128,
+  "hidden_size": 128,
+  "dropout": 0.3,
+  "variants": ["lstm", "bilstm", "bilstm_attention"],
+  "smoke": {
+    "train_size": 500,
+    "val_size": 100,
+    "epochs": 2,
+    "batch_size": 16
+  }
+}

@@ -1,0 +1,605 @@
+{
+  "experiment": "TV4-N10-One-Shot-Locked-Test",
+  "status": "FROZEN_BEFORE_TEST_READ",
+  "data_contract_version": "binary_n2_v1",
+  "expected_sha256": {
+    "train.parquet": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val.parquet": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "test.parquet": "d200be4a7ff2f2e725ba8e6c2c0ab835afd73612b9a5b2f14b528cb5c577be4e"
+  },
+  "test_blind": false,
+  "historical_exposure_disclosure": "dataset_info.json records test_blind=false due to historical upstream exposure prior to binary_n2_v1 split freeze. In TV4's D1-D4 pipeline (Parts 0-5), test.parquet was never opened, read, or used for vocabulary, training, hyperparameter tuning, calibration, threshold selection, or ensemble weighting.",
+  "protocol_rules": [
+    "Evaluate only the pre-declared frozen single models and ensembles.",
+    "Do not refit vocabularies, weights, Platt calibrators, or thresholds on test.",
+    "Report both default @0.50 and frozen Validation-Platt threshold metrics."
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "frozen_single_tv4": {
+    "HYBRID-RNN-01": {
+      "variant": "HYBRID-RNN-01",
+      "owner": "TV4",
+      "architecture": "bigru_char_cnn",
+      "preprocessing": "raw",
+      "num_params": 1964226,
+      "model_size_mb": 22.6933,
+      "val_macro_f1_mean": 0.773271,
+      "val_f1_toxic_mean": 0.614878,
+      "best_val_seed": 42,
+      "seeds": {
+        "42": {
+          "seed": 42,
+          "run_id": "aa229a56a51a45bc8a1a0e3e82ad60ad",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\HYBRID-RNN-01\\seed_42",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\HYBRID-RNN-01\\seed_42\\best.pt",
+          "checkpoint_sha256": "d7e37047db0fd605108f09d338d4a86f2f3539e73ff81967f91f994e4c83351e",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.78059,
+          "val_f1_toxic_at_050": 0.628694,
+          "val_raw_ece": 0.063574,
+          "frozen_platt_coef": 0.46550955,
+          "frozen_platt_intercept": -0.68158368,
+          "frozen_platt_val_ece": 0.007803,
+          "frozen_platt_threshold": 0.35,
+          "val_macro_f1_at_frozen_platt_thr": 0.782152
+        },
+        "43": {
+          "seed": 43,
+          "run_id": "75ded736b6504fb4b95a9c41f3b9d459",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\HYBRID-RNN-01\\seed_43",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\HYBRID-RNN-01\\seed_43\\best.pt",
+          "checkpoint_sha256": "a79242a6a7ed6e87d0fd38f860121f32be3a513ae0308095f4701d378bbe8aec",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.7663,
+          "val_f1_toxic_at_050": 0.602965,
+          "val_raw_ece": 0.066083,
+          "frozen_platt_coef": 0.43956206,
+          "frozen_platt_intercept": -0.61678148,
+          "frozen_platt_val_ece": 0.004308,
+          "frozen_platt_threshold": 0.3,
+          "val_macro_f1_at_frozen_platt_thr": 0.768532
+        },
+        "44": {
+          "seed": 44,
+          "run_id": "fc8e9ecc08024cf0ab97ed6c3826e49e",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\HYBRID-RNN-01\\seed_44",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\HYBRID-RNN-01\\seed_44\\best.pt",
+          "checkpoint_sha256": "1159b57f586c8b72771c3088146018d435143ecd085603ba86f23e7da31a943d",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.772922,
+          "val_f1_toxic_at_050": 0.612975,
+          "val_raw_ece": 0.060897,
+          "frozen_platt_coef": 0.51504336,
+          "frozen_platt_intercept": -0.5697301,
+          "frozen_platt_val_ece": 0.007964,
+          "frozen_platt_threshold": 0.35,
+          "val_macro_f1_at_frozen_platt_thr": 0.775406
+        }
+      }
+    },
+    "HYBRID-RNN-WD": {
+      "variant": "HYBRID-RNN-WD",
+      "owner": "TV4",
+      "architecture": "bigru_char_cnn",
+      "preprocessing": "raw",
+      "num_params": 1964226,
+      "model_size_mb": 22.6933,
+      "val_macro_f1_mean": 0.773093,
+      "val_f1_toxic_mean": 0.615514,
+      "best_val_seed": 42,
+      "seeds": {
+        "42": {
+          "seed": 42,
+          "run_id": "192d82a0d1974e72aa99c00e05675dfc",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-RNN-WD\\seed_42",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-RNN-WD\\seed_42\\best.pt",
+          "checkpoint_sha256": "61ba1c8710171c432494e888939ddb70eeaece0c08b41afb516853b149d136bd",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.779077,
+          "val_f1_toxic_at_050": 0.627119,
+          "val_raw_ece": 0.064441,
+          "frozen_platt_coef": 0.45647982,
+          "frozen_platt_intercept": -0.73218444,
+          "frozen_platt_val_ece": 0.010877,
+          "frozen_platt_threshold": 0.34,
+          "val_macro_f1_at_frozen_platt_thr": 0.779594
+        },
+        "43": {
+          "seed": 43,
+          "run_id": "338887d5dc4d4f5f908c4e18676a1427",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-RNN-WD\\seed_43",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-RNN-WD\\seed_43\\best.pt",
+          "checkpoint_sha256": "74537e0689f7adf94f23ed511d12086dbf481eefa43a9f4caa24edd213642255",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.769829,
+          "val_f1_toxic_at_050": 0.611814,
+          "val_raw_ece": 0.059913,
+          "frozen_platt_coef": 0.51589363,
+          "frozen_platt_intercept": -0.78635977,
+          "frozen_platt_val_ece": 0.005536,
+          "frozen_platt_threshold": 0.35,
+          "val_macro_f1_at_frozen_platt_thr": 0.770898
+        },
+        "44": {
+          "seed": 44,
+          "run_id": "5db206d824f14f3e909b49928c632099",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-RNN-WD\\seed_44",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-RNN-WD\\seed_44\\best.pt",
+          "checkpoint_sha256": "b9b5f708075851d3cb73446f66ac2790a6a896769213c90631352e01b5a8e4ee",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.770375,
+          "val_f1_toxic_at_050": 0.607609,
+          "val_raw_ece": 0.071653,
+          "frozen_platt_coef": 0.39382965,
+          "frozen_platt_intercept": -0.48337344,
+          "frozen_platt_val_ece": 0.008709,
+          "frozen_platt_threshold": 0.37,
+          "val_macro_f1_at_frozen_platt_thr": 0.773197
+        }
+      }
+    },
+    "CNN-01-WD": {
+      "variant": "CNN-01-WD",
+      "owner": "TV4",
+      "architecture": "textcnn",
+      "preprocessing": "basic",
+      "num_params": 1307906,
+      "model_size_mb": 15.1238,
+      "val_macro_f1_mean": 0.770451,
+      "val_f1_toxic_mean": 0.605759,
+      "best_val_seed": 42,
+      "seeds": {
+        "42": {
+          "seed": 42,
+          "run_id": "f6858c2ccc6247c6a3f6ce0d570c4771",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\CNN-01-WD\\seed_42",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\CNN-01-WD\\seed_42\\best.pt",
+          "checkpoint_sha256": "8a1ba37ac60bb8aac5077bd9b9088df936c0a1facfbce591cf32cb877ee50dd2",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.773395,
+          "val_f1_toxic_at_050": 0.611273,
+          "val_raw_ece": 0.054643,
+          "frozen_platt_coef": 0.51824798,
+          "frozen_platt_intercept": -0.51913579,
+          "frozen_platt_val_ece": 0.006407,
+          "frozen_platt_threshold": 0.33,
+          "val_macro_f1_at_frozen_platt_thr": 0.774483
+        },
+        "43": {
+          "seed": 43,
+          "run_id": "f4abf29a32c24d73b3930a13c8360622",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\CNN-01-WD\\seed_43",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\CNN-01-WD\\seed_43\\best.pt",
+          "checkpoint_sha256": "2651f1248148ea5e107ccb7002c41fcc3cf7636fc0f5f1085ecd1a871163a74d",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.767967,
+          "val_f1_toxic_at_050": 0.60012,
+          "val_raw_ece": 0.044017,
+          "frozen_platt_coef": 0.62495457,
+          "frozen_platt_intercept": -0.40935777,
+          "frozen_platt_val_ece": 0.010234,
+          "frozen_platt_threshold": 0.39,
+          "val_macro_f1_at_frozen_platt_thr": 0.769123
+        },
+        "44": {
+          "seed": 44,
+          "run_id": "cfe3374ff1604759b2ee67ec757e515c",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\CNN-01-WD\\seed_44",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\CNN-01-WD\\seed_44\\best.pt",
+          "checkpoint_sha256": "073245f5a1d6e01c7ffaced34919189094128b2f8a53ac8c5d7b2b6d4d861bc2",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.769989,
+          "val_f1_toxic_at_050": 0.605886,
+          "val_raw_ece": 0.049443,
+          "frozen_platt_coef": 0.53920732,
+          "frozen_platt_intercept": -0.54274161,
+          "frozen_platt_val_ece": 0.006753,
+          "frozen_platt_threshold": 0.38,
+          "val_macro_f1_at_frozen_platt_thr": 0.772074
+        }
+      }
+    },
+    "CNN-01": {
+      "variant": "CNN-01",
+      "owner": "TV4",
+      "architecture": "textcnn",
+      "preprocessing": "basic",
+      "num_params": 1307906,
+      "model_size_mb": 15.1238,
+      "val_macro_f1_mean": 0.770173,
+      "val_f1_toxic_mean": 0.606506,
+      "best_val_seed": 42,
+      "seeds": {
+        "42": {
+          "seed": 42,
+          "run_id": "b47f640f72ce4c1b824d68fa9eb71d1a",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\CNN-01\\seed_42",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\CNN-01\\seed_42\\best.pt",
+          "checkpoint_sha256": "e13b94fa9ff30de3520c655861d02b44dafafd77ddd33470b79eebeb2bf9fef9",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.773996,
+          "val_f1_toxic_at_050": 0.614955,
+          "val_raw_ece": 0.066492,
+          "frozen_platt_coef": 0.4306572,
+          "frozen_platt_intercept": -0.6752342,
+          "frozen_platt_val_ece": 0.01247,
+          "frozen_platt_threshold": 0.34,
+          "val_macro_f1_at_frozen_platt_thr": 0.774922
+        },
+        "43": {
+          "seed": 43,
+          "run_id": "45e6f02be4a14471aff9caa17bcb3ed9",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\CNN-01\\seed_43",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\CNN-01\\seed_43\\best.pt",
+          "checkpoint_sha256": "8fda0a12370d69d618446f90bf4badcf64d55091bdb2614b52a12f2526c7a6b1",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.765902,
+          "val_f1_toxic_at_050": 0.596908,
+          "val_raw_ece": 0.048284,
+          "frozen_platt_coef": 0.56399716,
+          "frozen_platt_intercept": -0.4522506,
+          "frozen_platt_val_ece": 0.008834,
+          "frozen_platt_threshold": 0.37,
+          "val_macro_f1_at_frozen_platt_thr": 0.767072
+        },
+        "44": {
+          "seed": 44,
+          "run_id": "998eb75ff58f4c32af2c3a5f42580021",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\CNN-01\\seed_44",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-c97812df7da7416395530962c87a7664\\CNN-01\\seed_44\\best.pt",
+          "checkpoint_sha256": "f20afd1d363c65cd981997fcf56e914b589f869c563f3bb92b0fc8a2beea4ff1",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.770622,
+          "val_f1_toxic_at_050": 0.607653,
+          "val_raw_ece": 0.050111,
+          "frozen_platt_coef": 0.53408679,
+          "frozen_platt_intercept": -0.58001538,
+          "frozen_platt_val_ece": 0.007306,
+          "frozen_platt_threshold": 0.28,
+          "val_macro_f1_at_frozen_platt_thr": 0.770669
+        }
+      }
+    },
+    "CNN-04b": {
+      "variant": "CNN-04b",
+      "owner": "TV4",
+      "architecture": "textcnn",
+      "preprocessing": "basic",
+      "num_params": 1456130,
+      "model_size_mb": 16.8243,
+      "val_macro_f1_mean": 0.768758,
+      "val_f1_toxic_mean": 0.60284,
+      "best_val_seed": 42,
+      "seeds": {
+        "42": {
+          "seed": 42,
+          "run_id": "d7631b196d3d44e0a1020b73898cf6d3",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-beab1e7c49a6401e902710849eacb8bf\\CNN-04b\\seed_42",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-beab1e7c49a6401e902710849eacb8bf\\CNN-04b\\seed_42\\best.pt",
+          "checkpoint_sha256": "340584f5f119f6abebf7e6803af1a57292d0c9b7013c3d0a9c46b2a8446633d3",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.773902,
+          "val_f1_toxic_at_050": 0.61547,
+          "val_raw_ece": 0.073036,
+          "frozen_platt_coef": 0.35145952,
+          "frozen_platt_intercept": -0.70321938,
+          "frozen_platt_val_ece": 0.009625,
+          "frozen_platt_threshold": 0.33,
+          "val_macro_f1_at_frozen_platt_thr": 0.77561
+        },
+        "43": {
+          "seed": 43,
+          "run_id": "636214d0f62c4d97b2323a8e9063e9ac",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-beab1e7c49a6401e902710849eacb8bf\\CNN-04b\\seed_43",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-beab1e7c49a6401e902710849eacb8bf\\CNN-04b\\seed_43\\best.pt",
+          "checkpoint_sha256": "1b887c7a5ce50e0a588494c492118399f17746d2030a1c7f36804366f6021a2b",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.765316,
+          "val_f1_toxic_at_050": 0.593999,
+          "val_raw_ece": 0.082831,
+          "frozen_platt_coef": 0.25142568,
+          "frozen_platt_intercept": -0.44242857,
+          "frozen_platt_val_ece": 0.020739,
+          "frozen_platt_threshold": 0.38,
+          "val_macro_f1_at_frozen_platt_thr": 0.765632
+        },
+        "44": {
+          "seed": 44,
+          "run_id": "2c452bfb88484d3788e4a01d472ca448",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-beab1e7c49a6401e902710849eacb8bf\\CNN-04b\\seed_44",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-beab1e7c49a6401e902710849eacb8bf\\CNN-04b\\seed_44\\best.pt",
+          "checkpoint_sha256": "63b607d9a568e58a29b835c8ec607342bdb5f348c305da92d3cdbb0fc5e411b9",
+          "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+          "val_macro_f1_at_050": 0.767057,
+          "val_f1_toxic_at_050": 0.599051,
+          "val_raw_ece": 0.074934,
+          "frozen_platt_coef": 0.33921704,
+          "frozen_platt_intercept": -0.49793656,
+          "frozen_platt_val_ece": 0.009428,
+          "frozen_platt_threshold": 0.38,
+          "val_macro_f1_at_frozen_platt_thr": 0.766364
+        }
+      }
+    },
+    "HYBRID-BILSTM-01": {
+      "variant": "HYBRID-BILSTM-01",
+      "owner": "TV4",
+      "architecture": "bilstm_char_cnn",
+      "preprocessing": "raw",
+      "num_params": 2030274,
+      "model_size_mb": 23.4491,
+      "val_macro_f1_mean": 0.766534,
+      "val_f1_toxic_mean": 0.606037,
+      "best_val_seed": 44,
+      "seeds": {
+        "42": {
+          "seed": 42,
+          "run_id": "bf7f2fec5a6a4c50847a59e9689a860f",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-BILSTM-01\\seed_42",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-BILSTM-01\\seed_42\\best.pt",
+          "checkpoint_sha256": "78b362f7a6bfd94f2817803b50b8b348e75873e70c7aa68f2311fc2a29612f7c",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.766962,
+          "val_f1_toxic_at_050": 0.606479,
+          "val_raw_ece": 0.086597,
+          "frozen_platt_coef": 0.30897822,
+          "frozen_platt_intercept": -0.76552016,
+          "frozen_platt_val_ece": 0.007269,
+          "frozen_platt_threshold": 0.32,
+          "val_macro_f1_at_frozen_platt_thr": 0.767413
+        },
+        "43": {
+          "seed": 43,
+          "run_id": "4ebefe5f7f5f4b9fbea3fd0cc306164e",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-BILSTM-01\\seed_43",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-BILSTM-01\\seed_43\\best.pt",
+          "checkpoint_sha256": "2b6ad95465521ca83d477a42f30b5e9c5725885a7d307297a5b9e4d5a0fbae6a",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.763671,
+          "val_f1_toxic_at_050": 0.602796,
+          "val_raw_ece": 0.083134,
+          "frozen_platt_coef": 0.33337647,
+          "frozen_platt_intercept": -0.86107909,
+          "frozen_platt_val_ece": 0.010767,
+          "frozen_platt_threshold": 0.33,
+          "val_macro_f1_at_frozen_platt_thr": 0.764956
+        },
+        "44": {
+          "seed": 44,
+          "run_id": "3d860bf5955144ff937124bb55a0dc6f",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-BILSTM-01\\seed_44",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-46dfa77e45994e48a27d7822e4ccf42f\\HYBRID-BILSTM-01\\seed_44\\best.pt",
+          "checkpoint_sha256": "fe43efe3259256011734733abb2f0c65090b1c1da5336dae5f97dd193709584d",
+          "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+          "val_macro_f1_at_050": 0.768969,
+          "val_f1_toxic_at_050": 0.608836,
+          "val_raw_ece": 0.072171,
+          "frozen_platt_coef": 0.39678181,
+          "frozen_platt_intercept": -0.69267919,
+          "frozen_platt_val_ece": 0.01008,
+          "frozen_platt_threshold": 0.34,
+          "val_macro_f1_at_frozen_platt_thr": 0.771373
+        }
+      }
+    },
+    "CHAR-02": {
+      "variant": "CHAR-02",
+      "owner": "TV4",
+      "architecture": "char_cnn",
+      "preprocessing": "raw",
+      "num_params": 345666,
+      "model_size_mb": 3.9752,
+      "val_macro_f1_mean": 0.754952,
+      "val_f1_toxic_mean": 0.581701,
+      "best_val_seed": 44,
+      "seeds": {
+        "42": {
+          "seed": 42,
+          "run_id": "d661b6e23be24c71b8d57dcff1fd9f35",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-0a40921400b646aa916d560517a4bebf\\CHAR-02\\seed_42",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-0a40921400b646aa916d560517a4bebf\\CHAR-02\\seed_42\\best.pt",
+          "checkpoint_sha256": "fa07f040816c4ae0f7449fcef8097c7a997f1b1eb3afc1fac05efdc924216861",
+          "vocab_sha256": "f428ae1d10bfde5b8b130af0b05d99febb042990778811c7b8d1470cfb9394ce",
+          "val_macro_f1_at_050": 0.757231,
+          "val_f1_toxic_at_050": 0.587196,
+          "val_raw_ece": 0.047541,
+          "frozen_platt_coef": 0.68476948,
+          "frozen_platt_intercept": -0.72727737,
+          "frozen_platt_val_ece": 0.007928,
+          "frozen_platt_threshold": 0.34,
+          "val_macro_f1_at_frozen_platt_thr": 0.756474
+        },
+        "43": {
+          "seed": 43,
+          "run_id": "e750ac03501c4754977e009c5069c9d5",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-0a40921400b646aa916d560517a4bebf\\CHAR-02\\seed_43",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-0a40921400b646aa916d560517a4bebf\\CHAR-02\\seed_43\\best.pt",
+          "checkpoint_sha256": "9ab46d65575fa05d2b357c28d892f429a1823172b368c51dfec3c9f70d76f9b1",
+          "vocab_sha256": "f428ae1d10bfde5b8b130af0b05d99febb042990778811c7b8d1470cfb9394ce",
+          "val_macro_f1_at_050": 0.750346,
+          "val_f1_toxic_at_050": 0.569544,
+          "val_raw_ece": 0.038521,
+          "frozen_platt_coef": 0.63845892,
+          "frozen_platt_intercept": -0.49404085,
+          "frozen_platt_val_ece": 0.01085,
+          "frozen_platt_threshold": 0.34,
+          "val_macro_f1_at_frozen_platt_thr": 0.758174
+        },
+        "44": {
+          "seed": 44,
+          "run_id": "f90189cf60d346ce8503475b621e330f",
+          "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-0a40921400b646aa916d560517a4bebf\\CHAR-02\\seed_44",
+          "checkpoint_path": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\cnn\\TV4-run-0a40921400b646aa916d560517a4bebf\\CHAR-02\\seed_44\\best.pt",
+          "checkpoint_sha256": "cb7db459dc0138027603c86e54ac677c59e05bb1b028946ed65a33c0ef81e1f9",
+          "vocab_sha256": "f428ae1d10bfde5b8b130af0b05d99febb042990778811c7b8d1470cfb9394ce",
+          "val_macro_f1_at_050": 0.75728,
+          "val_f1_toxic_at_050": 0.588363,
+          "val_raw_ece": 0.051878,
+          "frozen_platt_coef": 0.6729629,
+          "frozen_platt_intercept": -0.75425549,
+          "frozen_platt_val_ece": 0.011225,
+          "frozen_platt_threshold": 0.3,
+          "val_macro_f1_at_frozen_platt_thr": 0.760824
+        }
+      }
+    }
+  },
+  "frozen_n6_reference": {
+    "variant": "EXP-N6-C-calibrated",
+    "owner": "TV2",
+    "seed_dir": "C:\\Users\\THE ANH\\Documents\\Tài liệu học\\Máy học\\toxic-comment-detection-master\\models\\baselines\\N6-run-faffb8025fbc41fb8d9b463468bdd5f3\\EXP-N6-C-calibrated\\seed_42",
+    "config": {
+      "experiment": "N6-SVM-Binary",
+      "variant": "N6-C",
+      "seed": 42,
+      "run_id": "4257e892e9094f2699c6b019450302f3",
+      "owner": "TV2",
+      "data_contract_version": "binary_n2_v1",
+      "use_augmentation": false,
+      "preprocessing": "teencode",
+      "tfidf": {
+        "mode": "word+char",
+        "word_ngram_range": [
+          1,
+          3
+        ],
+        "char_ngram_range": [
+          2,
+          5
+        ],
+        "max_features": 150000,
+        "sublinear_tf": true,
+        "min_df": 2
+      },
+      "feature_selection": {
+        "enabled": true,
+        "method": "chi2",
+        "k_requested": 100000,
+        "k_effective": 100000
+      },
+      "svm": {
+        "kernel": "linear",
+        "C": 0.5,
+        "class_weight": "balanced",
+        "max_iter": 5000,
+        "dual": "auto"
+      },
+      "calibrated": true,
+      "calibration_method": "sigmoid",
+      "calibration_cv": 5,
+      "threshold": 0.34,
+      "data_hashes": {
+        "train_parquet_sha256": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+        "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+        "manifest_sha256": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3"
+      },
+      "train_text_sha256": "ad54266de9638e4cb31d9408fee54379240a1364bc55b2db04fc8f300fa3d783",
+      "val_text_sha256": "4e5a9630d232a808148ae6f022b671dab558993aa1d8d5d70c7c3ac8d03532a3",
+      "n_train": 28231,
+      "n_val": 6048
+    },
+    "frozen_default_threshold": 0.5,
+    "frozen_val_tuned_threshold": 0.34,
+    "val_macro_f1_at_050": 0.783641,
+    "val_macro_f1_at_034": 0.783641
+  },
+  "frozen_ensembles": [
+    {
+      "name": "ENS-TV4-INTRA-4",
+      "scope": "intra_tv4",
+      "protocol": "frozen_raw_softmax_cutoff_050",
+      "weights": {
+        "HYBRID-RNN-01": 0.25,
+        "HYBRID-RNN-WD": 0.25,
+        "CNN-01-WD": 0.25,
+        "CNN-04b": 0.25
+      },
+      "use_platt_calibrators": false,
+      "frozen_threshold_by_seed": {
+        "42": 0.5,
+        "43": 0.5,
+        "44": 0.5
+      }
+    },
+    {
+      "name": "ENS-TV4-DIVERSE-6",
+      "scope": "intra_tv4",
+      "protocol": "frozen_raw_softmax_cutoff_050",
+      "weights": {
+        "HYBRID-RNN-01": 0.22,
+        "HYBRID-RNN-WD": 0.22,
+        "CNN-01-WD": 0.18,
+        "CNN-04b": 0.16,
+        "HYBRID-BILSTM-01": 0.12,
+        "CHAR-02": 0.1
+      },
+      "use_platt_calibrators": false,
+      "frozen_threshold_by_seed": {
+        "42": 0.5,
+        "43": 0.5,
+        "44": 0.5
+      }
+    },
+    {
+      "name": "ENS-TV4-FROZEN-PLATT",
+      "scope": "intra_tv4",
+      "protocol": "frozen_val_platt_and_val_threshold",
+      "weights": {
+        "HYBRID-RNN-01": 0.22,
+        "HYBRID-RNN-WD": 0.22,
+        "CNN-01-WD": 0.18,
+        "CNN-04b": 0.16,
+        "HYBRID-BILSTM-01": 0.12,
+        "CHAR-02": 0.1
+      },
+      "use_platt_calibrators": true,
+      "frozen_threshold_by_seed": {
+        "42": 0.31,
+        "43": 0.29,
+        "44": 0.35
+      }
+    },
+    {
+      "name": "ENS-CROSS-DIVERSE-050",
+      "scope": "cross_team",
+      "protocol": "frozen_raw_softmax_cutoff_050",
+      "weights": {
+        "EXP-N6-C-calibrated": 0.48,
+        "HYBRID-RNN-01": 0.18,
+        "HYBRID-RNN-WD": 0.14,
+        "CNN-01-WD": 0.1,
+        "CNN-04b": 0.05,
+        "CHAR-02": 0.05
+      },
+      "use_platt_calibrators": false,
+      "frozen_threshold_by_seed": {
+        "42": 0.5,
+        "43": 0.5,
+        "44": 0.5
+      }
+    },
+    {
+      "name": "ENS-CROSS-FROZEN-PLATT",
+      "scope": "cross_team",
+      "protocol": "frozen_val_platt_and_val_threshold",
+      "weights": {
+        "EXP-N6-C-calibrated": 0.48,
+        "HYBRID-RNN-01": 0.18,
+        "HYBRID-RNN-WD": 0.14,
+        "CNN-01-WD": 0.1,
+        "CNN-04b": 0.05,
+        "CHAR-02": 0.05
+      },
+      "use_platt_calibrators": true,
+      "frozen_threshold_by_seed": {
+        "42": 0.35,
+        "43": 0.31,
+        "44": 0.36
+      }
+    }
+  ]
+}

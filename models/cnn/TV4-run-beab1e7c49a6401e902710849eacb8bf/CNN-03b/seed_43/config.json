@@ -1,0 +1,46 @@
+{
+  "experiment": "TV4-CNN-Binary",
+  "variant": "CNN-03b",
+  "seed": 43,
+  "run_id": "e92fae5115594b6db9d9470fc2bee19a",
+  "owner": "TV4",
+  "description": "Filter tuning (256 filters) trên Multi-kernel TextCNN [3, 4, 5]",
+  "hypothesis": "Tăng số filters lên 256 mở rộng khả năng trích xuất mẫu n-gram đa dạng hơn trên cả hai nguồn ViHSD và ViCTSD.",
+  "architecture": "textcnn",
+  "preprocessing": "basic",
+  "use_augmentation": false,
+  "imbalance_method": "none",
+  "focal_gamma": null,
+  "batch_size": 64,
+  "epochs": 15,
+  "patience": 4,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0,
+  "grad_clip": 1.0,
+  "max_word_length": 128,
+  "max_char_length": 384,
+  "min_word_freq": 2,
+  "min_char_freq": 2,
+  "use_amp": false,
+  "model": {
+    "embedding_dim": 128,
+    "kernel_sizes": [
+      3,
+      4,
+      5
+    ],
+    "num_filters": 256,
+    "dropout": 0.5
+  },
+  "word_vocab_size": 9831,
+  "char_vocab_size": null,
+  "vocab_sha256": "060733ba004475c04827768b274eb2c77d2366e519219d608bcf7b9b78e86764",
+  "data_hashes": {
+    "train_parquet_sha256": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "manifest_sha256": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3"
+  },
+  "n_train": 28231,
+  "n_val": 6048,
+  "device": "cuda"
+}

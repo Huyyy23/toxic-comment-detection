@@ -1,0 +1,49 @@
+{
+  "macro_f1": 0.5806415822458888,
+  "weighted_f1": 0.8505521039354624,
+  "per_class": {
+    "CLEAN": {
+      "precision": 0.8851996527777778,
+      "recall": 0.9929406037000974,
+      "f1": 0.9359798072510326,
+      "support": 4108.0
+    },
+    "OFFENSIVE": {
+      "precision": 0.6770833333333334,
+      "recall": 0.20569620253164558,
+      "f1": 0.3155339805825243,
+      "support": 316.0
+    },
+    "HATE": {
+      "precision": 0.7955555555555556,
+      "recall": 0.35445544554455444,
+      "f1": 0.4904109589041096,
+      "support": 505.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      4079,
+      11,
+      18
+    ],
+    [
+      223,
+      65,
+      28
+    ],
+    [
+      306,
+      20,
+      179
+    ]
+  ],
+  "train_time_s": 1.404,
+  "preprocess_time_s": 0.013,
+  "tfidf_fit_time_s": 1.873,
+  "inference_ms_per_sample": 0.0006,
+  "n_features": 35436,
+  "n_train": 23002,
+  "n_val": 4929,
+  "model_size_bytes": 2237865
+}
