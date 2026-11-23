@@ -1,0 +1,110 @@
+# LR Binary Config — N6 TV1 (Tam)
+# Source of truth: SPEC v5.0.0 & binary_n2_v1 / binary_n4_v1
+# Quy tắc:
+#   - Chỉ đọc train.parquet và val.parquet; tuyệt đối không mở test.parquet trước N10.
+#   - Fit TF-IDF và CalibratedClassifierCV CHỈ trên train / train-fold.
+#   - Chọn mô hình bằng raw Validation Macro-F1 trước; calibration/threshold là bước hậu kỳ cho inference.
+
+experiment: N6-LR-Binary
+owner: TV1
+seeds: [42, 43, 44]
+data_contract_version: "binary_n2_v1"
+dataset_dir: data/processed/binary_n2_v1
+augmentation_path: data/processed/binary_n4_v1/augmentation.parquet
+tracking_uri: null  # null = local store (mlruns/)
+max_fallback_size_mb: 15.0
+
+calibration:
+  method: sigmoid  # Platt scaling (ADR-03)
+  cv: 5
+  n_ece_bins: 10
+  threshold_grid_min: 0.10
+  threshold_grid_max: 0.90
+  threshold_grid_step: 0.01
+
+variants:
+  A:
+    description: "Baseline nhị phân: raw text + word TF-IDF (1-2 gram) + LogisticRegression (C=1.0)"
+    hypothesis: >
+      LogisticRegression trên word TF-IDF 1-2 gram thiết lập mốc baseline nhị phân (CLEAN vs TOXIC)
+      trên tập gộp ViHSD + ViCTSD.
+    use_augmentation: false
+    preprocessing: raw
+    tfidf:
+      mode: word
+      word_ngram_range: [1, 2]
+      char_ngram_range: [2, 4]
+      max_features: 100000
+      sublinear_tf: true
+      min_df: 2
+    lr:
+      C: 1.0
+      class_weight: null
+      max_iter: 1000
+      solver: lbfgs
+
+  B:
+    description: "Basic cleanup + word+char TF-IDF + LogisticRegression (C=5.0)"
+    hypothesis: >
+      Thêm basic cleanup và char_wb n-grams (2-4) với C=5.0 giúp LogisticRegression bắt được
+      teencode, từ viết tắt và biến thể chính tả tiếng Việt trên cả ViHSD và ViCTSD.
+    use_augmentation: false
+    preprocessing: basic
+    tfidf:
+      mode: "word+char"
+      word_ngram_range: [1, 2]
+      char_ngram_range: [2, 4]
+      max_features: 100000
+      sublinear_tf: true
+      min_df: 2
+    lr:
+      C: 5.0
+      class_weight: null
+      max_iter: 1000
+      solver: lbfgs
+
+  C:
+    description: "Teencode norm + word+char TF-IDF + LogisticRegression + tuning C/class_weight"
+    hypothesis: >
+      Chuẩn hóa teencode kết hợp word+char TF-IDF và xử lý imbalance bằng class_weight='balanced'
+      + điều chuẩn C giúp cải thiện Validation Macro-F1 và F1 TOXIC.
+    use_augmentation: false
+    preprocessing: teencode
+    tfidf:
+      mode: "word+char"
+      word_ngram_range: [1, 3]
+      char_ngram_range: [2, 5]
+      max_features: 150000
+      sublinear_tf: true
+      min_df: 2
+    lr:
+      C: 1.0
+      class_weight: balanced
+      max_iter: 1000
+      solver: lbfgs
+    tuning_grid:
+      C_candidates: [0.1, 0.5, 1.0, 2.0, 5.0]
+      class_weight_candidates: [null, "balanced"]
+
+  D:
+    description: "Ablation N4: Cấu hình tốt nhất + binary_n4_v1 train-only TOXIC augmentation"
+    hypothesis: >
+      Bổ sung 5,675 mẫu TOXIC tăng cường chỉ vào train (nâng tỷ lệ TOXIC lên 30.0%)
+      có thể thay đổi cân bằng precision/recall của lớp TOXIC trên validation.
+    use_augmentation: true
+    preprocessing: teencode
+    tfidf:
+      mode: "word+char"
+      word_ngram_range: [1, 3]
+      char_ngram_range: [2, 5]
+      max_features: 150000
+      sublinear_tf: true
+      min_df: 2
+    lr:
+      C: 1.0
+      class_weight: balanced
+      max_iter: 1000
+      solver: lbfgs
+    tuning_grid:
+      C_candidates: [0.5, 1.0, 2.0, 5.0]
+      class_weight_candidates: [null, "balanced"]

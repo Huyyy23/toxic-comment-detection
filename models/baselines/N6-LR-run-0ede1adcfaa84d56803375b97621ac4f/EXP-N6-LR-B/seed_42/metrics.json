@@ -1,0 +1,109 @@
+{
+  "n_samples": 6048,
+  "macro_f1": 0.7873825873995315,
+  "f1_toxic": 0.6326654523375835,
+  "weighted_f1": 0.8927785193531073,
+  "balanced_accuracy": 0.7542958790249126,
+  "pr_auc": 0.7282979355335768,
+  "per_class": {
+    "CLEAN": {
+      "precision": 0.9174277726001864,
+      "recall": 0.9681353265145555,
+      "f1": 0.9420997224614795,
+      "support": 5084.0
+    },
+    "TOXIC": {
+      "precision": 0.7628111273792094,
+      "recall": 0.5404564315352697,
+      "f1": 0.6326654523375835,
+      "support": 964.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      4922,
+      162
+    ],
+    [
+      443,
+      521
+    ]
+  ],
+  "by_source": {
+    "victsd": {
+      "n_samples": 1489,
+      "macro_f1": 0.6565356137368035,
+      "f1_toxic": 0.3682008368200837,
+      "weighted_f1": 0.8809681231031421,
+      "balanced_accuracy": 0.6220040281973817,
+      "pr_auc": 0.43463913153842554,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9144876325088339,
+          "recall": 0.9773413897280967,
+          "f1": 0.9448703906535232,
+          "support": 1324.0
+        },
+        "TOXIC": {
+          "precision": 0.5945945945945946,
+          "recall": 0.26666666666666666,
+          "f1": 0.3682008368200837,
+          "support": 165.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1294,
+          30
+        ],
+        [
+          121,
+          44
+        ]
+      ]
+    },
+    "vihsd": {
+      "n_samples": 4559,
+      "macro_f1": 0.8093361263412333,
+      "f1_toxic": 0.6775568181818182,
+      "weighted_f1": 0.8949247491664205,
+      "balanced_accuracy": 0.7809449311639549,
+      "pr_auc": 0.7773117341705672,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9184810126582279,
+          "recall": 0.9648936170212766,
+          "f1": 0.9411154345006485,
+          "support": 3760.0
+        },
+        "TOXIC": {
+          "precision": 0.7832512315270936,
+          "recall": 0.5969962453066333,
+          "f1": 0.6775568181818182,
+          "support": 799.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          3628,
+          132
+        ],
+        [
+          322,
+          477
+        ]
+      ]
+    }
+  },
+  "raw_ece": 0.010390004641014281,
+  "raw_log_loss": 0.2545037315164851,
+  "raw_brier_score": 0.07567677074123023,
+  "train_time_s": 4.497,
+  "inference_latency_ms_per_sample": 0.0019,
+  "n_features_final": 93893,
+  "seed": 42,
+  "variant": "EXP-N6-LR-B",
+  "use_augmentation": false,
+  "fallback_size_mb": 1.5491,
+  "within_15mb_budget": true
+}

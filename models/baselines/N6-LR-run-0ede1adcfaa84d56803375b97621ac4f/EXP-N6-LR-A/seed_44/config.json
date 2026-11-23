@@ -1,0 +1,40 @@
+{
+  "experiment": "N6-LR-Binary",
+  "owner": "TV1",
+  "variant": "EXP-N6-LR-A",
+  "result_type": "official",
+  "data_contract_version": "binary_n2_v1",
+  "use_augmentation": false,
+  "seed": 44,
+  "preprocessing": "raw",
+  "tfidf": {
+    "mode": "word",
+    "word_ngram_range": [
+      1,
+      2
+    ],
+    "char_ngram_range": [
+      2,
+      4
+    ],
+    "max_features": 100000,
+    "sublinear_tf": true,
+    "min_df": 2
+  },
+  "lr": {
+    "C": 1.0,
+    "class_weight": null,
+    "max_iter": 1000,
+    "solver": "lbfgs"
+  },
+  "calibrated": false,
+  "data_hashes": {
+    "train_parquet_sha256": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "manifest_sha256": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3",
+    "train_texts_sha256": "ad54266de9638e4cb31d9408fee54379240a1364bc55b2db04fc8f300fa3d783",
+    "val_texts_sha256": "4e5a9630d232a808148ae6f022b671dab558993aa1d8d5d70c7c3ac8d03532a3"
+  },
+  "n_train": 28231,
+  "n_val": 6048
+}
