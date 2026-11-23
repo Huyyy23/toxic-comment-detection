@@ -1,0 +1,49 @@
+{
+  "experiment": "TV4-CNN-Binary",
+  "variant": "HYBRID-RNN-01",
+  "seed": 42,
+  "run_id": "aa229a56a51a45bc8a1a0e3e82ad60ad",
+  "owner": "TV4",
+  "description": "Hybrid BiGRU + Char-CNN (TV4.md N7)",
+  "hypothesis": "Kết hợp BiGRU nắm bắt phụ thuộc tuần tự dài và Char-CNN bắt đặc trưng hình thái ký tự có thể cải thiện dự đoán trên bình luận phức tạp/đảo ngữ.",
+  "architecture": "bigru_char_cnn",
+  "preprocessing": "raw",
+  "use_augmentation": false,
+  "imbalance_method": "none",
+  "focal_gamma": null,
+  "batch_size": 64,
+  "epochs": 15,
+  "patience": 4,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0,
+  "grad_clip": 1.0,
+  "max_word_length": 128,
+  "max_char_length": 384,
+  "min_word_freq": 2,
+  "min_char_freq": 2,
+  "use_amp": false,
+  "model": {
+    "embedding_dim": 128,
+    "char_embedding_dim": 64,
+    "hidden_size": 128,
+    "char_kernel_sizes": [
+      3,
+      4,
+      5,
+      7
+    ],
+    "num_filters": 128,
+    "dropout": 0.5
+  },
+  "word_vocab_size": 12321,
+  "char_vocab_size": 489,
+  "vocab_sha256": "3744bfc1fbeb0bda67be824d004b5644386f098e6e49a9058976f75e0b785945",
+  "data_hashes": {
+    "train_parquet_sha256": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "manifest_sha256": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3"
+  },
+  "n_train": 28231,
+  "n_val": 6048,
+  "device": "cuda"
+}

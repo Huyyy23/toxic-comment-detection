@@ -8,7 +8,16 @@ from pathlib import Path
 
 
 LABELS = ("CLEAN", "OFFENSIVE", "HATE")
+BINARY_LABELS = ("CLEAN", "TOXIC")
 STATUSES = ("SYNTHETIC_NOT_RESEARCH", "OFFICIAL")
+
+
+def _label_names(num_classes: int) -> tuple[str, ...]:
+    if num_classes == 2:
+        return BINARY_LABELS
+    if num_classes == 3:
+        return LABELS
+    return tuple(f"CLASS_{index}" for index in range(num_classes))
 
 
 def _number(value, name, *, unit=False):
@@ -23,22 +32,23 @@ def _integer(value, name, minimum=0):
         raise ValueError(f"{name} must be an integer >= {minimum}")
 
 
-def _metrics(metrics, name):
+def _metrics(metrics, name) -> int:
     if not isinstance(metrics, dict):
         raise ValueError(f"{name} must be an object")
     _number(metrics.get("loss"), f"{name}.loss")
     _number(metrics.get("macro_f1"), f"{name}.macro_f1", unit=True)
+    per_class = metrics.get("per_class")
+    if not isinstance(per_class, list) or len(per_class) < 2:
+        raise ValueError(f"{name}.per_class must contain at least two class records")
+    num_classes = len(per_class)
     matrix = metrics.get("confusion_matrix")
-    if not isinstance(matrix, list) or len(matrix) != 3:
-        raise ValueError(f"{name}.confusion_matrix must be 3x3")
+    if not isinstance(matrix, list) or len(matrix) != num_classes:
+        raise ValueError(f"{name}.confusion_matrix must be {num_classes}x{num_classes}")
     for row in matrix:
-        if not isinstance(row, list) or len(row) != 3:
-            raise ValueError(f"{name}.confusion_matrix must be 3x3")
+        if not isinstance(row, list) or len(row) != num_classes:
+            raise ValueError(f"{name}.confusion_matrix must be {num_classes}x{num_classes}")
         for count in row:
             _integer(count, f"{name}.confusion_matrix count")
-    per_class = metrics.get("per_class")
-    if not isinstance(per_class, list) or len(per_class) != 3:
-        raise ValueError(f"{name}.per_class must contain three class records")
     for index, record in enumerate(per_class):
         if not isinstance(record, dict):
             raise ValueError(f"{name}.per_class record must be an object")
@@ -47,6 +57,7 @@ def _metrics(metrics, name):
         _integer(record.get("support"), f"{name}.per_class.support")
         if record["support"] != sum(matrix[index]):
             raise ValueError(f"{name}.per_class support disagrees with confusion matrix")
+    return num_classes
 
 
 def _validate(result):
@@ -56,7 +67,9 @@ def _validate(result):
         raise ValueError(f"Explicit report status required: {STATUSES}")
     if not isinstance(result.get("architecture"), str) or not result["architecture"].strip():
         raise ValueError("Report architecture must be a nonempty string")
-    if "run_id" in result and (not isinstance(result["run_id"], str) or not result["run_id"].strip()):
+    if "run_id" in result and (
+        not isinstance(result["run_id"], str) or not result["run_id"].strip()
+    ):
         raise ValueError("run_id must be a nonempty string when supplied")
     training = result.get("training")
     if not isinstance(training, dict):
@@ -65,6 +78,7 @@ def _validate(result):
     if not isinstance(history, list):
         raise ValueError("training.history must be a list")
     previous_epoch = 0
+    num_classes: int | None = None
     for epoch in history:
         if not isinstance(epoch, dict):
             raise ValueError("History epoch must be an object")
@@ -73,7 +87,11 @@ def _validate(result):
             raise ValueError("History epochs must be strictly increasing")
         previous_epoch = epoch["epoch"]
         for split in ("train", "val"):
-            _metrics(epoch.get(split), f"epoch {previous_epoch}.{split}")
+            split_classes = _metrics(epoch.get(split), f"epoch {previous_epoch}.{split}")
+            if num_classes is None:
+                num_classes = split_classes
+            elif split_classes != num_classes:
+                raise ValueError("History class counts must stay consistent across epochs")
     if training.get("best_epoch") is not None:
         _integer(training["best_epoch"], "best_epoch", minimum=1)
     if training.get("best_macro_f1") is not None:
@@ -83,11 +101,14 @@ def _validate(result):
         if history:
             raise ValueError("last_validation required when epochs exist")
         return result
-    _metrics(validation, "last_validation")
+    val_classes = _metrics(validation, "last_validation")
+    if num_classes is not None and val_classes != num_classes:
+        raise ValueError("last_validation class count disagrees with training history")
+    num_classes = val_classes
     predictions = validation.get("predictions")
     if not isinstance(predictions, list):
         raise ValueError("last_validation.predictions must be a list")
-    observed = [[0] * 3 for _ in range(3)]
+    observed = [[0] * num_classes for _ in range(num_classes)]
     ids = set()
     for prediction in predictions:
         if not isinstance(prediction, dict):
@@ -109,13 +130,13 @@ def _validate(result):
                 raise ValueError("Prediction run_id disagrees with report run_id")
         for key in ("true_label", "predicted_label"):
             _integer(prediction.get(key), key)
-            if prediction[key] >= 3:
-                raise ValueError(f"{key} must be a class index in [0, 2]")
+            if prediction[key] >= num_classes:
+                raise ValueError(f"{key} must be a class index in [0, {num_classes - 1}]")
         observed[prediction["true_label"]][prediction["predicted_label"]] += 1
         probabilities = prediction.get("probabilities_if_available")
         if probabilities is not None:
-            if not isinstance(probabilities, list) or len(probabilities) != 3:
-                raise ValueError("Prediction probabilities must contain three values")
+            if not isinstance(probabilities, list) or len(probabilities) != num_classes:
+                raise ValueError(f"Prediction probabilities must contain {num_classes} values")
             for value in probabilities:
                 _number(value, "Prediction probability", unit=True)
             if not math.isclose(sum(probabilities), 1.0, rel_tol=0, abs_tol=1e-5):
@@ -175,12 +196,16 @@ def render_report(result, output_dir) -> dict:
     figure, axis = plt.subplots()
     try:
         matrix = result["last_validation"]["confusion_matrix"]
+        num_classes = len(matrix)
+        labels = _label_names(num_classes)
         image = axis.imshow(matrix, cmap="Blues", vmin=0)
         figure.colorbar(image, ax=axis, label="Count")
-        axis.set(xticks=range(3), yticks=range(3), xticklabels=LABELS, yticklabels=LABELS,
-                 xlabel="Predicted label", ylabel="True label", title=f"{title}\nLast validation (not best checkpoint)")
-        for row in range(3):
-            for column in range(3):
+        axis.set(xticks=range(num_classes), yticks=range(num_classes),
+                 xticklabels=labels, yticklabels=labels,
+                 xlabel="Predicted label", ylabel="True label",
+                 title=f"{title}\nLast validation (not best checkpoint)")
+        for row in range(num_classes):
+            for column in range(num_classes):
                 axis.text(column, row, str(matrix[row][column]), ha="center", va="center")
         figure.tight_layout()
         paths["confusion_matrix"] = output_dir / "confusion_matrix.png"

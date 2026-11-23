@@ -1,0 +1,286 @@
+# CNN Binary Config — TV4 (TextCNN core + Char-CNN / Hybrid N7)
+# Source of truth: SPEC v5.0.0 (2026-11-23) & binary_n2_v1 / binary_n4_training_v1
+# Length stats from binary_n2_v1 train/val EDA:
+#   - words: p95=51, p99=93 -> max_word_length=128
+#   - chars: p95=222, p99=413 -> max_char_length=384
+# Rules:
+#   - Read ONLY train.parquet and val.parquet; NEVER open test.parquet before N10.
+#   - Fit word/char vocabularies and class weights ONLY on train.
+#   - Select checkpoints and rank variants strictly by Validation Macro-F1.
+
+experiment: TV4-CNN-Binary
+owner: TV4
+seeds: [42, 43, 44]
+data_contract_version: "binary_n2_v1"
+dataset_dir: data/processed/binary_n2_v1
+n4_dataset_dir: data/processed/binary_n4_training_v1
+tracking_uri: null  # null = local mlruns/
+device: auto
+vram_budget_gb: 7.0
+
+defaults:
+  max_word_length: 128
+  max_char_length: 384
+  batch_size: 64
+  epochs: 15
+  patience: 4
+  learning_rate: 0.001
+  grad_clip: 1.0
+  weight_decay: 0.0
+  imbalance_method: none  # none | class_weight | focal | sampler
+  focal_gamma: 2.0
+  min_word_freq: 2
+  min_char_freq: 2
+  use_augmentation: false
+  use_amp: false
+
+variants:
+  CNN-01:
+    description: "Baseline Word TextCNN single-kernel [3] (random-init, CE)"
+    hypothesis: >
+      Single-kernel [3] TextCNN thiết lập baseline CNN nắm bắt cụm 3 từ liên tiếp
+      trên văn bản đã chuẩn hóa basic (lowercase, strip URL/HTML).
+    architecture: textcnn
+    preprocessing: basic
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3]
+      num_filters: 128
+      dropout: 0.5
+
+  CNN-02:
+    description: "Multi-kernel Word TextCNN [3, 4, 5] (chỉ đổi kernel_sizes)"
+    hypothesis: >
+      Mở rộng sang đa kích thước cửa sổ [3, 4, 5] giúp bắt đồng thời cụm từ ngắn
+      và cấu trúc phủ định/xúc phạm dài hơn so với kernel đơn [3].
+    architecture: textcnn
+    preprocessing: basic
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 128
+      dropout: 0.5
+
+  CNN-03a:
+    description: "Filter tuning (64 filters) trên Multi-kernel TextCNN [3, 4, 5]"
+    hypothesis: >
+      Giảm số filters xuống 64 giảm dung lượng và khả năng overfit nhưng có thể
+      giảm năng lực biểu diễn các mẫu từ vựng hiếm.
+    architecture: textcnn
+    preprocessing: basic
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 64
+      dropout: 0.5
+
+  CNN-03b:
+    description: "Filter tuning (256 filters) trên Multi-kernel TextCNN [3, 4, 5]"
+    hypothesis: >
+      Tăng số filters lên 256 mở rộng khả năng trích xuất mẫu n-gram đa dạng hơn
+      trên cả hai nguồn ViHSD và ViCTSD.
+    architecture: textcnn
+    preprocessing: basic
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 256
+      dropout: 0.5
+
+  CNN-04a:
+    description: "Dropout tuning (dropout=0.3) trên Multi-kernel TextCNN [3, 4, 5]"
+    hypothesis: >
+      Giảm dropout từ 0.5 xuống 0.3 giúp giữ nhiều tín hiệu đặc trưng hơn nếu mô hình
+      đang underfit trên dữ liệu nhị phân.
+    architecture: textcnn
+    preprocessing: basic
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 128
+      dropout: 0.3
+
+  CNN-04b:
+    description: "Weight decay tuning (weight_decay=1e-4) trên Multi-kernel TextCNN"
+    hypothesis: >
+      Thêm L2 regularization (weight_decay=1e-4) kiểm soát overfitting của embedding
+      và lớp tuyến tính cuối mà vẫn giữ nguyên cấu trúc TextCNN.
+    architecture: textcnn
+    preprocessing: basic
+    weight_decay: 0.0001
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 128
+      dropout: 0.5
+
+  CHAR-01:
+    description: "Char-CNN multi-kernel [3, 4, 5, 7] (N7 SPEC v5, raw NFC text)"
+    hypothesis: >
+      Char-CNN xử lý trực tiếp chuỗi ký tự nguyên bản giúp chống nhiễu teencode,
+      sai chính tả, ký tự né filter (vd: d.m, clgt) tốt hơn tách từ đơn thuần.
+    architecture: char_cnn
+    preprocessing: raw
+    model:
+      char_embedding_dim: 64
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.5
+
+  HYBRID-01:
+    description: "Hybrid Word-CNN + Char-CNN (kết hợp ngữ cảnh từ và ký tự)"
+    hypothesis: >
+      Ghép biểu diễn Word-CNN [3, 4, 5] và Char-CNN [3, 4, 5, 7] tận dụng cả ngữ nghĩa
+      mức từ trên câu dài (ViCTSD) và biến thể ký tự/teencode (ViHSD).
+    architecture: word_char_cnn
+    preprocessing: raw
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      kernel_sizes: [3, 4, 5]
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.5
+
+  HYBRID-RNN-01:
+    description: "Hybrid BiGRU + Char-CNN (TV4.md N7)"
+    hypothesis: >
+      Kết hợp BiGRU nắm bắt phụ thuộc tuần tự dài và Char-CNN bắt đặc trưng hình thái
+      ký tự có thể cải thiện dự đoán trên bình luận phức tạp/đảo ngữ.
+    architecture: bigru_char_cnn
+    preprocessing: raw
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      hidden_size: 128
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.5
+
+  CNN-IMB-CW:
+    description: "Ablation D3: Multi-kernel TextCNN + class_weight balanced"
+    hypothesis: >
+      Dùng nghịch đảo tần suất lớp từ tập train bù đắp tỷ lệ TOXIC thấp (15.93%)
+      và cải thiện recall/F1 TOXIC trên validation.
+    architecture: textcnn
+    preprocessing: basic
+    imbalance_method: class_weight
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 128
+      dropout: 0.5
+
+  CNN-IMB-FOCAL:
+    description: "Ablation D3: Multi-kernel TextCNN + Focal Loss (gamma=2.0)"
+    hypothesis: >
+      Focal Loss giảm trọng số các mẫu CLEAN dễ phân loại và tập trung gradient vào
+      những mẫu ranh giới khó phân biệt giữa CLEAN và TOXIC.
+    architecture: textcnn
+    preprocessing: basic
+    imbalance_method: focal
+    focal_gamma: 2.0
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 128
+      dropout: 0.5
+
+  CNN-AUG-N4:
+    description: "Ablation N4: Multi-kernel TextCNN trên train tăng cường (30.0% TOXIC)"
+    hypothesis: >
+      Huấn luyện trên binary_n4_training_v1 (5,675 mẫu TOXIC train-only) tăng tiếp xúc
+      với biến thể teencode/lỗi dấu, kiểm chứng xem có cải thiện Validation Macro-F1 không.
+    architecture: textcnn
+    preprocessing: basic
+    use_augmentation: true
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 128
+      dropout: 0.5
+
+  CHAR-02:
+    description: "Ablation Char-CNN: tăng num_filters=256 (chỉ đổi filters so với CHAR-01)"
+    hypothesis: >
+      Tăng số filters từ 128 lên 256 trên Char-CNN có thể nắm bắt nhiều mẫu ký tự
+      teencode và từ ghép tiếng Việt hơn do vốn từ ký tự nhỏ không dễ overfit.
+    architecture: char_cnn
+    preprocessing: raw
+    model:
+      char_embedding_dim: 64
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 256
+      dropout: 0.5
+
+  CHAR-03:
+    description: "Ablation Char-CNN: giảm dropout=0.3 (chỉ đổi dropout so với CHAR-01)"
+    hypothesis: >
+      Char-CNN có ít tham số hơn (188k) nên dropout 0.5 có thể quá mạnh và gây
+      underfit; giảm dropout xuống 0.3 giúp giữ tín hiệu đặc trưng ký tự.
+    architecture: char_cnn
+    preprocessing: raw
+    model:
+      char_embedding_dim: 64
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.3
+
+  CNN-IMB-SAMPLER:
+    description: "Ablation D3: Multi-kernel TextCNN + WeightedRandomSampler trên train"
+    hypothesis: >
+      Dùng WeightedRandomSampler cân bằng tần suất mẫu TOXIC trong mỗi batch
+      trên tập train (phương án thứ 3 của D3) thay cho class_weight/focal.
+    architecture: textcnn
+    preprocessing: basic
+    imbalance_method: sampler
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3, 4, 5]
+      num_filters: 128
+      dropout: 0.5
+
+  HYBRID-BILSTM-01:
+    description: "Hybrid BiLSTM + Char-CNN (TV4.md N7, đối chứng với BiGRU + Char-CNN)"
+    hypothesis: >
+      Thay encoder từ BiGRU sang BiLSTM trong kiến trúc Hybrid + Char-CNN để
+      so sánh hiệu năng/chi phí theo yêu cầu N7 của TV4.md.
+    architecture: bilstm_char_cnn
+    preprocessing: raw
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      hidden_size: 128
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.5
+
+  HYBRID-RNN-WD:
+    description: "Regularization tuning: BiGRU + Char-CNN + weight_decay=1e-4"
+    hypothesis: >
+      Thêm L2 weight_decay=1e-4 trên mô hình dẫn đầu HYBRID-RNN-01 giúp kiềm
+      overfitting tương tự hiệu ứng tích cực đã thấy ở CNN-04b.
+    architecture: bigru_char_cnn
+    preprocessing: raw
+    weight_decay: 0.0001
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      hidden_size: 128
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.5
+
+  CNN-01-WD:
+    description: "Regularization tuning: Word TextCNN [3] + weight_decay=1e-4"
+    hypothesis: >
+      Áp dụng weight_decay=1e-4 lên kiến trúc TextCNN [3] (CNN-01) để giảm
+      khoảng cách train-val Macro-F1 và nâng khả năng tổng quát hóa.
+    architecture: textcnn
+    preprocessing: basic
+    weight_decay: 0.0001
+    model:
+      embedding_dim: 128
+      kernel_sizes: [3]
+      num_filters: 128
+      dropout: 0.5

@@ -10,6 +10,15 @@ from src.tracking.mlflow_tracker import MLflowTracker
 
 
 LABELS = ("CLEAN", "OFFENSIVE", "HATE")
+BINARY_LABELS = ("CLEAN", "TOXIC")
+
+
+def _label_names(num_classes: int) -> tuple[str, ...]:
+    if num_classes == 2:
+        return BINARY_LABELS
+    if num_classes == 3:
+        return LABELS
+    return tuple(f"CLASS_{index}" for index in range(num_classes))
 
 
 def log_epoch(tracker, state):
@@ -19,7 +28,8 @@ def log_epoch(tracker, state):
     for split in ("train", "val"):
         values = row[split]
         metrics.update({f"{split}_{name}": values[name] for name in ("loss", "macro_f1")})
-        for label, scores in zip(LABELS, values["per_class"]):
+        labels = _label_names(len(values["per_class"]))
+        for label, scores in zip(labels, values["per_class"]):
             for name in ("precision", "recall", "f1", "support"):
                 metrics[f"{split}_{label}_{name}"] = scores[name]
     tracker.log_metrics(metrics, step=state["epoch"])
@@ -73,8 +83,11 @@ def finish_tracking(tracker, output, summary, *, config, data_metadata, duration
                          "last_val_macro_f1": summary["last_validation"]["macro_f1"]})
     if write_artifacts:
         (output / "validation_predictions.json").write_text(
-            json.dumps(summary["last_validation"]["predictions"], ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8")
+            json.dumps(
+                summary["last_validation"]["predictions"], ensure_ascii=False, indent=2
+            ) + "\n",
+            encoding="utf-8",
+        )
         (output / "config.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
         (output / "data_metadata.json").write_text(
             json.dumps(data_metadata, indent=2) + "\n", encoding="utf-8")

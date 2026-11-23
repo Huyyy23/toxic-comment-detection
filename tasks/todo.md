@@ -15,15 +15,15 @@
 - [ ] **TV2 — EXP-02:** LinearSVC + TF-IDF; tuning C/n-grams/feature selection; tối thiểu 3 official runs.
 - [x] **TV3 — EXP-03:** scratch LSTM → BiLSTM → BiLSTM+Attention; 3 official runs completed on G0 train/validation with train-only vocabulary. No locked test used.
   - [x] Pipeline: best-checkpoint validation, data hashes, CUDA/CPU auto-selection, complete optimizer/RNG checkpoints and resume support. Artifacts: `models/recurrent_official/EXP-03/`.
-- [ ] **TV4 — EXP-04:** scratch TextCNN single/multi-kernel; tối thiểu 3 official runs.
+- [x] **TV4 — EXP-04:** scratch TextCNN single/multi-kernel; tối thiểu 3 official runs. (`EXPERIMENTALLY VALIDATED` 2026-11-24 — 18 biến thể × 3 seeds = 54 official GPU runs trên `binary_n2_v1` & `binary_n4_training_v1` tại `models/cnn/TV4-run-*/` và MLflow `TV4-CNN-Binary`).
 - [ ] **Bàn giao chung mỗi mô hình:** config/seed/dataset hash, MLflow run IDs, checkpoint, validation predictions, Macro-F1/per-class F1 và thời gian/size.
 
 ## Nhóm 2 — Ablation và phân tích (sau khi có validation results)
 - [ ] **TV1:** preprocessing ablation và lỗi LR.
 - [ ] **TV2:** SVM feature/hyperparameter ablation và training-cost comparison.
 - [ ] **TV3 lead; TV1–TV4 đóng góp:** **EXP-05**, phân tích ít nhất 30 lỗi validation cross-model, nhóm lỗi và giả thuyết kiểm chứng.
-- [ ] **TV4:** CNN kernel/dropout ablation.
-- [ ] **TV4, có điều kiện — EXP-06:** chỉ thử voting/stacking khi validation predictions cho thấy error diversity; stacking phải dùng OOF train predictions. Nếu không phù hợp, ghi lý do skip.
+- [x] **TV4:** CNN kernel/dropout ablation. (`EXPERIMENTALLY VALIDATED` 2026-11-24 — 6 vòng ablation kernel/filter/dropout/weight_decay/imbalance/augmentation/char-cnn/hybrid tại `docs/TV4_CNN_REPORT.md` & `artifacts/TV4-cnn-analysis/`).
+- [x] **TV4, có điều kiện — EXP-06:** chỉ thử voting/stacking khi validation predictions cho thấy error diversity; stacking phải dùng OOF train predictions. Nếu không phù hợp, ghi lý do skip. (`EXPERIMENTALLY VALIDATED` 2026-11-24 — đo Error Diversity `disagreement_rate = 6.13%–9.62%`, `Oracle Macro-F1 = 0.8535–0.8693`; `ENS-TV4-DIVERSE-6` đạt Val Macro-F1 `0.7859` (`+1.26%`), `ENS-TV4-OOF-PLATT` đạt `0.7900` (`+1.67%`), `ENS-CROSS-OOF-PLATT` đạt `0.7989`; ghi rõ quyết định skip 90-run Train-OOF Stacking trong production tại `artifacts/TV4-ensemble-analysis/`).
 - [ ] **TV3, tùy chọn — EXP-07:** PhoBERT chỉ sau nghiệm thu EXP-03; được skip nếu không đủ tài nguyên, không chặn final.
 
 ## Nhóm 3 — Chọn mô hình và đánh giá cuối
@@ -81,9 +81,9 @@ Nguồn chi tiết: [spec](../docs/spec.md) · [experiment plan](../docs/plans/m
 
 ### TV4 — TheAnh
 - [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
-- [ ] N7: Phối hợp neural với TV3 theo vai trò recurrent và CNN hiện có. Sau N4, N5, thử BiGRU/BiLSTM + Char-CNN, checkpoint theo val Macro-F1, ghi F1 TOXIC và VRAM mục tiêu dưới 7 GB.
-  - [ ] Thực hiện CNN ablation trên validation; lưu config, hash dữ liệu, ba seed và metrics.
-- [ ] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning.
+- [x] N7: Phối hợp neural với TV3 theo vai trò recurrent và CNN hiện có. Sau N4, N5, thử BiGRU/BiLSTM + Char-CNN, checkpoint theo val Macro-F1, ghi F1 TOXIC và VRAM mục tiêu dưới 7 GB. (`HYBRID-RNN-01` BiGRU+Char-CNN đạt Val Macro-F1 `0.7733 ± 0.0072`, F1-TOXIC `0.6149 ± 0.0130`, best seed 42 `0.7806`, VRAM `230.8 MB << 7 GB`; `HYBRID-RNN-WD` đạt `0.7731 ± 0.0052`; `HYBRID-BILSTM-01` đạt `0.7665 ± 0.0027`, VRAM `230.6 MB`).
+  - [x] Thực hiện CNN ablation trên validation; lưu config, hash dữ liệu, ba seed và metrics. (18 biến thể × 3 seeds = 54 runs tại `models/cnn/TV4-run-*/`, báo cáo và biểu đồ tại `artifacts/TV4-cnn-analysis/`, `notebooks/EXP-04-cnn-analysis.ipynb` và `docs/TV4_CNN_REPORT.md`).
+- [x] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning. (Đóng băng `artifacts/TV4-locked-test/tv4_n10_freeze_manifest.json` trước khi đọc `test.parquet`; báo cáo one-shot tại `artifacts/TV4-locked-test/tv4_n10_locked_test_report.json`: single TV4 đạt Test Macro-F1 `0.7855–0.7867`, intra-TV4 ensemble đạt `0.7991–0.8029`, cross-member TV2+TV4 ensemble đạt `0.8029–0.8128`).
 
 ### Cả nhóm
 - [x] N1: Cả nhóm duyệt spec, decisions, plan và todo D1–D4.

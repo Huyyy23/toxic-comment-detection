@@ -2,7 +2,7 @@
 
 Checklist theo thành viên: [Tam (TV1)](TV1.md) · [Vinh (TV2)](TV2.md) · [Huy (TV3)](TV3.md) · [TheAnh (TV4)](TV4.md).
 
-**Protocol hiện hành D1–D4:** ViHSD và ViCTSD dự kiến gộp thành `0=CLEAN`, `1=TOXIC`, có `source`, dedupe trước split 70/15/15 theo `(source,label)`. Split mới chưa được dựng; quyền UIT và khác biệt định nghĩa nhãn còn chờ xác nhận. Chọn checkpoint bằng val Macro-F1; calibration và threshold trên val. Freeze mọi candidate trước một đợt locked test, công bố lịch sử test exposure.
+**Protocol hiện hành D1–D4:** dataset nhị phân `data/processed/binary_n2_v1/` dùng `CLEAN=0`, `TOXIC=1`, split 70/15/15 và dedupe. Nhóm xác nhận đã xin phép UIT; repo chưa có bằng chứng giấy phép độc lập, khác biệt nhãn được ghi tại `docs/dataset-requirements.md`. Chọn checkpoint theo val Macro-F1; calibration/threshold trên val; freeze candidates trước một đợt locked test và công khai lịch sử exposure.
 
 PhoBERT pretrained fine-tune đã được chấp nhận theo xác nhận người dùng và là benchmark do Huy phụ trách. Huy phụ trách N3, N4, N5, N8, N9, N11 và N12; xem [checklist chung](../../tasks/todo.md). Deadline chưa xác định.
 
@@ -15,13 +15,13 @@ Các mục `[x]` trong checklist cá nhân được giữ làm lịch sử, khô
 | Phần | Trạng thái thực tế | Bằng chứng / việc còn lại |
 |---|---|---|
 | Data Contract / EXP-00 (TV3) | **Đã duyệt; G0 OPEN** | Contract v1, G0 acceptance và `vihsd_g0_v1` có hash/manifest, split checks PASS. Official training được mở. |
-| EXP-01 (TV1) | **Đã có EDA và 3 LR artifacts trên dữ liệu cũ; chưa nghiệm thu trên G0** | Notebook/config/artifacts trỏ `data/processed/vihsd.jsonl`; run ghi 24,048 train / 2,672 val thay vì candidate hiện hành 23,002 / 4,929. Cần cập nhật EDA và chạy lại A/B/C; không dùng số cũ như kết quả official. |
-| EXP-02 (TV2) | **Chưa bắt đầu** | Không thấy pipeline/config/results riêng cho LinearSVC. Có TF-IDF utility dùng chung nhưng không chứng minh đã có SVM experiment. |
-| EXP-03 (TV3) | **Hạ tầng và fixture tests đã có; official training chưa được chứng minh** | Recurrent model/trainer/checkpoint/loader/report có sẵn; official driver/config hiện có. Chưa thấy official checkpoints, run metrics hay prediction artifacts. |
-| EXP-04 (TV4) | **Chưa bắt đầu** | Không thấy TextCNN code/config/tests/metrics/checkpoints riêng. |
-| EXP-05 (TV3) | **Chưa bắt đầu** | Chưa có cross-model validation predictions/error report. |
-| EXP-06 (TV4) | **Chưa bắt đầu; conditional** | Chưa có prediction diversity evidence từ ≥2 models; chỉ tiếp tục nếu có căn cứ. |
-| EXP-07 (TV3) | **Chưa bắt đầu; optional** | Không thấy PhoBERT training/artifacts; chỉ sau nghiệm thu EXP-03 scratch. |
+| EXP-01 (TV1) | **N6 Binary Logistic Regression đã hoàn tất** | 3 seeds trên `binary_n2_v1`/`binary_n4_v1`; artifacts và validation metrics tại `docs/TV1_N6_REPORT.md`. EXP-01 G0 cũ vẫn là lịch sử, không thay thế kết quả N6. |
+| EXP-02 (TV2) | **N6 Binary LinearSVC đã hoàn tất** | Ba seeds, calibrated artifacts và validation analysis; xem `docs/TV2_N6_REPORT.md`. |
+| EXP-03 (TV3) | **N7 recurrent đã hoàn tất; N13 PhoBERT benchmark đã chạy** | Recurrent artifacts tại `models/recurrent_n7/`; PhoBERT configs, predictions và metrics tại `docs/todos/TV3.md`. |
+| EXP-04 (TV4) | **Đã hoàn thành (`EXPERIMENTALLY VALIDATED`)** | 18 biến thể × 3 seeds trên `binary_n2_v1`/`binary_n4_training_v1`; báo cáo tại `docs/TV4_CNN_REPORT.md`, artifacts tại `models/cnn/TV4-run-*/`. |
+| EXP-05 (TV3) | **Chưa hoàn tất; TV4 đã bàn giao lỗi validation** | 40 mẫu lỗi ẩn danh tại `artifacts/TV4-cnn-analysis/tv4_error_analysis_val.json`; phân tích TV4 tại `docs/TV4_CNN_REPORT.md`. |
+| EXP-06 (TV4) | **Đã hoàn thành (`EXPERIMENTALLY VALIDATED`)** | Diversity và ensemble có validation evidence; locked-test results trong `artifacts/TV4-ensemble-analysis/` và `artifacts/TV4-locked-test/`. Test đã có historical exposure; không dùng kết quả để tune. |
+| N13 (TV3) | **PhoBERT pretrained benchmark đã hoàn thành trên validation** | Chi tiết metrics/seeds/config tại `docs/todos/TV3.md`; không coi đây là scratch model. |
 
 ## Blockers, giới hạn và tài liệu không đồng bộ
 

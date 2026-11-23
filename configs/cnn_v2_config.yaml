@@ -1,0 +1,344 @@
+version: "2.1.0"
+experiment: "TV4-CNN-V2"
+experiment_id: "EXP-04-V2"
+owner: "TV4"
+dataset_dir: "data/processed/binary_n2_v1"
+n4_dataset_dir: "data/processed/binary_n4_training_v1"
+seeds: [42, 43, 44]
+device: "auto"
+
+defaults:
+  max_word_length: 128
+  max_char_length: 384
+  batch_size: 64
+  epochs: 10
+  patience: 3
+  learning_rate: 0.001
+  grad_clip: 1.0
+  weight_decay: 0.0001
+  imbalance_method: "none"
+  focal_gamma: 2.0
+  min_word_freq: 2
+  min_char_freq: 2
+  use_amp: false
+  lr_scheduler: "cosine"
+  train_aug_mode: "none"
+
+variants:
+  # =========================================================================
+  # PHASE 3A: BiGRU + Char-CNN Controlled Staged Experiments
+  # =========================================================================
+  V2-BIGRU-PREP:
+    description: "BiGRU (last) + Char-CNN with decoupled v2_word_norm & v2_char_norm + CosineLR"
+    hypothesis: "Separating punctuation and normalizing teencode on the word branch reduces validation OOV from 31.65% to 18.56% while keeping raw orthographic cues for Char-CNN."
+    architecture: "bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      hidden_size: 128
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.45
+      rnn_pooling: "last"
+      spatial_dropout: 0.0
+
+  V2-BIGRU-ATTN:
+    description: "BiGRU (Self-Attention Pooling) + Char-CNN [3,4,5,7] + SpatialDropout1D"
+    hypothesis: "Replacing terminal hidden states with masked self-attention pooling over all time steps captures toxic clauses in the middle of long ViCTSD comments."
+    architecture: "bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      hidden_size: 128
+      char_kernel_sizes: [3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.40
+      rnn_pooling: "attn"
+      spatial_dropout: 0.15
+      word_dropout: 0.35
+      char_dropout: 0.20
+
+  V2-BIGRU-ATTN-MAX:
+    description: "BiGRU (Attention + Masked Max Pooling) + Char-CNN [2,3,4,5,7] + SpatialDropout1D"
+    hypothesis: "Combining self-attention context pooling with masked global max pooling preserves both sharp local swear-word peaks and multi-clause sequential context."
+    architecture: "bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      hidden_size: 128
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.40
+      rnn_pooling: "attn_max"
+      spatial_dropout: 0.15
+      word_dropout: 0.35
+      char_dropout: 0.20
+
+  V2-BIGRU-H192:
+    description: "BiGRU (h=192, Attn+Max) + Char-CNN [2,3,4,5,7] (filters=160, lr=5e-4)"
+    hypothesis: "Increasing BiGRU hidden capacity to 192 with lr=5e-4 and spatial dropout=0.15 improves representation of complex sentence structures without overfitting."
+    architecture: "bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.0005
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 160
+      char_embedding_dim: 64
+      hidden_size: 192
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      num_filters: 160
+      dropout: 0.40
+      rnn_pooling: "attn_max"
+      spatial_dropout: 0.15
+      word_dropout: 0.35
+      char_dropout: 0.20
+
+  V2-BIGRU-H256:
+    description: "BiGRU (h=256, Attn+Max) + Char-CNN [2,3,4,5,7] (filters=192, wd=5e-4, lr=5e-4)"
+    hypothesis: "Testing upper capacity bound h=256 with stronger L2 weight_decay=5e-4 and dropout=0.45."
+    architecture: "bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0005
+    learning_rate: 0.0005
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 160
+      char_embedding_dim: 64
+      hidden_size: 256
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      num_filters: 192
+      dropout: 0.45
+      rnn_pooling: "attn_max"
+      spatial_dropout: 0.20
+      word_dropout: 0.40
+      char_dropout: 0.25
+
+  # =========================================================================
+  # PHASE 3B: Word TextCNN Controlled Experiments (Baseline: CNN-01-WD 0.7705)
+  # =========================================================================
+  V2-WCNN-K234:
+    description: "Word TextCNN kernels=[2,3,4], filters=128, v2_word_norm, SpatialDropout=0.15, CosineLR"
+    hypothesis: "Adding bigram kernel=2 on punctuation-separated v2_word_norm captures 2-word Vietnamese compound slurs and negation pairs ('không ngu', 'đồ chó')."
+    architecture: "textcnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 128
+      kernel_sizes: [2, 3, 4]
+      num_filters: 128
+      dropout: 0.45
+      spatial_dropout: 0.15
+
+  V2-WCNN-K2345-F192:
+    description: "Word TextCNN kernels=[2,3,4,5], filters=192, v2_word_norm, SpatialDropout=0.20"
+    hypothesis: "Multi-scale [2,3,4,5] with 192 filters and SpatialDropout1D=0.20 improves multi-word phrase recall without the V1 CNN-02 overfitting."
+    architecture: "textcnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.0008
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 160
+      kernel_sizes: [2, 3, 4, 5]
+      num_filters: 192
+      dropout: 0.45
+      spatial_dropout: 0.20
+
+  V2-WCNN-K3457-F256:
+    description: "Word TextCNN kernels=[3,4,5,7], filters=256, v2_word_norm, SpatialDropout=0.20, wd=2e-4"
+    hypothesis: "Wide receptive field [3,4,5,7] with 256 filters tests long clause coverage on ViCTSD."
+    architecture: "textcnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    weight_decay: 0.0002
+    learning_rate: 0.0007
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 160
+      kernel_sizes: [3, 4, 5, 7]
+      num_filters: 256
+      dropout: 0.50
+      spatial_dropout: 0.20
+
+  # =========================================================================
+  # PHASE 3C: Char-CNN Controlled Experiments (Baseline: CHAR-02 0.7550)
+  # =========================================================================
+  V2-CHAR-K23457-F192:
+    description: "Char-CNN kernels=[2,3,4,5,7], filters=192, emb=96, v2_char_norm, drop=0.40, CosineLR"
+    hypothesis: "Adding 2-char kernel and increasing char embedding to 96D on v2_char_norm improves short teencode ('vl', 'đm', 'cc') detection."
+    architecture: "char_cnn"
+    preprocessing: "v2_char_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    model:
+      char_embedding_dim: 96
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      num_filters: 192
+      dropout: 0.40
+      spatial_dropout: 0.10
+
+  V2-CHAR-K23457-F256:
+    description: "Char-CNN kernels=[2,3,4,5,7], filters=256, emb=128, v2_char_norm, drop=0.50, CosineLR"
+    hypothesis: "High-capacity 128D char embedding + 256 filters across 5 kernel widths maximizes morphological feature extraction."
+    architecture: "char_cnn"
+    preprocessing: "v2_char_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.0008
+    lr_scheduler: "cosine"
+    model:
+      char_embedding_dim: 128
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      num_filters: 256
+      dropout: 0.50
+      spatial_dropout: 0.15
+
+  # =========================================================================
+  # PHASE 3D: Tri-Branch Hybrid (Word-CNN + BiGRU + Char-CNN) Fusion Ablation
+  # =========================================================================
+  V2-TRI-CONCAT:
+    description: "Tri-Hybrid Word-CNN [2,3,4] + BiGRU (Attn+Max) + Char-CNN [2,3,4,5,7] (Concat Fusion)"
+    hypothesis: "Combining local word n-grams (Word-CNN), global sequential context (BiGRU Attn+Max), and character morphology (Char-CNN) outperforms 2-branch hybrids."
+    architecture: "word_cnn_bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      kernel_sizes: [2, 3, 4]
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      word_num_filters: 128
+      char_num_filters: 128
+      hidden_size: 128
+      fusion_type: "concat"
+      fusion_dim: 256
+      dropout: 0.40
+      spatial_dropout: 0.15
+
+  V2-TRI-GATED:
+    description: "Tri-Hybrid Word-CNN + BiGRU (Attn+Max) + Char-CNN (Gated Modality Fusion)"
+    hypothesis: "Learned sigmoid gating across the 3 projected branches dynamically suppresses noisy branches on ambiguous comments."
+    architecture: "word_cnn_bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      kernel_sizes: [2, 3, 4]
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      word_num_filters: 128
+      char_num_filters: 128
+      hidden_size: 128
+      fusion_type: "gated"
+      fusion_dim: 256
+      dropout: 0.40
+      spatial_dropout: 0.15
+
+  V2-TRI-ATTN:
+    description: "Tri-Hybrid Word-CNN + BiGRU (Attn+Max) + Char-CNN (Attention Modality Fusion)"
+    hypothesis: "Branch-level attention pooling over the 3 modality vectors plus residual concatenation provides adaptive multi-scale fusion."
+    architecture: "word_cnn_bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      kernel_sizes: [2, 3, 4]
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      word_num_filters: 128
+      char_num_filters: 128
+      hidden_size: 128
+      fusion_type: "attention"
+      fusion_dim: 256
+      dropout: 0.40
+      spatial_dropout: 0.15
+
+  # =========================================================================
+  # PHASE 4: Data Improvement, Hard-Example Mining & Controlled Train-Only Aug
+  # =========================================================================
+  V2-BIGRU-HARDMINE:
+    description: "V2-BIGRU-ATTN-MAX + Train-Only Hard-Example Mining (1.45x loss weight on hard FP/FN patterns)"
+    hypothesis: "Upweighting long (>=32 words), negation-bearing CLEAN, and implicit TOXIC training examples reduces false positives on slang/animals and false negatives on long ViCTSD comments."
+    architecture: "bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    train_aug_mode: "hard_example_mining"
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      hidden_size: 128
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.40
+      rnn_pooling: "attn_max"
+      spatial_dropout: 0.15
+      word_dropout: 0.35
+      char_dropout: 0.20
+
+  V2-BIGRU-CTRLAUG:
+    description: "V2-BIGRU-ATTN-MAX + Controlled Train-Only Minority TOXIC & Hard-CLEAN Augmentation"
+    hypothesis: "Perturbing non-keyword tokens on minority TOXIC and hard lexical-cue CLEAN training samples improves robustness without shifting class priors excessively."
+    architecture: "bigru_char_cnn"
+    preprocessing: "v2_word_norm"
+    word_preprocessing: "v2_word_norm"
+    char_preprocessing: "v2_char_norm"
+    weight_decay: 0.0001
+    learning_rate: 0.001
+    lr_scheduler: "cosine"
+    train_aug_mode: "v2_controlled_aug"
+    model:
+      embedding_dim: 128
+      char_embedding_dim: 64
+      hidden_size: 128
+      char_kernel_sizes: [2, 3, 4, 5, 7]
+      num_filters: 128
+      dropout: 0.40
+      rnn_pooling: "attn_max"
+      spatial_dropout: 0.15
+      word_dropout: 0.35
+      char_dropout: 0.20
