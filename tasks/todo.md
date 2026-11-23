@@ -73,7 +73,7 @@ Nguồn chi tiết: [spec](../docs/spec.md) · [experiment plan](../docs/plans/m
 - [ ] N15: Lead phân tích lỗi sau N10. Viết `docs/experiments/error_analysis.md`, so sánh hai chiều, có ví dụ và số mẫu theo nguồn, độ dài và teencode.
 - [x] N3: Kiểm thử leakage split N2 và augmentation giả lập đã chạy. Xem kết quả và giới hạn trong `docs/dataset-requirements.md`.
 - [x] N4: Train-only TOXIC augmentation under D3; 5,675 rows yield a 30.0% train TOXIC share. Actual artifact passed N2/N4 leakage checks; see `docs/dataset-requirements.md`.
-- [ ] N5: Sau N2, train FastText bằng gensim chỉ trên train, lưu embedding và báo kích thước.
+- [x] N5: FastText train-only trên N2, 3 seeds; validation Macro-F1 mean 0.622218, population std 0.001276. Config, hashes, models, predictions, metrics và MLflow runs ở `models/baselines/N5-run-4cef5024bbdb437296384e56b471e20b/`.
 - [ ] N8: Sau N6, N7 và N13, calibration và chọn threshold trên val, báo ECE trước/sau.
 - [ ] N9: Sau N7, N8 và N13, ablation trên val và so sánh với PhoBERT pretrained fine-tune. Lưu `ablation_val.csv`.
 - [ ] N11: Sau N6 và N8, cập nhật inference/API/frontend cho nhị phân; test API và fallback `.joblib`.

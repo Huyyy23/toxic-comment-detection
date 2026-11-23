@@ -15,7 +15,7 @@
 | N2 | Build the combined, deduplicated binary dataset and locked 70/15/15 manifest. | N1 | TV3 lead; TV1 hỗ trợ |
 | N3 | DONE. Audit duplicate and split leakage after N2; document remaining limits. | N2 | Huy (TV3) |
 | N4 | DONE. Create train-only TOXIC augmentation under D3 and rerun leakage tests on the actual augmentation. | N3 | Huy (TV3) |
-| N5 | Train and evaluate train-only FastText embeddings. | N2 | Huy (TV3) |
+| N5 | DONE. Train and evaluate train-only FastText embeddings; validation results and artifacts are in `models/baselines/N5-run-4cef5024bbdb437296384e56b471e20b/`. | N2 | Huy (TV3) |
 | N6 | Train LR and SVM baselines on the shared split. | N2 | TV1 LR; TV2 SVM |
 | N7 | Train scratch LSTM, BiLSTM/attention, and character CNN models. | N4, N5 | TV3 và TV4 |
 | N8 | Calibrate and choose thresholds on validation for all eligible models, including PhoBERT. | N6, N7, N13 | Huy (TV3) |
