@@ -1,0 +1,110 @@
+{
+  "n_samples": 6048,
+  "macro_f1": 0.776839575204467,
+  "f1_toxic": 0.6144505160898603,
+  "weighted_f1": 0.8874617517177241,
+  "balanced_accuracy": 0.7450405796722939,
+  "pr_auc": 0.7017751301459412,
+  "per_class": {
+    "CLEAN": {
+      "precision": 0.9146318732525629,
+      "recall": 0.9651848937844217,
+      "f1": 0.9392286343190736,
+      "support": 5084.0
+    },
+    "TOXIC": {
+      "precision": 0.7408491947291361,
+      "recall": 0.524896265560166,
+      "f1": 0.6144505160898603,
+      "support": 964.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      4907,
+      177
+    ],
+    [
+      458,
+      506
+    ]
+  ],
+  "by_source": {
+    "victsd": {
+      "n_samples": 1489,
+      "macro_f1": 0.657773399939023,
+      "f1_toxic": 0.36909871244635195,
+      "weighted_f1": 0.8824704871143121,
+      "balanced_accuracy": 0.6208619426897373,
+      "pr_auc": 0.427177398440084,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9141449683321604,
+          "recall": 0.9811178247734139,
+          "f1": 0.946448087431694,
+          "support": 1324.0
+        },
+        "TOXIC": {
+          "precision": 0.6323529411764706,
+          "recall": 0.2606060606060606,
+          "f1": 0.36909871244635195,
+          "support": 165.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1299,
+          25
+        ],
+        [
+          122,
+          43
+        ]
+      ]
+    },
+    "vihsd": {
+      "n_samples": 4559,
+      "macro_f1": 0.795768028071165,
+      "f1_toxic": 0.6548797736916548,
+      "weighted_f1": 0.8872727706063106,
+      "balanced_accuracy": 0.7695244055068836,
+      "pr_auc": 0.7488103196075915,
+      "per_class": {
+        "CLEAN": {
+          "precision": 0.9148073022312373,
+          "recall": 0.9595744680851064,
+          "f1": 0.936656282450675,
+          "support": 3760.0
+        },
+        "TOXIC": {
+          "precision": 0.7528455284552845,
+          "recall": 0.5794743429286608,
+          "f1": 0.6548797736916548,
+          "support": 799.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          3608,
+          152
+        ],
+        [
+          336,
+          463
+        ]
+      ]
+    }
+  },
+  "train_time_s": 0.1307,
+  "feature_selection_time_s": 0.0,
+  "inference_ms_per_sample": 0.0002,
+  "n_features_raw": 56328,
+  "n_features_selected": 56328,
+  "preprocess_time_s": 0.0103,
+  "tfidf_fit_time_s": 1.6995,
+  "n_train": 28231,
+  "n_val": 6048,
+  "train_toxic_share": 0.1593,
+  "model_size_mb": 2.3394,
+  "within_15mb_fallback_limit": true
+}

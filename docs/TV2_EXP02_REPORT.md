@@ -1,5 +1,7 @@
 # Báo cáo Phân tích & Bàn giao TV2 — EXP-02 (LinearSVC)
 
+> **Lưu ý (2026-11-23):** Báo cáo 3 lớp (`CLEAN/OFFENSIVE/HATE`) dưới đây thuộc giai đoạn G0 cũ và đã được thay thế bởi báo cáo nhị phân hiện hành (SPEC v5.0.0) tại [`docs/TV2_N6_REPORT.md`](TV2_N6_REPORT.md).
+
 **Dataset G0:** `data/processed/vihsd_g0_v1/train_val.jsonl` (`n_train=23002`, `n_val=4929`)
 **Dataset SHA-256:** `c17d920f788ff982775405d7031373dc2cd5525cbba5db6ed4e4f85e70159164`
 **Manifest SHA-256:** `1a3364ae6dcdc50e4f55e4bda665c5b4065c2835d2d98db808e60f4932c2edb2`

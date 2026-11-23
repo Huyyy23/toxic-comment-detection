@@ -4,10 +4,10 @@
 
 Các mục G0 bên dưới là lịch sử ba lớp; giữ nguyên các mục `[x]`. Kết quả cũ không phải kết quả trên split nhị phân mới.
 
-- [ ] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
-- [ ] **N6:** Sau N2, chạy TF-IDF + LinearSVC trên split nhị phân với ba seed. Fit vectorizer và feature selection trên train; lưu config, hash, MLflow run ID, model, validation predictions và metrics theo lớp và nguồn.
-- [ ] **N6:** So sánh feature và hyperparameter trên validation; chọn checkpoint theo Macro-F1 và báo F1 TOXIC. Phối hợp calibration trên validation; không gọi `decision_function` là xác suất.
-- [ ] Bàn giao predictions và phân tích lỗi validation cho Huy; ghi thời gian và kích thước artifact.
+- [x] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
+- [x] **N6:** Sau N2, chạy TF-IDF + LinearSVC trên split nhị phân với ba seed. Fit vectorizer và feature selection trên train; lưu config, hash, MLflow run ID, model, validation predictions và metrics theo lớp và nguồn.
+- [x] **N6:** So sánh feature và hyperparameter trên validation; chọn checkpoint theo Macro-F1 và báo F1 TOXIC. Phối hợp calibration trên validation; không gọi `decision_function` là xác suất.
+- [x] Bàn giao predictions và phân tích lỗi validation cho Huy; ghi thời gian và kích thước artifact.
 - [ ] **N10:** Cùng nhóm đánh giá danh sách đã freeze trong một đợt locked test; không tuning từ kết quả test.
 
 ## Lịch sử G0 trước D1–D4
