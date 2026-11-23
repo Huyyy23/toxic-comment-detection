@@ -79,4 +79,15 @@ class TestLrBinarySmoke:
             assert cal_diag is not None
             assert 0.0 <= cal_diag["ece"] <= 1.0
             assert 0.10 <= cal_diag["val_selected_threshold"]["threshold"] <= 0.90
+            seed_dir = Path(res["runs"][0]["seed_dir"])
+            preds = json.loads((seed_dir / "val_predictions.json").read_text(encoding="utf-8"))
+            assert all(
+                p["predicted_label"] == int(p["probabilities"]["TOXIC"] >= 0.5)
+                for p in preds
+            )
+            loaded = load_lr_binary_artifacts(seed_dir)
+            re_preds = predict_lr_binary_from_artifacts(
+                loaded, [r["text"] for r in VAL_ROWS], preprocessing_mode="teencode"
+            )
+            assert re_preds == [p["predicted_label"] for p in preds]
             assert res["runs"][0]["fallback_size_mb"] <= 15.0

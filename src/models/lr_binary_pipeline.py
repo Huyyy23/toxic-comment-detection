@@ -133,6 +133,7 @@ def _fit_and_eval_lr_single(
             t_step=float(cal_cfg.get("threshold_grid_step", 0.01)),
         )
         default_pred = (prob_pos >= 0.5).astype(int).tolist()
+        val_pred = default_pred
         default_metrics = compute_binary_metrics(y_val, default_pred, val_sources, scores_or_probs=prob_pos)
         cal_diagnostics = {
             "method": method,

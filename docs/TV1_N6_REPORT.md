@@ -38,3 +38,5 @@
 - **N6-LR-A, B, C, D (raw, 3 seeds `[42, 43, 44]`):** `models/baselines/N6-LR-run-0ede1adcfaa84d56803375b97621ac4f/` (`EXP-N6-LR-A`, `EXP-N6-LR-B`, `EXP-N6-LR-C`, `EXP-N6-LR-D` best raw, `N6-LR-summary.json`)
 - **N6-LR-D-calibrated (`cv=5`, `sigmoid`, `7.854 MB < 15 MB`):** `models/baselines/N6-LR-run-1533b39d1efa4b70b4179f884d1143f0/EXP-N6-LR-D-calibrated/`
 - **Code & Config & Tests:** `src/models/lr_binary_pipeline.py`, `configs/lr_binary_config.yaml`, `tests/test_lr_binary_smoke.py` (`2 passed`).
+
+- **Audit note (2026-11-24):** The original calibrated-run `val_predictions.json` files stored calibrated probabilities with labels from the uncalibrated model; their error summaries used those same uncalibrated labels. The pipeline now keeps calibrated probabilities and labels aligned. Existing artifacts remain unchanged; regenerate them before using calibrated-run labels or error summaries. Calibration diagnostics above were computed from calibrated probabilities.
