@@ -28,7 +28,7 @@
 
 ## Nhóm 3 — Chọn mô hình và đánh giá cuối
 - [ ] **TV3 lead:** freeze candidate và hyperparameters bằng validation; ghi danh sách trước khi mở test.
-- [ ] **TV1 điều phối, cả nhóm tham gia, TV3 duyệt — EXP-08/N10:** trạng thái team-wide bị chặn; chỉ có batch lịch sử TV4 + TV2 reference, không chứng minh đủ TV1–TV4. Không mở lại test; xem `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`. Chỉ đóng khi candidate/protocol được đối soát và có sign-off bằng chứng.
+- [ ] **TV1 điều phối, cả nhóm tham gia, TV3 duyệt — EXP-08/N10:** `TECHNICAL RECONCILIATION COMPLETE; BLOCKED ONLY FOR GROUP SIGN-OFF`. Candidate inventory, historical validation/test comparison, N6 rerun artifacts, exposure and protocol limitations are recorded at `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`. Chỉ sau xác nhận bốn thành viên và quyết định lead/reviewer mới đóng `CLOSED — LIMITED HISTORICAL ACCEPTANCE`; không phải blind `PASS`; không mở lại test.
 - [ ] **Cả nhóm:** reproducibility report/notebooks và 4 phần thí nghiệm cá nhân.
 - [ ] **Cả nhóm:** Minimal FastAPI `/predict`, `/health`, `/model-info`; chỉ phục vụ model đã chọn, hosting sau khi kiểm tra eligibility.
 
@@ -53,31 +53,31 @@ Nguồn chi tiết: [spec](../docs/spec.md) · [experiment plan](../docs/plans/m
 - [x] N6: TF-IDF + Logistic Regression cùng TV2. Chọn checkpoint theo val Macro-F1, báo F1 TOXIC, xuất baseline calibrated `.joblib` dưới 15 MB. Phụ thuộc N2.
   - [x] Chạy ít nhất ba seed trên split nhị phân; lưu config, hash dữ liệu, predictions, metrics và artifact.
   - [x] Thực hiện preprocessing ablation và phân tích lỗi LR trên validation.
-- [ ] N10: Điều phối cả nhóm đánh giá locked test một đợt, sau N9 và N14 nếu có. Đóng băng candidate và ba seed trước khi mở, tạo file khóa và báo cáo `locked_test.md`.
+- [ ] N10: Cùng nhóm duyệt danh mục candidate chỉ dựa trên validation và giới hạn exposure/phạm vi lịch sử; không mở test hoặc đánh giá lại. Chỉ xác nhận nghiệm thu có giới hạn qua checklist chung: `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`.
 
 ### TV2 — Vinh
 - [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
 - [x] N6: TF-IDF + LinearSVC cùng TV1. Hiệu chuẩn margins, cùng protocol và điều kiện nghiệm thu N6.
   - [x] Chạy ít nhất ba seed trên split nhị phân; lưu config, hash dữ liệu, predictions, metrics và artifact.
   - [x] Thực hiện SVM feature/hyperparameter ablation và so sánh chi phí train trên validation.
-- [ ] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning.
+- [ ] N10: Xác nhận nhóm chấp nhận phạm vi/exposure test lịch sử và giới hạn tái lập đã ghi; không tune bằng test hoặc mở lại test. Ghi xác nhận trong checklist chung.
 
 ### TV3 — Huy
 - [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
 - [x] N2: Dataset nhị phân `data/processed/binary_n2_v1/` đã tạo; seed, hash và manifest có trong artifacts.
   - Người dùng xác nhận nhóm đã xin phép UIT; chưa có bằng chứng giấy phép trong repo. Khác biệt ngữ nghĩa nhãn và giới hạn near-duplicate được ghi tại `docs/dataset-requirements.md`.
 - [x] N7: Huy hoàn tất recurrent (LSTM/BiLSTM/Attention); TV4 hoàn tất Char-CNN. Artifacts và metrics validation được ghi trong checklist TV3/TV4.
-- [ ] N10: Duyệt danh sách candidate, threshold và protocol đã đóng băng trước đợt test.
+- [ ] N10: Duyệt danh mục candidate validation và trạng thái nghiệm thu có giới hạn; vẫn BLOCKED cho đến khi đủ xác nhận của bốn thành viên và quyết định của TV1 lead/TV3 reviewer.
 - [x] N13: TV3 hoàn tất benchmark PhoBERT pretrained fine-tune đã được chấp nhận; checkpoint/config/log, ba seed và VRAM được ghi tại `docs/todos/TV3.md`.
 - [x] **N14:** Completed PhoBERT N2 validation-only LR comparison (1e-5 and 3e-5, 3 seeds each; only LR changed). Mean validation Macro-F1: `0.793272 ± 0.002131` and `0.800336 ± 0.004193`, respectively; N13 default `2e-5` remains higher at `0.801469 ± 0.003773`. No alternative promoted; evidence: `docs/experiments/phobert_extra_val.csv`. No locked-test access.
 - [ ] N15: Lead phân tích lỗi sau N10. Viết `docs/experiments/error_analysis.md`, so sánh hai chiều, có ví dụ và số mẫu theo nguồn, độ dài và teencode.
 - [x] N3: Kiểm thử leakage split N2 và augmentation giả lập đã chạy. Xem kết quả và giới hạn trong `docs/dataset-requirements.md`.
 - [x] N4: Train-only TOXIC augmentation under D3; 5,675 rows yield a 30.0% train TOXIC share. Actual artifact passed N2/N4 leakage checks; see `docs/dataset-requirements.md`.
 - [x] N5: FastText train-only trên N2, 3 seeds; validation Macro-F1 mean 0.622218, population std 0.001276. Config, hashes, models, predictions, metrics và MLflow runs ở `models/baselines/N5-run-4cef5024bbdb437296384e56b471e20b/`.
-- [x] N8: Calibration và chọn threshold trên validation cho các candidate hợp lệ; report ECE trước/sau và artifacts tại `artifacts/N8/n8_calibration_report.md`. N6 raw SVM không có probabilities/model weights nên chỉ dùng candidate SVM đã calibrated.
+- [x] N8: Calibration và chọn threshold chỉ dùng validation. LinearSVC raw chỉ xuất decision margin, không phải probability; N6 rerun đã bổ sung raw model weights có thể load lại, nhưng khi cần calibrated probability chỉ dùng SVM đã calibration. Bằng chứng rerun: `docs/TV2_N6_REPORT.md` §5.
 - [x] N9: Validation-only ablations and PhoBERT comparison complete; 63-row evidence and protocol/results at `artifacts/N9/README.md` and `artifacts/N9/ablation_val.csv`.
 - [x] N11: Hoàn tất inference React + FastAPI local với adapter baseline N6-LR-D; giữ contract CLEAN/TOXIC, chưa deploy public/chốt production trước N10. Bằng chứng: `docs/todos/TV3.md`.
-- [ ] N12: Sau N10 và N11, Docker + HF Spaces, smoke test.
+- [ ] N12: Gate triển khai public đang đề xuất, chờ nhóm phê duyệt. Không deploy cho đến khi N10 được nghiệm thu có giới hạn, N11 được xác minh, eligibility được kiểm tra và cách công bố probability của API được rà soát.
 
 ### TV4 — TheAnh
 - [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
