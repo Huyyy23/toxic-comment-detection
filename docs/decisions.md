@@ -127,6 +127,10 @@ Phương pháp: **ML-first, API-minimal, reproducibility-first**
 - **Ngày**: 2026-11-23.
 - **Trạng thái**: Accepted.
 
+### N12 inference calibration outcome
+
+N6 dùng Platt; TRI và PhoBERT dùng Temperature Scaling. Chỉ TRI vượt điều kiện áp dụng vì ECE và Brier giảm, Macro-F1 không giảm. N6 trượt Macro-F1; PhoBERT trượt ECE. Trọng số và lựa chọn mô hình được giữ nguyên. Metrics và giới hạn validation được ghi trong [experiment plan](docs/plans/ml-experiments.md).
+
 ## D4: Đối chứng PhoBERT và giao thức so sánh
 
 - **Bối cảnh**: Cần so sánh công bằng nhóm tự huấn luyện với PhoBERT pretrained fine-tune đã được chấp nhận.

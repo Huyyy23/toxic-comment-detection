@@ -10,9 +10,9 @@ Public deployment is not cleared. Account eligibility, artifact/data distributio
 
 | Model | Original artifact | Validation selection | Inference contract |
 |---|---|---|---|
-| N6-LR-D | `models/baselines/N6-LR-run-ea238c630a2f41b4b5be6b58edf4cdcd/EXP-N6-LR-D/seed_42/fallback_pipeline.joblib` | Macro-F1 `0.790095`; seeds 42/43/44 tied, seed 42 selected as the lowest-seed tie-break. | Teencode normalization, `predict_proba`, threshold 0.5, uncalibrated. |
-| V3-TRI-GATED-FT | `models/retrained/v3/retrained_20261124/cnn/V3-TRI-GATED-FT/seed_43/best.pt` | Macro-F1 `0.793046`, F1 TOXIC `0.646727`. | `v3_word_norm`, `v2_char_norm`, frozen vocabulary, raw softmax, uncalibrated. |
-| V3-PHOBERT-V2 | `models/retrained/v3/retrained_20261124/transformers/V3-PHOBERT-V2/seed_44/best.pt` | Macro-F1 `0.819487`, F1 TOXIC `0.694340`. | PyVi segmentation, pinned tokenizer revision, raw softmax, uncalibrated. |
+| N6-LR-D | `models/baselines/N6-LR-run-ea238c630a2f41b4b5be6b58edf4cdcd/EXP-N6-LR-D/seed_42/fallback_pipeline.joblib` | Macro-F1 `0.790095`; seeds 42/43/44 tied, seed 42 selected as the lowest-seed tie-break. | Teencode normalization, Platt fitted but not applied because holdout Macro-F1 decreased; threshold 0.5. |
+| V3-TRI-GATED-FT | `models/retrained/v3/retrained_20261124/cnn/V3-TRI-GATED-FT/seed_43/best.pt` | Macro-F1 `0.793046`, F1 TOXIC `0.646727`. | `v3_word_norm`, `v2_char_norm`, frozen vocabulary; Temperature Scaling `T=0.871645` applied. |
+| V3-PHOBERT-V2 | `models/retrained/v3/retrained_20261124/transformers/V3-PHOBERT-V2/seed_44/best.pt` | Macro-F1 `0.819487`, F1 TOXIC `0.694340`. | PyVi segmentation, pinned tokenizer revision; Temperature Scaling fitted but not applied because holdout ECE increased. |
 
 The two V3 weights are validation-only replacements because the historical checkpoints were unavailable. No training was run. Validation selection did not use N10, N15, or locked test data.
 
@@ -21,14 +21,14 @@ The two V3 weights are validation-only replacements because the historical check
 - `app.py`: Gradio Blocks and FastAPI routes.
 - `model_runtime.py`: fixed three-model registry, CPU baseline, on-demand neural inference, shared GPU lock.
 - `preprocessing.py`: only inference-time preprocessing variants and vocabulary encoding required by the selected artifacts.
-- `models/`: copied N6 joblib, TRI checkpoint/vocabulary/config, PhoBERT checkpoint/config.
-- `requirements.txt`, `README.md`, `smoke_test.py`.
+- `models/`: copied N6 joblib, TRI checkpoint/vocabulary/config, PhoBERT checkpoint/config, and the aggregate-only `calibration.json` registry.
+- `calibration.py`: scalar Platt and temperature transforms plus registry validation.
 
 The bundle contains no datasets, validation predictions, training scripts, notebooks, experiment logs or unrelated checkpoints. Original files remain in place.
 
 ## Local verification
 
-The local smoke test uses synthetic input and passed the REST routes, Swagger HTML, all three model IDs, comparison, binary labels, normalized probabilities, latency and calibration status. The browser check showed the single-model Gradio flow, three-model comparison and Swagger UI. A first REST pass hit a transient local CUDA out-of-memory error; a later complete pass succeeded. Hosted resource behavior is not verified.
+The local smoke test passed on a CPU-only profile with GPUs hidden. It covered REST, Swagger HTML, all three model IDs, comparison, binary labels, normalized probabilities, latency and calibration status. The browser verified single-model TRI calibration, three-model comparison and Swagger UI. A GPU-visible run failed while returning PhoBERT to CPU because memory allocation failed. Hosted resource behavior remains unverified.
 
 ## Space configuration
 

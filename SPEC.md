@@ -49,7 +49,7 @@ N12 inference candidates được chọn trên validation cùng split N2:
 
 N11 local fallback không phải artifact N12. Hai V3 historical weights không có; N12 bundle copy các checkpoint replacement đã tồn tại, không train lại. Chi tiết hash, provenance và inference preprocessing ở [deployment README](deployment/hf-gradio/README.md). Không có dataset, logs, notebooks hoặc validation predictions trong bundle.
 
-Local Gradio, REST, Swagger và cả ba model đã smoke test bằng synthetic input. Public ZeroGPU Space chưa triển khai. Account eligibility, quyền phân phối artifacts/dữ liệu, sign-off N10 hiện có và GPU allocation cho direct FastAPI routes chưa được xác minh. Không truy cập test set hoặc mở lại N10/N15.
+Local Gradio, REST, Swagger and all three models passed smoke tests on a CPU-only profile with GPUs hidden. The public Space has not been deployed. Account eligibility, distribution rights, existing N10 acknowledgement and hosted GPU allocation for direct FastAPI routes remain unverified. No test data was accessed and N10/N15 were not reopened.
 
 - **D1 Data:** Dataset nhị phân đã được tạo và kiểm tra cơ bản; test không blind. Kiểm tra leakage sâu hơn thuộc N3.
 - **D2 Models:** LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính. PhoBERT pretrained fine-tune là benchmark riêng.
