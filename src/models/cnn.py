@@ -145,6 +145,25 @@ class MaskedSelfAttentionPool1D(nn.Module):
         return torch.sum(states * weights, dim=1)
 
 
+class MaskedGatedAttentionPool1D(nn.Module):
+    """Gated attention pooling (Ilse et al. 2018): w^T (tanh(Vh) * sigmoid(Uh))."""
+
+    def __init__(self, input_dim: int) -> None:
+        super().__init__()
+        _validate_positive_int(input_dim, "input_dim")
+        self.proj_v = nn.Linear(input_dim, input_dim)
+        self.proj_u = nn.Linear(input_dim, input_dim)
+        self.score = nn.Linear(input_dim, 1, bias=False)
+
+    def forward(self, states: Tensor, mask: Tensor) -> Tensor:
+        """Pool [batch, time, dim] states with gated context suppression."""
+        gated = torch.tanh(self.proj_v(states)) * torch.sigmoid(self.proj_u(states))
+        energy = self.score(gated).squeeze(-1)
+        energy = energy.masked_fill(~mask, float("-inf"))
+        weights = torch.softmax(energy, dim=1).unsqueeze(-1)
+        return torch.sum(states * weights, dim=1)
+
+
 class TextCNNClassifier(nn.Module):
     """Word-level TextCNN classifier (single or multi-kernel, random-init)."""
 
@@ -241,6 +260,9 @@ class HybridWordCharClassifier(nn.Module):
         spatial_dropout: float = 0.0,
         word_dropout: float | None = None,
         char_dropout: float | None = None,
+        num_rnn_layers: int = 1,
+        use_layernorm: bool = False,
+        multi_sample_dropout: bool = False,
     ) -> None:
         super().__init__()
         _validate_positive_int(num_classes, "num_classes")
@@ -249,21 +271,31 @@ class HybridWordCharClassifier(nn.Module):
         _validate_pad_id(word_pad_id, word_vocab_size, "word_pad_id")
         if word_encoder_type not in ("cnn", "bilstm", "bigru"):
             raise ValueError("word_encoder_type must be cnn, bilstm, or bigru")
-        if rnn_pooling not in ("last", "attn", "attn_max"):
-            raise ValueError("rnn_pooling must be last, attn, or attn_max")
+        valid_poolings = (
+            "last",
+            "attn",
+            "attn_max",
+            "gated_attn",
+            "gated_attn_max",
+            "gated_attn_max_mean",
+        )
+        if rnn_pooling not in valid_poolings:
+            raise ValueError(f"rnn_pooling must be one of {valid_poolings}")
         drop = _validate_dropout(dropout)
         w_drop = _validate_dropout(drop if word_dropout is None else word_dropout)
         c_drop = _validate_dropout(0.0 if char_dropout is None else char_dropout)
 
         self.word_encoder_type = word_encoder_type
         self.rnn_pooling = rnn_pooling
+        self.use_layernorm = bool(use_layernorm)
+        self.multi_sample_dropout = bool(multi_sample_dropout)
         self.architecture = (
             "word_char_cnn" if word_encoder_type == "cnn" else f"{word_encoder_type}_char_cnn"
         )
         self.num_classes = num_classes
         self.word_vocab_size = word_vocab_size
 
-        self.attn_pool: MaskedSelfAttentionPool1D | None = None
+        self.attn_pool: nn.Module | None = None
         if word_encoder_type == "cnn":
             self.word_cnn = Conv1DPoolEncoder(
                 vocab_size=word_vocab_size,
@@ -277,16 +309,30 @@ class HybridWordCharClassifier(nn.Module):
             word_out_dim = self.word_cnn.out_features
         else:
             _validate_positive_int(hidden_size, "hidden_size")
+            _validate_positive_int(num_rnn_layers, "num_rnn_layers")
             self.word_embedding = nn.Embedding(
                 word_vocab_size, word_embedding_dim, padding_idx=word_pad_id
             )
             rnn_cls = nn.GRU if word_encoder_type == "bigru" else nn.LSTM
+            rnn_inter_drop = drop * 0.5 if num_rnn_layers > 1 else 0.0
             self.word_rnn = rnn_cls(
-                word_embedding_dim, hidden_size, batch_first=True, bidirectional=True
+                word_embedding_dim,
+                hidden_size,
+                num_layers=num_rnn_layers,
+                dropout=rnn_inter_drop,
+                batch_first=True,
+                bidirectional=True,
             )
             if rnn_pooling in ("attn", "attn_max"):
                 self.attn_pool = MaskedSelfAttentionPool1D(hidden_size * 2)
-            word_out_dim = hidden_size * 4 if rnn_pooling == "attn_max" else hidden_size * 2
+            elif rnn_pooling in ("gated_attn", "gated_attn_max", "gated_attn_max_mean"):
+                self.attn_pool = MaskedGatedAttentionPool1D(hidden_size * 2)
+            if rnn_pooling == "gated_attn_max_mean":
+                word_out_dim = hidden_size * 6
+            elif rnn_pooling in ("attn_max", "gated_attn_max"):
+                word_out_dim = hidden_size * 4
+            else:
+                word_out_dim = hidden_size * 2
 
         self.char_cnn = Conv1DPoolEncoder(
             vocab_size=char_vocab_size,
@@ -299,7 +345,14 @@ class HybridWordCharClassifier(nn.Module):
         self.word_drop = nn.Dropout(w_drop)
         self.char_drop = nn.Dropout(c_drop)
         self.dropout = nn.Dropout(drop)
-        self.classifier = nn.Linear(word_out_dim + self.char_cnn.out_features, num_classes)
+        fused_dim = word_out_dim + self.char_cnn.out_features
+        self.fusion_norm = nn.LayerNorm(fused_dim) if self.use_layernorm else None
+        self.ms_dropouts = (
+            nn.ModuleList([nn.Dropout(drop) for _ in range(5)])
+            if self.multi_sample_dropout
+            else None
+        )
+        self.classifier = nn.Linear(fused_dim, num_classes)
 
     def forward(
         self,
@@ -338,17 +391,30 @@ class HybridWordCharClassifier(nn.Module):
                     packed_out, batch_first=True, total_length=word_ids.shape[1]
                 )
                 attn_vec = self.attn_pool(unpacked, mask)
-                if self.rnn_pooling == "attn":
+                if self.rnn_pooling in ("attn", "gated_attn"):
                     word_feat = attn_vec
                 else:
                     masked_states = unpacked.masked_fill(
                         ~mask.unsqueeze(-1), float("-inf")
                     )
                     max_vec = masked_states.max(dim=1).values
-                    word_feat = torch.cat((attn_vec, max_vec), dim=1)
+                    if self.rnn_pooling == "gated_attn_max_mean":
+                        mask_f = mask.unsqueeze(-1).to(dtype=unpacked.dtype)
+                        mean_vec = (unpacked * mask_f).sum(dim=1) / mask_f.sum(
+                            dim=1
+                        ).clamp(min=1.0)
+                        word_feat = torch.cat((attn_vec, max_vec, mean_vec), dim=1)
+                    else:
+                        word_feat = torch.cat((attn_vec, max_vec), dim=1)
 
         char_feat = self.char_drop(self.char_cnn(char_ids, char_lengths))
         fused = torch.cat((word_feat, char_feat), dim=1)
+        if self.fusion_norm is not None:
+            fused = self.fusion_norm(fused)
+        if self.ms_dropouts is not None:
+            return torch.stack(
+                [self.classifier(dp(fused)) for dp in self.ms_dropouts], dim=0
+            ).mean(dim=0)
         return self.classifier(self.dropout(fused))
 
 

@@ -1,0 +1,21 @@
+{
+  "n_val_total": 6048,
+  "n_errors_total": 628,
+  "error_rate": 0.1038,
+  "confusion_pair_counts": {
+    "TOXIC -> CLEAN": 443,
+    "CLEAN -> TOXIC": 185
+  },
+  "errors_by_source": {
+    "vihsd": 477,
+    "victsd": 151
+  },
+  "pattern_tag_counts_among_errors": {
+    "contains_teencode": 246,
+    "context_or_lexical_nuance": 196,
+    "contains_negation": 188,
+    "short_text_le_5_words": 103,
+    "contains_emoji_or_punct": 64,
+    "contains_url_or_mention": 2
+  }
+}
