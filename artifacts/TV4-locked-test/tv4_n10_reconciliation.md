@@ -1,6 +1,6 @@
 # N10 reconciliation — historical evidence audit
 
-**Technical reconciliation: COMPLETE. Group sign-off: PENDING.** This is a post-hoc audit of existing artifacts and historical reports; it does not reopen or rerun the locked test.
+**Status: `CLOSED — LIMITED HISTORICAL ACCEPTANCE`.** User reports that the group confirms N10. This closes only the historical, non-blind evaluation; no test was reopened.
 
 ## Existing batch scope
 
@@ -16,11 +16,11 @@ The shared runner hard-codes MLflow experiment/run labels as N13; N14 configs is
 
 **No further locked-test access.** No evidence in the current plan/checklists authorizes another access. Any later test access would be a separate, explicitly disclosed evaluation, not a continuation of this N10 batch.
 
-## Remaining gate
+## Group-level disposition
 
 The validation inventory and historical metrics have now been reconciled below, including the N6 three-seed rerun artifacts. This is a post-hoc record, not a pre-test freeze manifest; it cannot retroactively establish a single all-team freeze or blind test.
 
-The only remaining N10 gate is governance: TV1 lead Tam and TV3 reviewer Huy must decide whether the disclosed historical evaluations qualify as limited evidence or whether team-wide N10 is not reproducible; TV2 Vinh and TV4 TheAnh must confirm candidate scope. Capture each response in the checklist/team context. N1 approval does not imply N10 sign-off. No further test access is needed or authorized.
+The user reported that the group confirms N10; accordingly, record `CLOSED — LIMITED HISTORICAL ACCEPTANCE`, not blind-test `PASS` or full `EXPERIMENTALLY VALIDATED`. No individual member statements were supplied, so this record attributes approval only to the user's group-level report. No further test access is needed or authorized.
 
 ## Audit trail
 
@@ -111,15 +111,12 @@ flowchart LR
 - No dataset was recreated, no model was retrained, and no new locked-test access was made. No public deployment or production-candidate selection is part of N10.
 
 
-## Sign-off checklist — leave unchecked until each owner confirms
+## Group confirmation record and individual attribution
+- [x] **Group-level confirmation, reported by user:** “nhóm xác nhận N10.” Accepted as `CLOSED — LIMITED HISTORICAL ACCEPTANCE`; this records the user's aggregate report, not independently supplied statements from named members.
 
-- [ ] **TV1 / Tam:** confirm N6 LR/SVM inventory and agree whether the disclosed historical evaluation can be accepted only as limited, non-blind evidence.
-- [ ] **TV2 / Vinh:** confirm `EXP-N6-C-calibrated` and the recorded cross-member ensemble scope.
-- [ ] **TV3 / Huy:** confirm N5/N7/N9/PhoBERT/N14 inventory, validation-only selection rule, and N14 non-promotion.
-- [ ] **TV4 / TheAnh:** confirm V1/V3 candidate and ensemble inventory, historical exposure, V3 calibration deviation, and XLM-R seed limitation.
-- [ ] **TV1 lead + TV3 reviewer:** approve final N10 disposition after the four confirmations: `CLOSED — LIMITED HISTORICAL ACCEPTANCE` only; never blind-test `PASS`.
+**Attribution limit:** the user did not provide individual confirmations by name; this record does not represent personal signatures or approvals from named members.
 
-Technical reconciliation is complete; N10 remains `BLOCKED` only until the listed confirmations and disposition are recorded. After group approval, update status to `CLOSED — LIMITED HISTORICAL ACCEPTANCE`; never mark it blind-test `PASS` or full `EXPERIMENTALLY VALIDATED`.
+N10 is `CLOSED — LIMITED HISTORICAL ACCEPTANCE` based on the user's reported group confirmation. Individual attributions were not supplied, so no named person is represented as personally signing. The historical evaluation remains non-blind; do not mark it `PASS` or `EXPERIMENTALLY VALIDATED`.
 
 ## N12 gate proposal — pending group approval
 

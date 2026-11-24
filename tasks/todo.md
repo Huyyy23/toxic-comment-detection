@@ -28,7 +28,7 @@
 
 ## Nhóm 3 — Chọn mô hình và đánh giá cuối
 - [ ] **TV3 lead:** freeze candidate và hyperparameters bằng validation; ghi danh sách trước khi mở test.
-- [ ] **TV1 điều phối, cả nhóm tham gia, TV3 duyệt — EXP-08/N10:** `TECHNICAL RECONCILIATION COMPLETE; BLOCKED ONLY FOR GROUP SIGN-OFF`. Candidate inventory, historical validation/test comparison, N6 rerun artifacts, exposure and protocol limitations are recorded at `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`. Chỉ sau xác nhận bốn thành viên và quyết định lead/reviewer mới đóng `CLOSED — LIMITED HISTORICAL ACCEPTANCE`; không phải blind `PASS`; không mở lại test.
+- [x] **TV1 điều phối, cả nhóm tham gia, TV3 duyệt — EXP-08/N10:** `CLOSED — LIMITED HISTORICAL ACCEPTANCE`, based on the user's report that the group confirms N10. Historical/test-exposure and protocol limitations remain in `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`; this is not blind-test `PASS`. Individual member statements were not attached; don't infer named approvals.
 - [ ] **Cả nhóm:** reproducibility report/notebooks và 4 phần thí nghiệm cá nhân.
 - [ ] **Cả nhóm:** Minimal FastAPI `/predict`, `/health`, `/model-info`; chỉ phục vụ model đã chọn, hosting sau khi kiểm tra eligibility.
 
