@@ -40,3 +40,20 @@
 - **Code & Config & Tests:** `src/models/lr_binary_pipeline.py`, `configs/lr_binary_config.yaml`, `tests/test_lr_binary_smoke.py` (`2 passed`).
 
 - **Audit note (2026-11-24):** The original calibrated-run `val_predictions.json` files stored calibrated probabilities with labels from the uncalibrated model; their error summaries used those same uncalibrated labels. The pipeline now keeps calibrated probabilities and labels aligned. Existing artifacts remain unchanged; regenerate them before using calibrated-run labels or error summaries. Calibration diagnostics above were computed from calibrated probabilities.
+## 5. Chạy lại N6 — giữ nguyên split N2, ba seed
+
+**Phạm vi:** Chạy lại LR A–D raw với seeds `[42, 43, 44]`; D calibrated là artifact inference riêng. Hash N2 khớp lịch sử: train `097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73`, validation `4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a`, manifest `d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3`. D dùng augmentation N4 train-only hiện có, hash `2f42eaaee33efe96a41816ecbb112df07473da20ef0641d7f3b6df2754bd488d`; validation không đổi. Không mở test.
+
+**Lệnh:** `.venv/Scripts/python.exe -m src.models.lr_binary_pipeline --variant all --tune`, sau đó `--variant D --tune --calibrate`; chạy CPU với `OMP_NUM_THREADS=8`. C/D tune trên validation bằng seed 42 rồi giữ nguyên config đã chọn cho cả ba seed.
+
+| Biến thể | Macro-F1 / F1 TOXIC lịch sử | Chạy lại | Dung lượng cũ → mới (MB) |
+|---|---:|---:|---:|
+| A | 0.712809 / 0.490483 | 0.712809 / 0.490483 | 0.9852 → 0.9917 |
+| B | 0.787383 / 0.632665 | 0.787383 / 0.632665 | 1.5491 → 1.5549 |
+| C | 0.787098 / 0.647874 | 0.787098 / 0.647874 | 2.1901 → 2.2156 |
+| D raw | 0.790095 / 0.641934 | 0.790095 / 0.641934 | 3.1942 → 3.2623 |
+| D calibrated (metric xếp hạng vẫn là raw) | 0.790095 / 0.641934 | 0.790095 / 0.641934 | 7.8535 → 8.0167 |
+
+Các metric tái lập khớp kết quả validation lịch sử theo độ chính xác được hiển thị. Dung lượng serialization chênh nhẹ; metadata môi trường của lần chạy cũ không đủ để xác định nguyên nhân. YAML hiện đặt C/D `C=1.0`, nhưng tuning validation chọn `C=5.0`, khớp config từng run trong lịch sử. D calibrated chọn lại threshold `0.37`; đây là chẩn đoán in-sample trên validation.
+
+**Artifacts:** raw `models/baselines/N6-LR-run-ea238c630a2f41b4b5be6b58edf4cdcd/`; D calibrated `models/baselines/N6-LR-run-9a9124eff43b480fb679b22d04130595/`. Mỗi seed lưu `.joblib` model/vectorizer, config, metrics, validation predictions, data hashes và run ID. Môi trường: Windows 11, Python 3.12.5, scikit-learn 1.9.1; code revision `9f96a4de0ad8d8e48500364db0da59fa859d4f4d`; SHA-256 config `f4cf4a330b954bacf88729cbf8b0c8d56ec6bd351a9a8200e9c69fb8f573a9cc`, runner `c8114fddb624b92f0f21214f6db049b1c1ef63387aa0043152ac4c1808e67043`.
