@@ -20,12 +20,12 @@
 | N7 | Train scratch LSTM, BiLSTM/attention, and character CNN models. | N4, N5 | TV3 và TV4 |
 | N8 | Calibrate and choose thresholds on validation for all eligible models, including PhoBERT. | N6, N7, N13 | Huy (TV3) |
 | N9 | Run controlled validation ablations, including the PhoBERT comparison. | N7, N8, N13 | Huy (TV3) |
-| N10 | Run the single locked-test comparison after all candidates are frozen. | N9, N14 if applicable | TV1 điều phối; cả nhóm |
+| N10 | Freeze the validation candidate inventory, reconcile disclosed historical evaluations, and close only as limited historical acceptance after all four sign-offs; no test re-access. | N9, N14 if applicable | TV1 lead; group; TV3 reviewer |
 | N11 | Implement local React/FastAPI inference with a replaceable model adapter; start with the N6 baseline `.joblib`, keep the binary API contract stable, and defer production selection/public deployment until N10 gates pass. | N6, N8 | Huy (TV3) |
-| N12 | Deploy after test and integration gates pass. Consider ONNX only if it offers a measured benefit. | N10, N11 | Huy (TV3) |
+| N12 | Prepare deployment; public launch only after N11 local verification, evidence of the group acknowledgement required for N10's limited historical scope/exposure, production candidate/artifact freeze, verified hosting eligibility, truthful API probability disclosure, and container/security/data-exclusion smoke checks. Current phase is preparation only; N15 limited acceptance does not clear these gates. | N10, N11 | Huy (TV3) |
 | N13 | Run the accepted pretrained PhoBERT fine-tuning benchmark. | N2, N4 if augmentation is used | TV3 |
 | N14 | Run optional pretrained PhoBERT fine-tuning extras on validation only. | N13, if applicable | Huy |
-| N15 | Analyze errors after the final locked-test batch without tuning candidates. | N10 | Huy (TV3) lead |
+| N15 | Validation-only paired error analysis and AI-assisted review of the fixed 30-case sample. Group-lead acceptance is limited to this technical scope; human adjudication, privacy/data rights and comprehensive leakage review remain open. No test analysis/access. | N9, N13 | Huy (TV3) lead |
 
 TV1 là Tam, TV2 là Vinh, TV3 là Huy và TV4 là TheAnh, theo xác nhận của người dùng ngày 2026-11-23.
 
