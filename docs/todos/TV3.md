@@ -46,7 +46,7 @@ Các mục G0 bên dưới là lịch sử ba lớp. `tasks/todo.md` ghi ba offi
     | Mean ± population SD | 0.791670 ± 0.003876 | 0.934947 ± 0.001305 | 0.648393 ± 0.006829 | — | — | — | — |
 
     N4 train SHA256 `f57fbf0a55de6b08c8cba1cd366c3895bfed495f2817069f892ba27b5786542e`; validation hash matches N2 (`4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a`). Compared with N2, N4 means are lower by 0.009799 Macro-F1, 0.004138 F1 CLEAN and 0.015460 F1 TOXIC on validation; descriptive result only. Initial N4 seed-42 run `8bc3a002797444c491cabf20945f5288` remains tagged `INVALID`; initial N2 runs remain tagged `SUPERSEDED`.
-- [ ] **N14:** Nếu còn thời gian, thử learning rate, epoch và chiến lược fine-tuning trên val; mỗi lần đổi một yếu tố. Lưu `docs/experiments/phobert_extra_val.csv`. Phụ thuộc N13.
+- [x] **N14:** Validation-only PhoBERT learning-rate comparison on N2 completed; 3 seeds per setting, only LR changed. Macro-F1 mean ± population SD: `1e-5` = `0.793272 ± 0.002131`; `3e-5` = `0.800336 ± 0.004193`; N13 baseline `2e-5` = `0.801469 ± 0.003773`. No alternative LR promoted. Six run IDs, hashes, F1 by class, checkpoint/prediction hashes, and the failed timeout/retry are recorded in `docs/experiments/phobert_extra_val.csv`. Validation-only; no locked-test access.
 - [ ] **N10:** Duyệt danh sách candidate, seed, threshold và protocol trước khi Tam điều phối một đợt test. Không tuning hay chọn lại theo test.
 - [ ] **N15:** Sau N10, phân tích lỗi hai chiều giữa PhoBERT pretrained fine-tune và các mô hình khác. Ghi ví dụ, số mẫu, lỗi tiếng lóng, teencode, từ bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode trong `docs/experiments/error_analysis.md`. Không dùng lỗi test để tuning.
 

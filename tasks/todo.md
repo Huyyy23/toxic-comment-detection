@@ -69,7 +69,7 @@ Nguồn chi tiết: [spec](../docs/spec.md) · [experiment plan](../docs/plans/m
 - [x] N7: Huy hoàn tất recurrent (LSTM/BiLSTM/Attention); TV4 hoàn tất Char-CNN. Artifacts và metrics validation được ghi trong checklist TV3/TV4.
 - [ ] N10: Duyệt danh sách candidate, threshold và protocol đã đóng băng trước đợt test.
 - [x] N13: TV3 hoàn tất benchmark PhoBERT pretrained fine-tune đã được chấp nhận; checkpoint/config/log, ba seed và VRAM được ghi tại `docs/todos/TV3.md`.
-- [ ] N14: Nếu có thời gian, thử learning rate, epoch và chiến lược PhoBERT pretrained fine-tune trên val sau N13. Mỗi lần đổi một yếu tố, lưu `docs/experiments/phobert_extra_val.csv`.
+- [x] **N14:** Completed PhoBERT N2 validation-only LR comparison (1e-5 and 3e-5, 3 seeds each; only LR changed). Mean validation Macro-F1: `0.793272 ± 0.002131` and `0.800336 ± 0.004193`, respectively; N13 default `2e-5` remains higher at `0.801469 ± 0.003773`. No alternative promoted; evidence: `docs/experiments/phobert_extra_val.csv`. No locked-test access.
 - [ ] N15: Lead phân tích lỗi sau N10. Viết `docs/experiments/error_analysis.md`, so sánh hai chiều, có ví dụ và số mẫu theo nguồn, độ dài và teencode.
 - [x] N3: Kiểm thử leakage split N2 và augmentation giả lập đã chạy. Xem kết quả và giới hạn trong `docs/dataset-requirements.md`.
 - [x] N4: Train-only TOXIC augmentation under D3; 5,675 rows yield a 30.0% train TOXIC share. Actual artifact passed N2/N4 leakage checks; see `docs/dataset-requirements.md`.
@@ -83,7 +83,7 @@ Nguồn chi tiết: [spec](../docs/spec.md) · [experiment plan](../docs/plans/m
 - [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
 - [x] N7: Phối hợp neural với TV3 theo vai trò recurrent và CNN hiện có. Sau N4, N5, thử BiGRU/BiLSTM + Char-CNN, checkpoint theo val Macro-F1, ghi F1 TOXIC và VRAM mục tiêu dưới 7 GB. (`HYBRID-RNN-01` BiGRU+Char-CNN đạt Val Macro-F1 `0.7733 ± 0.0072`, F1-TOXIC `0.6149 ± 0.0130`, best seed 42 `0.7806`, VRAM `230.8 MB << 7 GB`; `HYBRID-RNN-WD` đạt `0.7731 ± 0.0052`; `HYBRID-BILSTM-01` đạt `0.7665 ± 0.0027`, VRAM `230.6 MB`).
   - [x] Thực hiện CNN ablation trên validation; lưu config, hash dữ liệu, ba seed và metrics. (18 biến thể × 3 seeds = 54 runs tại `models/cnn/TV4-run-*/`, báo cáo và biểu đồ tại `artifacts/TV4-cnn-analysis/`, `notebooks/EXP-04-cnn-analysis.ipynb` và `docs/TV4_CNN_REPORT.md`).
-- [x] N10: Cùng nhóm đánh giá các candidate đã đóng băng trong một đợt test; không dùng kết quả test để tuning. (Đóng băng `artifacts/TV4-locked-test/tv4_n10_freeze_manifest.json` trước khi đọc `test.parquet`; báo cáo one-shot tại `artifacts/TV4-locked-test/tv4_n10_locked_test_report.json`: single TV4 đạt Test Macro-F1 `0.7855–0.7867`, intra-TV4 ensemble đạt `0.7991–0.8029`, cross-member TV2+TV4 ensemble đạt `0.8029–0.8128`).
+- [x] TV4 — historical N10 batch: frozen before the recorded one-shot test; scope is TV4 singles, one TV2 reference, and TV4/TV2+TV4 ensembles (test `Macro-F1` range `0.7855–0.8128`). This does not establish team-wide N10 completion; see `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`. Do not reopen locked test.
 
 ### Cả nhóm
 - [x] N1: Cả nhóm duyệt spec, decisions, plan và todo D1–D4.

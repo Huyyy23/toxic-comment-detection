@@ -312,6 +312,8 @@ $\Rightarrow$ **Bằng chứng Error Diversity rất mạnh:** Giữa các họ 
    - SHA-256: `d200be4a7ff2f2e725ba8e6c2c0ab835afd73612b9a5b2f14b528cb5c577be4e`.
    - **Công bố minh bạch (`test_blind: false`):** Tuân thủ `docs/decisions.md` (D7) và `AGENTS.md` §5, báo cáo ghi nhận rõ `test_blind: false` vì tập test của repository từng bị chạm ở một số script lịch sử trước mốc tái cấu trúc nhị phân `SPEC v5.0.0`. Tuy nhiên, **toàn bộ 54 runs của TV4 (Phần 2–3), phân tích lỗi & hiệu chuẩn (Phần 4), và thiết kế ensemble (Phần 5) đều hoàn toàn mù với `test.parquet`** và chỉ truy cập `test.parquet` đúng một lần duy nhất trong Phần 6 (`N10`).
 
+**Phạm vi N10 đã đối soát sau báo cáo:** các artifacts trên chỉ chứng minh 7 single models TV4, một reference TV2 và ensemble TV4/TV2+TV4. Chúng không chứng minh candidate TV1/TV3 đã được đánh giá hoặc có đủ sign-off cả nhóm; vì vậy số liệu ở phần này là batch lịch sử TV4 + TV2 reference, không phải báo cáo hoàn tất N10 team-wide. Xem `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`. Không truy cập locked test thêm; N14 chỉ dùng validation và không thay đổi kết quả batch lịch sử.
+
 ---
 
 ### 8.2. Kết quả Mô hình Đơn Đóng băng trên Locked Test (`test.parquet`, 3 seeds `42, 43, 44`)
