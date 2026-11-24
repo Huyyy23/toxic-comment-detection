@@ -35,17 +35,27 @@ Calibration và threshold validation có thể tạo optimistic bias nếu dùng
 
 ## API và artifacts inference local
 
-Prediction binary gồm `label_id`, `label_name`, `confidence`, `probabilities` (`CLEAN`, `TOXIC`), `is_calibrated`, `threshold`, `latency_ms`, `model_backend`. Probabilities có tổng xấp xỉ 1; `confidence` là xác suất của nhãn trả về. `is_calibrated` chỉ true khi có calibration hợp lệ; raw margins và softmax không tự động là calibrated probabilities. Threshold chọn trên validation và lưu trong metadata.
+Prediction binary gồm `label_id`, `label_name`, `confidence`, `probabilities` (`CLEAN`, `TOXIC`), `is_calibrated`, `threshold`, `latency_ms`, `model_backend`. Probabilities có tổng xấp xỉ 1; `confidence` là xác suất của nhãn trả về. `is_calibrated` chỉ true khi có calibration hợp lệ; raw `predict_proba` và softmax không tự động là calibrated probabilities.
 
-Baseline N6-LR-D seed 42 được tái tạo tại `models/runtime/n11/EXP-N6-LR-D/seed_42/fallback_pipeline.joblib` theo cấu hình N6 chính thức; artifact này chỉ có trên local và bị Git bỏ qua. Các model khác vẫn chờ hoàn tất gate đánh giá.
+N11 local React/FastAPI hiện có tiếp tục giữ nguyên. N12 dùng bundle riêng `deployment/hf-gradio/`, với Gradio làm UI, FastAPI REST cùng process và port 7860; không dùng Docker.
 
-The application uses React and FastAPI locally. Adapter implementations can be replaced behind the stable binary API contract. Public Docker/Hugging Face deployment remains pending, and this baseline is not the final production-model selection.
+N12 inference candidates được chọn trên validation cùng split N2:
+
+| Model | Artifact dùng trong N12 | Val Macro-F1 | F1 TOXIC | Calibration |
+|---|---|---:|---:|---|
+| N6-LR-D | Official C=5, seed 42; seed 42/43/44 tie, chọn seed thấp nhất | 0.7901 | 0.6419 | Raw `predict_proba`, chưa calibration |
+| V3-TRI-GATED-FT | Validation-only replacement, seed 43 | 0.7930 | 0.6467 | Raw softmax, chưa calibration |
+| V3-PHOBERT-V2 | Validation-only replacement, seed 44 | 0.8195 | 0.6943 | Raw softmax, chưa calibration |
+
+N11 local fallback không phải artifact N12. Hai V3 historical weights không có; N12 bundle copy các checkpoint replacement đã tồn tại, không train lại. Chi tiết hash, provenance và inference preprocessing ở [deployment README](deployment/hf-gradio/README.md). Không có dataset, logs, notebooks hoặc validation predictions trong bundle.
+
+Local Gradio, REST, Swagger và cả ba model đã smoke test bằng synthetic input. Public ZeroGPU Space chưa triển khai. Account eligibility, quyền phân phối artifacts/dữ liệu, sign-off N10 hiện có và GPU allocation cho direct FastAPI routes chưa được xác minh. Không truy cập test set hoặc mở lại N10/N15.
 
 - **D1 Data:** Dataset nhị phân đã được tạo và kiểm tra cơ bản; test không blind. Kiểm tra leakage sâu hơn thuộc N3.
-- **D2 Models:** LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính. PhoBERT pretrained fine-tune đã được chấp nhận làm benchmark riêng.
+- **D2 Models:** LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính. PhoBERT pretrained fine-tune là benchmark riêng.
 - **D3 Improvements:** augmentation TOXIC chỉ trên train theo giới hạn; chọn đúng một imbalance method; calibration, threshold và ECE; không dùng test.
-- **D4 Evaluation:** cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; artifacts và React/FastAPI/Docker/HF Spaces theo yêu cầu, sau khi xác minh deploy.
+- **D4 Evaluation:** cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; N12 có bundle và local evidence, còn public deployment chỉ sau khi đóng các gate nêu trên.
 
-Giấy phép UIT chưa được kiểm chứng độc lập trong repo; yêu cầu bài tập và deadline còn pending.
+Giấy phép UIT và quyền phân phối artifacts chưa được kiểm chứng độc lập trong repo; yêu cầu bài tập và deadline còn pending.
 
 Tài liệu liên quan: [Đặc tả chi tiết](docs/spec.md), [kế hoạch thí nghiệm](docs/plans/ml-experiments.md), [yêu cầu dữ liệu](docs/dataset-requirements.md), [deployment](docs/deployment-plan.md).

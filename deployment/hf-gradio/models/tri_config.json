@@ -1,0 +1,21 @@
+{
+  "architecture": "word_cnn_bigru_char_cnn",
+  "preprocessing": "v3_word_norm",
+  "word_preprocessing": "v3_word_norm",
+  "char_preprocessing": "v2_char_norm",
+  "max_word_length": 144,
+  "max_char_length": 400,
+  "model": {
+    "embedding_dim": 128,
+    "char_embedding_dim": 64,
+    "kernel_sizes": [2, 3, 4],
+    "char_kernel_sizes": [2, 3, 4, 5, 7],
+    "word_num_filters": 128,
+    "char_num_filters": 128,
+    "hidden_size": 128,
+    "fusion_type": "gated",
+    "fusion_dim": 256,
+    "dropout": 0.4,
+    "spatial_dropout": 0.15
+  }
+}

@@ -1,99 +1,47 @@
-# Kế hoạch Triển khai Ứng dụng Web & Docker Container (Deployment Plan)
+# N12 Gradio ZeroGPU deployment
 
-Trạng thái: **APPROVED & SYNCHRONIZED**  
-Ngày cập nhật: 2026-11-11  
-Dự án: **Vietnamese Toxic Comment Detection System**
+## Target
 
----
+Prepare `deployment/hf-gradio/` as an isolated Hugging Face Gradio Space bundle. Gradio is the demo UI, FastAPI preserves the REST API in the same Uvicorn process. The app listens on port 7860 and does not use Docker.
 
-## 1. KIẾN TRÚC TRIỂN KHAI (Deployment Architecture)
+Public deployment is not cleared. Account eligibility, artifact/data distribution rights, N10 acknowledgement evidence, and ZeroGPU allocation for direct FastAPI routes remain unresolved. No Space was created or uploaded.
 
-Ứng dụng được đóng gói thành một **Docker Container độc lập**, kết hợp **React (Frontend)** và **FastAPI (Backend)** chạy trên cùng một port `7860` (cổng tiêu chuẩn của Hugging Face Spaces):
+## Inference artifacts
 
-```
-+-----------------------------------------------------------------------+
-|                            USER BROWSER                               |
-|        (Giao diện React hiện đại: Single / Batch / Model Card)        |
-+-----------------------------------+-----------------------------------+
-                                    | HTTPS / Port 7860
-                                    v
-+-----------------------------------------------------------------------+
-|                 HUGGING FACE SPACES (Docker SDK)                      |
-|                  2 vCPU | 16 GB RAM (Dự kiến) | 50 GB Disk            |
-|                                                                       |
-|   +---------------------------------------------------------------+   |
-|   |                  FastAPI Backend Server (Port 7860)           |   |
-|   |  - API Endpoints (backend/schemas.py contract):               |   |
-|   |      * POST /api/predict (Phân tích 1 câu, xác suất chuẩn)    |   |
-|   |      * POST /api/predict-batch (Phân tích tệp CSV <= 500 dòng)|   |
-|   |      * GET  /api/model-info (Thông tin model & calibration)   |   |
-|   |      * GET  /api/health (Kiểm tra model_loaded & artifact)    |   |
-|   |  - Static Files Mount:                                        |   |
-|   |      * Mount thư mục /dist (React Build) phục vụ Single Page  |   |
-|   +-------------------------------+-------------------------------+   |
-|                                   | In-memory call                    |
-|                                   v                                   |
-|   +---------------------------------------------------------------+   |
-|   |               Multi-Backend Inference Engine                  |   |
-|   |  - src/inference/predictor.py (Singleton instance)            |   |
-|   |  - Hỗ trợ: SklearnBackend (Calibrated) / PyTorch / ONNX       |   |
-|   +-------------------------------+-------------------------------+   |
-|                                   |                                   |
-|                                   v                                   |
-|   +---------------------------------------------------------------+   |
-|   |         Model Artifact Delivery (src/tools/download_artifacts)|   |
-|   |  - 1. Kiểm tra local models/exported/                         |   |
-|   |  - 2. Tải từ HF Model Hub theo pinned revision (v1.0.0)       |   |
-|   |  - 3. Fallback sang Baseline model joblib đóng gói sẵn        |   |
-|   +---------------------------------------------------------------+   |
-+-----------------------------------------------------------------------+
-```
+| Model | Original artifact | Validation selection | Inference contract |
+|---|---|---|---|
+| N6-LR-D | `models/baselines/N6-LR-run-ea238c630a2f41b4b5be6b58edf4cdcd/EXP-N6-LR-D/seed_42/fallback_pipeline.joblib` | Macro-F1 `0.790095`; seeds 42/43/44 tied, seed 42 selected as the lowest-seed tie-break. | Teencode normalization, `predict_proba`, threshold 0.5, uncalibrated. |
+| V3-TRI-GATED-FT | `models/retrained/v3/retrained_20261124/cnn/V3-TRI-GATED-FT/seed_43/best.pt` | Macro-F1 `0.793046`, F1 TOXIC `0.646727`. | `v3_word_norm`, `v2_char_norm`, frozen vocabulary, raw softmax, uncalibrated. |
+| V3-PHOBERT-V2 | `models/retrained/v3/retrained_20261124/transformers/V3-PHOBERT-V2/seed_44/best.pt` | Macro-F1 `0.819487`, F1 TOXIC `0.694340`. | PyVi segmentation, pinned tokenizer revision, raw softmax, uncalibrated. |
 
----
+The two V3 weights are validation-only replacements because the historical checkpoints were unavailable. No training was run. Validation selection did not use N10, N15, or locked test data.
 
-## 2. QUY TRÌNH XÁC MINH HUGGING FACE DOCKER SPACE ELIGIBILITY (M0)
+## Package contents
 
-- **Trạng thái Hiện tại**: **`[ATTENTION / PENDING TOKEN]`**.
-  - Script `src/tools/check_hf_eligibility.py` đã chạy và ghi nhận rằng môi trường chưa được cấp `HF_TOKEN`.
-  - **Không đánh dấu xác minh deployment thành công** khi chưa có bằng chứng thực tế về tài khoản và quyền tạo Docker Space.
-- **Quy trình khi chuẩn bị Deploy (M6)**:
-  1. Người dùng cung cấp `HF_TOKEN` (quyền write).
-  2. Chạy lại `check_hf_eligibility.py` để xác nhận tài khoản không bị yêu cầu thẻ tín dụng hoặc hạn chế.
-  3. Nếu tài khoản bị chặn xác thực thẻ tín dụng: ghi nhận blocker vào `docs/hf_eligibility_report.md` và kích hoạt phương án dự phòng (Render Free Docker hoặc chạy container local), **không tự ý đổi nền tảng**.
+- `app.py`: Gradio Blocks and FastAPI routes.
+- `model_runtime.py`: fixed three-model registry, CPU baseline, on-demand neural inference, shared GPU lock.
+- `preprocessing.py`: only inference-time preprocessing variants and vocabulary encoding required by the selected artifacts.
+- `models/`: copied N6 joblib, TRI checkpoint/vocabulary/config, PhoBERT checkpoint/config.
+- `requirements.txt`, `README.md`, `smoke_test.py`.
 
----
+The bundle contains no datasets, validation predictions, training scripts, notebooks, experiment logs or unrelated checkpoints. Original files remain in place.
 
-## 3. QUY TRÌNH GIAO NHẬN & VERSION HÓA MODEL ARTIFACTS TRONG DOCKER
+## Local verification
 
-Để đảm bảo container trên production thực sự có model và không crash vì thiếu file:
-1. **Version hóa trên Hugging Face Model Hub**:
-   - Model Transformer sau khi huấn luyện được đẩy lên repo weights riêng với tag cố định (ví dụ: `v1.0.0`).
-2. **Kịch bản Khởi động (Startup Protocol)**:
-   - Script `src/tools/download_artifacts.py` chạy lúc khởi động container (hoặc build-time).
-   - Nếu tìm thấy file trong `models/exported/`: Khởi tạo `PyTorchBackend` hoặc `ONNXBackend`.
-   - Nếu chưa có: Thực hiện `snapshot_download(repo_id=..., revision="v1.0.0")`.
-   - Nếu mạng lỗi hoặc chưa có weights: Tự động fallback sang `models/baselines/baseline_model.joblib` đã được build trực tiếp vào Docker image.
-3. **Giám sát Sức khỏe Container (`/api/health`)**:
-   - Trả về JSON:
-     ```json
-     {
-       "status": "healthy",
-       "model_loaded": true,
-       "model_backend": "pytorch",
-       "artifact_status": "loaded_local",
-       "device": "cpu"
-     }
-     ```
+The local smoke test uses synthetic input and passed the REST routes, Swagger HTML, all three model IDs, comparison, binary labels, normalized probabilities, latency and calibration status. The browser check showed the single-model Gradio flow, three-model comparison and Swagger UI. A first REST pass hit a transient local CUDA out-of-memory error; a later complete pass succeeded. Hosted resource behavior is not verified.
 
----
+## Space configuration
 
-## 4. CHIẾN LƯỢC QUẢN LÝ TÀI NGUYÊN (Dựa trên Đo đạc Thực tế)
+`README.md` contains frontmatter for `sdk: gradio`, Python 3.12, Gradio 5.50.0 and `app_file: app.py`. Uvicorn binds port 7860. `app_port` is deliberately omitted because it is Docker-only. `requirements.txt` uses PyTorch 2.8+ for ZeroGPU while retaining Transformers 4.57.6 and Hub below 1.0.
 
-1. **Bộ nhớ RAM**:
-   - Hugging Face Spaces cung cấp quota 16GB RAM cho CPU Basic.
-   - Cần thực hiện **memory profiling** thực tế khi nạp model vào RAM ở giai đoạn smoke test, không đưa ra cam kết chủ quan.
-2. **Thời gian Khởi động (Cold Start)**:
-   - Sử dụng Lifespan context của FastAPI (`@asynccontextmanager`) để nạp model một lần duy nhất lúc server start.
-   - Thời gian khởi động cần được đo lường thực tế trong bài kiểm thử smoke test.
-3. **Cơ chế Fallback Mô hình**:
-   - Nếu mô hình Transformer gặp sự cố (OOM hoặc thiếu file), `Predictor` tự động fallback sang `SklearnBackend` (<15MB) và gắn cờ `"model_backend": "sklearn_fallback"` để người dùng web nhận biết, đảm bảo ứng dụng không bao giờ bị trắng trang.
+PhoBERT checkpoint already includes fine-tuned backbone weights. Runtime downloads only `config` and tokenizer at pinned revision. It does not fetch base-model weights again, quantize, or alter model architecture.
+
+## Publication gates
+
+1. Verify account email, age, good standing, ZeroGPU quota, and whether private ZeroGPU Spaces are available.
+2. Verify publication rights for selected checkpoints and tokenizer/config; check dataset source permissions before public examples or uploads.
+3. Locate existing N10 acknowledgement evidence without reopening N10 or the test set.
+4. On an eligible private Space, verify direct REST inference allocation and all endpoints. If ZeroGPU requires a public Space, do not upload until rights gates close.
+5. Free ZeroGPU documents a 5 GPU-minute daily quota for Free accounts and supports up to two ZeroGPU Spaces. Do not promise sustained demo availability.
+
+After gates close, create a Gradio Space on ZeroGPU Free and upload only this directory with `hf upload <username>/<space-name> . --repo-type space`. Do not upload the project root, `data/`, training artifacts, notebooks or logs.

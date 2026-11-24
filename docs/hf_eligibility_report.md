@@ -1,35 +1,32 @@
-# Báo cáo Xác minh Điều kiện Triển khai Hugging Face Docker Space (M0)
+# Báo cáo xác minh Hugging Face Gradio ZeroGPU
 
-- **Ngày kiểm tra**: 2026-11-11
-- **Trạng thái**: **[ATTENTION / PENDING TOKEN]**
-- **Phương pháp triển khai**: ML-first, API-minimal (FastAPI REST API, không bắt buộc Docker/HF Space bắt buộc)
+Trạng thái tài khoản: **CHƯA XÁC MINH**. Chưa có quyền public deployment được xác nhận.
 
----
+## Kết quả kiểm tra tài khoản
 
-## 1. Kết quả Kiểm tra Chi tiết
-
-| Hạng mục | Kết quả |
+| Điều kiện | Bằng chứng hiện có |
 |---|---|
-| **HF Token tìm thấy** | CHƯA (Nguồn: None) |
-| **Tài khoản Hugging Face** | Chưa xác định |
-| **Email Verified** | None |
-| **Quyền tạo Docker Space** | Cần cung cấp token |
+| `HF_TOKEN` hoặc token đăng nhập | Không tìm thấy |
+| Tên tài khoản | Chưa xác định |
+| Email đã xác minh | Chưa xác định |
+| Tài khoản đủ tuổi và good standing | Chưa xác định |
+| Quyền tạo Space và quota ZeroGPU | Chưa xác định |
 
-## 2. Ghi nhận Rào cản & Khuyến nghị (Blocker & Action)
+Đã thử kiểm tra token/API và mở phiên HF đã đăng nhập. Môi trường không có `HF_TOKEN`; browser relay không khả dụng. Vì vậy không thể đọc trạng thái tài khoản hay tạo Space. Không có credential nào được yêu cầu hoặc ghi vào repo.
 
-⚠️ **Rào cản hiện tại**: Chưa cấu hình `HF_TOKEN`. Chưa xác minh được quyền tạo Docker Space tự động qua API.
+## Điều kiện nền tảng đã đối chiếu
 
-👉 **Khuyến nghị**: Người dùng cần đăng nhập Hugging Face (`huggingface-cli login` hoặc tạo token tại https://huggingface.co/settings/tokens với quyền write) khi sẵn sàng deploy.
+- Free ZeroGPU dùng Gradio SDK, yêu cầu email xác minh, tài khoản trên 30 ngày và good standing; tài khoản Free có quota tối đa 5 GPU-phút mỗi ngày và tối đa 2 ZeroGPU Spaces theo tài liệu HF hiện hành.
+- ZeroGPU yêu cầu PyTorch 2.8 trở lên. README deployment pin Gradio 5.50.0 để tương thích với Transformers 4.57.6 và Hub 0.x trong pipeline hiện có.
+- `app_port` trong metadata chỉ áp dụng Docker SDK. Gradio SDK dùng port mặc định 7860.
+- HF mô tả ZeroGPU cho Gradio. FastAPI custom routes có thể cùng process local, nhưng chưa có bằng chứng remote rằng route REST trực tiếp nhận GPU allocation.
+- CPU Basic không được chọn. Không tạo Docker Space, không chọn hardware trả phí.
 
-## 3. Phương án Dự phòng (Fallback Plan)
+Nguồn: [Spaces overview](https://huggingface.co/docs/hub/en/spaces-overview), [ZeroGPU](https://huggingface.co/docs/hub/en/spaces-zerogpu), [Spaces configuration](https://huggingface.co/docs/hub/en/spaces-config-reference), [Gradio FastAPI mount](https://www.gradio.app/docs/gradio/mount_gradio_app).
 
-Nếu HF yêu cầu thẻ tín dụng hoặc bị chặn, phương án dự phòng:
-1. **Render Free Docker Web Service**
-2. **Railway**
-3. **Chạy container Docker local** (hoặc FastAPI trực tiếp local)
+## Quyết định và blocker
 
-Kiến trúc FastAPI giữ nguyên để porting dễ dàng giữa các nền tảng.
-
-## 4. Lưu ý phiên này
-
-Phiên này đã xóa thư mục `frontend/` (React + Vite) và thiết lập MLflow local tracking (`src/tracking/`). Không thực hiện deploy, không tạo Dockerfile. Xác minh thực tế HF sẽ được thực hiện ở phiên implementation M6.
+- Kế hoạch N12 chuyển sang một Space Gradio + ZeroGPU Free, port 7860, FastAPI REST custom routes được giữ cùng process.
+- `deployment/hf-gradio/` chỉ chứa inference code và ba checkpoint đã chọn. Không có dataset, notebook, validation predictions, training logs hoặc experiment artifacts.
+- Chỉ upload private để smoke test nếu tài khoản cho phép. Nếu ZeroGPU yêu cầu Space public, không upload trước khi có bằng chứng quyền phân phối model/tokenizer và dữ liệu nguồn.
+- Chưa xác minh HF account eligibility, quyền upload model artifacts, N10 acknowledgement hiện có, hoặc ZeroGPU allocation cho direct FastAPI REST. Chưa deploy.

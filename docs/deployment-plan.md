@@ -1,108 +1,53 @@
-# Kế hoạch Triển khai & Ràng buộc Tài nguyên (Deployment Plan)
+# Kế hoạch triển khai N12 trên Hugging Face Gradio ZeroGPU
 
-Trạng thái: **DRAFT — PENDING USER REVIEW**  
-Ngày cập nhật: 2026-11-11  
-Dự án: **Vietnamese Toxic Comment Detection**  
-Kiến trúc: **ML-first, API-minimal** (FastAPI REST API, không frontend)
+## Trạng thái
 
----
+Bundle inference riêng tại `deployment/hf-gradio/` đã được tạo và kiểm thử local. Chưa tạo Space, chưa upload, chưa deploy. Public launch vẫn bị chặn bởi eligibility tài khoản, quyền phân phối artifacts, bằng chứng N10 hiện có và kiểm chứng remote cho FastAPI REST trên ZeroGPU.
 
-## 1. Kiến trúc Triển khai (System Architecture)
+## Kiến trúc và contract
 
-Chỉ bao gồm khối **Production Inference** tối giản:
+- Gradio là UI tiếng Việt tại `/`; FastAPI cùng process phục vụ `/predict`, `/compare`, `/health`, `/model-info`, `/models` và Swagger tại `/docs`.
+- Uvicorn bind port 7860. Metadata không dùng `app_port` vì khóa đó dành cho Docker SDK.
+- N6 chạy trên CPU. CNN và PhoBERT dùng `@spaces.GPU` khi hosted, với khóa inference chung để serialize model GPU.
+- API trả `CLEAN=0`, `TOXIC=1`, raw probabilities, latency và calibration status. Cả ba model chưa calibration; không mô tả softmax hay `predict_proba` là calibrated.
 
-```
-+-----------------------------------------------------------------------+
-|                          KHÁCH HÀNG / NGƯỜI DÙNG                      |
-|           (Gọi API qua Swagger UI tại /docs, hoặc curl / HTTP client) |
-+-----------------------------------+-----------------------------------+
-                                    | HTTP
-                                    v
-+-----------------------------------------------------------------------+
-|                     NỀN TẢNG TRIỂN KHAI (đề xuất)                     |
-|  - Hugging Face Spaces (CPU Basic, 2 vCPU, 16 GB RAM)                 |
-|  - Thay thế: Render, Railway, hoặc chạy FastAPI trực tiếp local       |
-|  - Docker: **không bắt buộc**, chỉ dùng nếu hosting yêu cầu container |
-+-----------------------------------+-----------------------------------+
-                                    | HTTP
-                                    v
-+-----------------------------------------------------------------------+
-|                  FASTAPI APPLICATION (Production Inference)           |
-|                                                                       |
-|  Endpoints:                                                           |
-|    POST /predict   → văn bản → nhãn + xác suất hiệu chuẩn + latency   |
-|    GET  /health    → model_loaded, backend, artifact, device          |
-|    GET  /model-info → metadata, label taxonomy, calibration, version  |
-|                                                                       |
-|  Swagger UI: /docs                                                    |
-+-----------------------------------+-----------------------------------+
-                                    | In-memory call
-                                    v
-+-----------------------------------------------------------------------+
-|               INFERENCE PIPELINE (.py, không phải Notebook)           |
-|  - Best model hoặc ensemble đã chọn (từ M5)                           |
-|  - Tokenizer / preprocessing artifacts                                |
-|  - Label mapping (0:CLEAN, 1:OFFENSIVE, 2:HATE)                       |
-|  - Probability contract (tổng ≈ 1.0, LinearSVC calibrated)            |
-+-----------------------------------+-----------------------------------+
-                                    | File load
-                                    v
-+-----------------------------------------------------------------------+
-|           MODEL ARTIFACTS (models/exported/, models/baselines/)       |
-|  - Tùy chọn: Hugging Face Model Hub (pinned revision)                 |
-|  - Fallback: Baseline .joblib (<15MB) đóng gói sẵn                    |
-+-----------------------------------------------------------------------+
-```
+## Candidate và artifact
 
-**Không đưa vào production**: Notebook, training dataset, MLflow server, Optuna, training processes, unused checkpoints, frontend (React/Vite).
+| Model | Candidate | Validation Macro-F1 | F1 TOXIC | Ghi chú |
+|---|---|---:|---:|---|
+| N6-LR-D | Official C=5, seed 42 | 0.7901 | 0.6419 | Seed 42/43/44 tie; chọn seed thấp nhất. |
+| V3-TRI-GATED-FT | V3 replacement, seed 43 | 0.7930 | 0.6467 | Historical weight thiếu; chỉ dùng checkpoint validation-only hiện có. |
+| V3-PHOBERT-V2 | V3 replacement, seed 44 | 0.8195 | 0.6943 | Historical weight thiếu; chỉ dùng checkpoint validation-only hiện có. |
 
----
+Đường dẫn gốc, bản sao và SHA-256 của ba checkpoint cùng validation provenance được ghi tại `deployment/hf-gradio/README.md`. Bundle kiểm tra SHA lúc khởi động và xác minh vocabulary với checkpoint TRI. Bản sao deployment giữ nguyên SHA của artifact gốc. Không mở lại N10, N15 hoặc test.
 
-## 2. Ba Endpoint (API schema)
+## Kiểm thử local đã có bằng chứng
 
-| Endpoint | Phương thức | Mô tả |
-|---|---|---|
-| `POST /predict` | POST | Nhận `text`, trả về `label_id`, `label_name`, `confidence`, `probabilities` (3 lớp, sum ≈ 1.0), `is_calibrated`, `latency_ms`, `model_backend`. |
-| `GET /health` | GET | Trả về `status`, `model_loaded`, `model_backend`, `artifact_status`, `device`. |
-| `GET /model-info` | GET | Trả về `model_name`, `model_backend`, `label_taxonomy`, `is_calibrated`, `calibration_method`, `artifact_version`, `status`. |
+- `smoke_test.py` pass với synthetic text: REST, Swagger endpoint, chọn từng model, `/compare`, nhãn, xác suất, latency và trạng thái calibration.
+- Gradio UI được mở trong browser local; single-model và three-model comparison hiển thị kết quả. `/docs` mở được với các route dự kiến.
+- Preprocessing bundle khớp với helper nguồn trên 20 synthetic cases.
+- Một lượt API đầu gặp CUDA out-of-memory trên GPU local; lượt full smoke tiếp theo pass. Chưa xác định được nguyên nhân gốc ngoài áp lực VRAM/RAM tại thời điểm chạy. Đây không phải bằng chứng hosted không lỗi.
 
-Schema chi tiết tại `backend/schemas.py` (Pydantic, probability contract).
+## Tối ưu có giới hạn
 
----
+- Checkpoint PhoBERT đã chứa backbone fine-tuned; runtime tải config/tokenizer ở revision cố định thay vì tải thêm base-model weights.
+- Ba checkpoint cần thiết và CNN vocabulary được copy vào bundle riêng. Không có dataset, predictions, logs, notebook hoặc training artifacts.
+- Models neural ở CPU khi idle; lần lượt chuyển một model sang device khi inference rồi trả về CPU. Không lượng tử hóa hay đổi kiến trúc để tránh suy giảm chất lượng.
+- Free ZeroGPU có quota tối đa 5 GPU-phút/ngày theo tài liệu HF; thời gian demo kéo dài có thể chạm quota. Chưa đo hiệu năng hosted.
 
-## 3. Docker — tùy chọn, không bắt buộc
+## Rào cản trước public deploy
 
-- `Dockerfile` và `docker-compose.yml` **không bắt buộc** trong phiên này.
-- Giữ lại chỉ nếu nền tảng hosting yêu cầu container (ví dụ Hugging Face Spaces Docker SDK, Render Docker).
-- FastAPI có thể chạy trực tiếp local qua Uvicorn mà không cần Docker.
-- Kiến trúc API không đổi giữa trường hợp chạy local hay chạy trong container.
+1. Tài khoản chưa xác minh được: thiếu `HF_TOKEN`, email/account age/good standing/quota đều chưa biết.
+2. Quyền public của model checkpoints, PhoBERT tokenizer/config và dữ liệu nguồn chưa được xác minh độc lập.
+3. Bằng chứng sign-off N10 hiện có chưa được đối chiếu; không mở lại N10 để bổ sung.
+4. Local FastAPI REST hoạt động, nhưng chưa chứng minh direct REST requests được cấp ZeroGPU trên Space.
+5. Free ZeroGPU private-Space eligibility chưa xác định. Nếu test yêu cầu public Space, dừng cho tới khi rights được xác nhận.
 
----
+## Upload sau khi các gate đóng
 
-## 4. Xác minh Điều kiện Triển khai Hugging Face (M0 Status)
+1. Tạo Space mới, SDK Gradio, Python 3.12, hardware ZeroGPU Free. Không chọn Docker hoặc hardware trả phí.
+2. Nếu private ZeroGPU được hỗ trợ, upload vào Space private và kiểm tra `/`, `/docs`, `/health`, `/predict`, `/compare`. Nếu không, chưa upload.
+3. Tại `deployment/hf-gradio/`, chạy `hf auth login` rồi `hf upload <username>/<space-name> . --repo-type space`.
+4. Chỉ upload nội dung của bundle này. Không upload `data/`, model directory gốc, notebooks, logs, `artifacts/` hay toàn repo.
 
-- **Trạng thái**: `docs/hf_eligibility_report.md` ghi nhận **`[ATTENTION / PENDING TOKEN]`** (chưa có `HF_TOKEN`, chưa xác minh quyền tạo Docker Space).
-- **Quy tắc**: Không đánh dấu triển khai thành công khi chưa có bằng chứng thực tế về tài khoản và quyền tạo Space.
-- **Phương án dự phòng**: Nếu HF yêu cầu thẻ tín dụng hoặc bị chặn, chuyển sang Render Free Docker, Railway, hoặc chạy container Docker local. Giữ nguyên kiến trúc FastAPI để porting dễ dàng.
-
----
-
-## 5. Quản lý Tài nguyên (dựa trên đo đạc thực tế)
-
-| Tham số | Ngưỡng dự kiến | Giải pháp kiểm soát |
-|---|---|---|
-| Dung lượng artifacts | PyTorch ~500 MB hoặc ONNX ~150 MB | Version hóa HF Model Hub, pinned tag/revision. |
-| RAM | Quota 16 GB (HF Spaces CPU Basic) | Memory profiling thực tế khi nạp model; fallback sang baseline nếu vượt hạn mức. |
-| Thời gian khởi động | Cần đo lường thực tế | Nạp model một lần qua FastAPI lifespan; không train/download nặng lúc runtime nếu đã có local cache. |
-| Độ trễ suy luận | Cần benchmark thực tế trên CPU | Hỗ trợ đa backend; chỉ bật ONNX nếu benchmark chứng minh giảm latency ≥ 25%. |
-| Chi phí hạ tầng | 0 VNĐ (miễn phí) | HF Spaces CPU Basic, hoặc Render/Railway miễn phí, hoặc local Docker. |
-
----
-
-## 6. Thực hiện trong phiên này
-
-- Đã xóa thư mục `frontend/` (React + Vite).
-- Đã thiết lập MLflow local tracking tại `src/tracking/`.
-- Docker không bắt buộc (chỉ giữ nếu hosting yêu cầu container).
-- Ensemble/Stacking không bắt buộc (chỉ nếu có bằng chứng thực nghiệm).
-- Không tạo `Dockerfile`, không code FastAPI `main.py` thực tế, không triển khai public deployment.
+Nguồn nền tảng: [Spaces overview](https://huggingface.co/docs/hub/en/spaces-overview), [ZeroGPU](https://huggingface.co/docs/hub/en/spaces-zerogpu), [Spaces config](https://huggingface.co/docs/hub/en/spaces-config-reference), [Gradio mount](https://www.gradio.app/docs/gradio/mount_gradio_app).

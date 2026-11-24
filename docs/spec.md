@@ -74,9 +74,9 @@ Các endpoint local đã triển khai là `POST /predict`, `GET /health`, `GET /
 
 ## 6. Artifact và ứng dụng
 
-Neural checkpoint tốt nhất dự kiến ở `models/neural_best/`, cấu hình ở `configs/neural_config.yaml`. PhoBERT pretrained fine-tune dùng `models/transformer_best/` và `configs/transformer_config.yaml`. Fallback baseline `.joblib` được giữ. Đây là cấu trúc đích, không khẳng định các đường dẫn đã tồn tại.
+Inference artifacts remain in their original project paths. N12 copies only the selected N6 joblib, TRI checkpoint/vocabulary/config and PhoBERT checkpoint/config into `deployment/hf-gradio/models/`; it does not move or overwrite any source artifact.
 
-Theo yêu cầu người dùng, kiến trúc ứng dụng dự kiến gồm React frontend, FastAPI backend, Docker và Hugging Face Spaces. Đây là quyết định mới thay cho kiến trúc FastAPI-only trong tài liệu cũ. Không khẳng định frontend, Docker image, API hay Space đã được triển khai. HF account/eligibility, token, quyền tạo Space và deploy vẫn pending.
+N11 local React/FastAPI remains unchanged. N12 uses Gradio as the primary Vietnamese interface and FastAPI REST in the same process on port 7860, with ZeroGPU Free as the target host and no Docker. Three validation-selected models are exposed individually and in a side-by-side comparison. All probabilities are explicitly uncalibrated. Local UI/REST/Swagger checks pass; public eligibility, rights, N10 evidence, and hosted FastAPI GPU allocation remain unresolved.
 
 ## 7. Điều kiện nghiệm thu D1–D4
 
@@ -85,7 +85,7 @@ Theo yêu cầu người dùng, kiến trúc ứng dụng dự kiến gồm Reac
 | **D1 Data** | Dataset nhị phân đã tạo và kiểm tra cơ bản; N3 tiếp tục audit leakage. |
 | **D2 Models** | LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính; PhoBERT pretrained fine-tune là benchmark riêng đã được chấp nhận. |
 | **D3 Improvements** | TOXIC augmentation train-only theo giới hạn; chọn đúng một imbalance method; calibration, threshold và ECE; không dùng test. |
-| **D4 Evaluation** | Cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; artifacts và React/FastAPI/Docker/HF Spaces theo yêu cầu, sau khi xác minh deploy. |
+| **D4 Evaluation** | Cùng split, binary metrics, 3 seeds; freeze candidates trước một batch test; bootstrap CI hoặc McNemar; error analysis; artifacts và local Gradio/FastAPI evidence. Public HF deployment chỉ sau khi xác minh account eligibility, artifact/data rights và ZeroGPU REST allocation. |
 
 Test chỉ mở một đợt sau khi đóng băng mọi candidate, seed, threshold và protocol; file khóa ghi danh sách trước đợt đánh giá và ngăn chạy lại. Báo riêng nhóm tự huấn luyện và PhoBERT pretrained fine-tune. Phân tích lỗi sau test chỉ để báo cáo, không tuning. Ghi ví dụ, số mẫu, lỗi tiếng lóng, viết tắt bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode.
 
