@@ -20,7 +20,7 @@
 | N7 | Train scratch LSTM, BiLSTM/attention, and character CNN models. | N4, N5 | TV3 và TV4 |
 | N8 | Calibrate and choose thresholds on validation for all eligible models, including PhoBERT. | N6, N7, N13 | Huy (TV3) |
 | N9 | Run controlled validation ablations, including the PhoBERT comparison. | N7, N8, N13 | Huy (TV3) |
-| N10 | Freeze the validation candidate inventory, reconcile disclosed historical evaluations, and close only as limited historical acceptance after all four sign-offs; no test re-access. | N9, N14 if applicable | TV1 lead; group; TV3 reviewer |
+| N10 | Complete as limited historical acceptance, based on the user's group-level report. The historical batch is non-blind and omits part of the team candidate inventory. Individual sign-offs are not evidenced. No test re-access. | N9, N14 if applicable | TV1 lead; group; TV3 reviewer |
 | N11 | Implement local React/FastAPI inference with a replaceable model adapter; start with the N6 baseline `.joblib`, keep the binary API contract stable, and defer production selection/public deployment until N10 gates pass. | N6, N8 | Huy (TV3) |
 | N12 | Prepare and locally verify a standalone Hugging Face Gradio + FastAPI ZeroGPU Free bundle with the three validation-selected models; public launch only after account eligibility, existing N10 acknowledgement evidence, artifact/data rights, and hosted FastAPI GPU allocation are verified. No Docker, training, N10/N15 reopening, or test access. | N10, N11 | Huy (TV3) |
 | N13 | Run the accepted pretrained PhoBERT fine-tuning benchmark. | N2, N4 if augmentation is used | TV3 |
