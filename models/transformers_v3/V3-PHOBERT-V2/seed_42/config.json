@@ -1,0 +1,25 @@
+{
+  "experiment": "TV4-Transformer-V3",
+  "variant": "V3-PHOBERT-V2",
+  "seed": 42,
+  "run_id": "c1707941092e4652b4d5db7d4209db5c",
+  "pretrained": true,
+  "model_name": "vinai/phobert-base-v2",
+  "use_pyvi": true,
+  "max_length": 160,
+  "batch_size": 16,
+  "grad_accum": 2,
+  "epochs": 4,
+  "learning_rate": 2.5e-05,
+  "head_lr_mult": 4.0,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "dropout": 0.2,
+  "pooling": "mean_cls",
+  "label_smoothing": 0.03,
+  "data_hashes": {
+    "train_parquet_sha256": "097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73",
+    "val_parquet_sha256": "4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a",
+    "manifest_sha256": "d0b94fb59ecc20a55eba9fc4dbadc013043c6ae126dd86e8a73daffb94cc4ff3"
+  }
+}

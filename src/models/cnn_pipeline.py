@@ -119,8 +119,53 @@ _NEGATION_CUES = frozenset(
 )
 
 
+_V3_VI_TONE_FIXES = (
+    ("òa", "oà"),
+    ("óa", "oá"),
+    ("ỏa", "oả"),
+    ("õa", "oã"),
+    ("ọa", "oạ"),
+    ("òe", "oè"),
+    ("óe", "oé"),
+    ("ỏe", "oẻ"),
+    ("õe", "oẽ"),
+    ("ọe", "oẹ"),
+    ("ùy", "uỳ"),
+    ("úy", "uý"),
+    ("ủy", "uỷ"),
+    ("ũy", "uỹ"),
+    ("ụy", "uỵ"),
+)
+_V3_OBFUSC_RE = (
+    (re.compile(r"\bđ[\.\*\-_]+m\b", re.IGNORECASE), "đm"),
+    (re.compile(r"\bd[\.\*\-_]+m\b", re.IGNORECASE), "đm"),
+    (re.compile(r"\bv[\.\*\-_]+l\b", re.IGNORECASE), "vl"),
+    (re.compile(r"\bv[\.\*\-_]+c[\.\*\-_]+l\b", re.IGNORECASE), "vcl"),
+    (re.compile(r"\bc[\.\*\-_]+c\b", re.IGNORECASE), "cc"),
+    (re.compile(r"\bl[\.\*\-_]+n\b", re.IGNORECASE), "lồn"),
+)
+
+
+def _normalize_v3_word_text(raw: str) -> str:
+    s = unicodedata.normalize("NFC", str(raw))
+    s = _V2_ZW_RE.sub("", s)
+    s = _V2_URL_RE.sub(" <url> ", s)
+    s = _V2_HTML_RE.sub(" ", s)
+    s = _V2_EMOJI_RE.sub(" <emoji> ", s)
+    s = s.lower()
+    for old, new in _V3_VI_TONE_FIXES:
+        s = s.replace(old, new)
+    for pat, repl in _V3_OBFUSC_RE:
+        s = pat.sub(f" {repl} ", s)
+    s = _V2_LETTER_REP_RE.sub(r"\1", s)
+    s = _V2_CHAR_REP3_RE.sub(r"\1\1", s)
+    s = _V2_PUNCT_SEP_RE.sub(r" \1 ", s)
+    tokens = [TEENCODE_V2_DICT.get(tok, tok) for tok in s.split()]
+    return _V2_WS_RE.sub(" ", " ".join(tokens)).strip() or "<unk>"
+
+
 def preprocess_v2_series(texts: list[str], variant: str = "basic") -> list[str]:
-    """Preprocess texts supporting both V1 ('raw','basic','teencode') and V2 modes."""
+    """Preprocess texts supporting V1 ('raw','basic','teencode'), V2, and V3 modes."""
     if variant in ("raw", "basic", "teencode"):
         return preprocess_series(texts, variant=variant)  # type: ignore[arg-type]
     out: list[str] = []
@@ -138,6 +183,16 @@ def preprocess_v2_series(texts: list[str], variant: str = "basic") -> list[str]:
             tokens = [TEENCODE_V2_DICT.get(tok, tok) for tok in s.split()]
             out.append(_V2_WS_RE.sub(" ", " ".join(tokens)).strip() or "<unk>")
         return out
+    if variant == "v3_word_norm":
+        return [_normalize_v3_word_text(raw) for raw in texts]
+    if variant == "v3_word_pyvi":
+        from pyvi import ViTokenizer
+
+        return [
+            _V2_WS_RE.sub(" ", ViTokenizer.tokenize(_normalize_v3_word_text(raw))).strip()
+            or "<unk>"
+            for raw in texts
+        ]
     if variant == "v2_char_norm":
         for raw in texts:
             s = unicodedata.normalize("NFC", str(raw))
@@ -148,6 +203,46 @@ def preprocess_v2_series(texts: list[str], variant: str = "basic") -> list[str]:
             out.append(_V2_WS_RE.sub(" ", s).strip() or " ")
         return out
     raise ValueError(f"Unsupported preprocessing variant: {variant!r}")
+
+
+def _init_word_embedding_with_train_only_fasttext(
+    model: nn.Module,
+    word_vocab: SequenceVocab,
+    train_word_texts: list[str],
+    seed: int,
+) -> None:
+    """Fit gensim FastText STRICTLY on train_word_texts to initialize word embeddings."""
+    from gensim.models import FastText
+
+    emb = getattr(model, "word_embedding", None)
+    if emb is None:
+        emb = getattr(model, "embedding", None)
+    if emb is None or not isinstance(emb, nn.Embedding):
+        return
+    emb_dim = int(emb.embedding_dim)
+    sentences = [t.split() for t in train_word_texts if t.strip()]
+    if not sentences:
+        return
+    ft = FastText(
+        sentences=sentences,
+        vector_size=emb_dim,
+        window=5,
+        min_count=max(1, word_vocab.min_freq),
+        min_n=2,
+        max_n=5,
+        sg=1,
+        epochs=10,
+        workers=4,
+        seed=seed,
+    )
+    weight_data = emb.weight.detach().cpu().numpy()
+    assert word_vocab._token_to_id is not None
+    for tok, idx in word_vocab._token_to_id.items():
+        if idx < weight_data.shape[0]:
+            weight_data[idx] = ft.wv[tok]
+    weight_data[word_vocab.pad_id] = 0.0
+    with torch.no_grad():
+        emb.weight.copy_(torch.from_numpy(weight_data).to(emb.weight.device))
 
 
 class SequenceVocab:
@@ -479,6 +574,9 @@ def build_cnn_model(
                 if model_cfg.get("char_dropout") is not None
                 else None
             ),
+            num_rnn_layers=int(model_cfg.get("num_rnn_layers", 1)),
+            use_layernorm=bool(model_cfg.get("use_layernorm", False)),
+            multi_sample_dropout=bool(model_cfg.get("multi_sample_dropout", False)),
         )
     raise ValueError(f"Unsupported CNN architecture: {architecture!r}")
 
@@ -505,15 +603,24 @@ def _compute_loss(
     class_weights: torch.Tensor | None,
     focal_gamma: float,
     sample_weights: torch.Tensor | None = None,
+    label_smoothing: float = 0.0,
 ) -> torch.Tensor:
     if imbalance_method == "class_weight" and class_weights is not None:
-        ce = F.cross_entropy(logits, labels, weight=class_weights, reduction="none")
+        ce = F.cross_entropy(
+            logits,
+            labels,
+            weight=class_weights,
+            reduction="none",
+            label_smoothing=label_smoothing,
+        )
     elif imbalance_method == "focal":
         raw_ce = F.cross_entropy(logits, labels, reduction="none")
         pt = torch.exp(-raw_ce)
         ce = ((1.0 - pt) ** focal_gamma) * raw_ce
     else:
-        ce = F.cross_entropy(logits, labels, reduction="none")
+        ce = F.cross_entropy(
+            logits, labels, reduction="none", label_smoothing=label_smoothing
+        )
     if sample_weights is not None:
         ce = ce * sample_weights.to(device=ce.device, dtype=ce.dtype)
     return ce.mean()
@@ -668,6 +775,15 @@ def run_cnn_seed(
     min_word_freq = int(v_cfg.get("min_word_freq", defaults.get("min_word_freq", 2)))
     min_char_freq = int(v_cfg.get("min_char_freq", defaults.get("min_char_freq", 2)))
     use_amp = bool(v_cfg.get("use_amp", defaults.get("use_amp", False)))
+    label_smoothing = float(
+        v_cfg.get("label_smoothing", defaults.get("label_smoothing", 0.0))
+    )
+    init_fasttext = bool(
+        v_cfg.get(
+            "init_fasttext_train_only",
+            defaults.get("init_fasttext_train_only", False),
+        )
+    )
 
     seed_dir = variant_root_dir / f"seed_{seed}"
     if (
@@ -770,6 +886,13 @@ def run_cnn_seed(
         char_vocab_size=char_vocab.size if char_vocab is not None else None,
         num_classes=2,
     ).to(device)
+    if init_fasttext and word_vocab is not None:
+        _init_word_embedding_with_train_only_fasttext(
+            model=model,
+            word_vocab=word_vocab,
+            train_word_texts=train_word_texts,
+            seed=seed,
+        )
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
     class_weights: torch.Tensor | None = None
@@ -867,10 +990,10 @@ def run_cnn_seed(
             model.train()
             tr_loss = 0.0
             tr_count = 0
-            tr_true: list[int] = []
-            tr_pred: list[int] = []
-            tr_src: list[str] = []
-            tr_prob_pos: list[np.ndarray] = []
+            tr_tp1 = 0
+            tr_fp1 = 0
+            tr_fn1 = 0
+            tr_tn1 = 0
 
             for batch in train_loader:
                 labels = batch["labels"].to(device)
@@ -888,6 +1011,7 @@ def run_cnn_seed(
                         class_weights=class_weights,
                         focal_gamma=focal_gamma,
                         sample_weights=batch_sw,
+                        label_smoothing=label_smoothing,
                     )
                 if not torch.isfinite(loss).item():
                     raise ValueError("Non-finite training loss encountered")
@@ -909,15 +1033,19 @@ def run_cnn_seed(
                 size = int(labels.shape[0])
                 tr_loss += float(loss.detach().item()) * size
                 tr_count += size
-                probs = torch.softmax(logits.detach().float(), dim=1).cpu().numpy()
-                tr_true.extend(labels.cpu().tolist())
-                tr_pred.extend(probs.argmax(axis=1).tolist())
-                tr_src.extend(batch["sources"])
-                tr_prob_pos.append(probs[:, 1])
+                preds_t = logits.detach().argmax(dim=1)
+                tr_tp1 += int(((labels == 1) & (preds_t == 1)).sum().item())
+                tr_fp1 += int(((labels == 0) & (preds_t == 1)).sum().item())
+                tr_fn1 += int(((labels == 1) & (preds_t == 0)).sum().item())
+                tr_tn1 += int(((labels == 0) & (preds_t == 0)).sum().item())
 
-            train_probs_pos = np.concatenate(tr_prob_pos) if tr_prob_pos else np.zeros(0)
-            train_m = compute_binary_metrics(tr_true, tr_pred, tr_src, train_probs_pos)
-            train_m["loss"] = tr_loss / max(1, tr_count)
+            tr_f1_tox = (2.0 * tr_tp1) / max(1, 2 * tr_tp1 + tr_fp1 + tr_fn1)
+            tr_f1_cln = (2.0 * tr_tn1) / max(1, 2 * tr_tn1 + tr_fn1 + tr_fp1)
+            train_m = {
+                "loss": tr_loss / max(1, tr_count),
+                "macro_f1": 0.5 * (tr_f1_cln + tr_f1_tox),
+                "f1_toxic": tr_f1_tox,
+            }
 
             val_m = _eval_loader(
                 model, val_loader, device,

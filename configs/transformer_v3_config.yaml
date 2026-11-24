@@ -1,0 +1,58 @@
+version: "3.0.0"
+experiment: "TV4-Transformer-V3"
+owner: "TV4"
+dataset_dir: "data/processed/binary_n2_v1"
+seeds: [42, 43, 44]
+
+defaults:
+  device: "auto"
+  max_length: 160
+  batch_size: 16
+  eval_batch_size: 64
+  grad_accum: 2
+  epochs: 4
+  learning_rate: 0.00002
+  head_lr_mult: 5.0
+  weight_decay: 0.01
+  warmup_ratio: 0.10
+  dropout: 0.20
+  pooling: "mean_cls"
+  label_smoothing: 0.03
+  grad_clip: 1.0
+  use_amp: true
+  gradient_checkpointing: false
+
+variants:
+  V3-PHOBERT-V2:
+    description: "Pretrained vinai/phobert-base-v2 + PyVi segmentation + Mean+CLS pooling + Multi-Sample Dropout"
+    hypothesis: "PhoBERT-v2 pretrained on 140GB Vietnamese corpora captures sarcasm, negation, quoted context, and subtle ViCTSD news toxicity far beyond scratch word/char models."
+    model_name: "vinai/phobert-base-v2"
+    use_pyvi: true
+    max_length: 160
+    batch_size: 16
+    grad_accum: 2
+    epochs: 3
+    learning_rate: 0.000025
+    head_lr_mult: 4.0
+    weight_decay: 0.01
+    warmup_ratio: 0.10
+    dropout: 0.20
+    pooling: "mean_cls"
+    label_smoothing: 0.03
+
+  V3-XLMR-BASE:
+    description: "Pretrained FacebookAI/xlm-roberta-base (SentencePiece subword BPE, no word seg) + Mean+CLS + Multi-Sample Dropout"
+    hypothesis: "XLM-RoBERTa's multilingual subword tokenization handles unaccented Vietnamese, teencode, English-Vietnamese code-switching, and noisy punctuation with high error diversity relative to PhoBERT-v2."
+    model_name: "FacebookAI/xlm-roberta-base"
+    use_pyvi: false
+    max_length: 160
+    batch_size: 16
+    grad_accum: 2
+    epochs: 3
+    learning_rate: 0.00002
+    head_lr_mult: 4.0
+    weight_decay: 0.01
+    warmup_ratio: 0.10
+    dropout: 0.20
+    pooling: "mean_cls"
+    label_smoothing: 0.03
