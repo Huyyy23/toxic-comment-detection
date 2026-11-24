@@ -33,13 +33,13 @@ PhoBERT là benchmark pretrained fine-tune riêng, đã được chấp nhận t
 Calibration và threshold validation có thể tạo optimistic bias nếu dùng để xếp hạng model. So sánh raw predictions và chọn candidate bằng validation Macro-F1 trước. Sau đó fit calibration và threshold trên validation chỉ cho artifact inference; ghi diagnostics là in-sample, không dùng làm bằng chứng so sánh công bằng. Freeze artifact trước test, không fit lại trên test.
 
 
-## API và artifacts dự kiến
+## API và artifacts inference local
 
 Prediction binary gồm `label_id`, `label_name`, `confidence`, `probabilities` (`CLEAN`, `TOXIC`), `is_calibrated`, `threshold`, `latency_ms`, `model_backend`. Probabilities có tổng xấp xỉ 1; `confidence` là xác suất của nhãn trả về. `is_calibrated` chỉ true khi có calibration hợp lệ; raw margins và softmax không tự động là calibrated probabilities. Threshold chọn trên validation và lưu trong metadata.
 
-Artifacts dự kiến gồm `models/neural_best/`, `configs/neural_config.yaml`, `models/transformer_best/`, `configs/transformer_config.yaml` và baseline fallback `.joblib`. Các đường dẫn này là yêu cầu đích, chưa khẳng định tồn tại.
+Baseline N6-LR-D seed 42 được tái tạo tại `models/runtime/n11/EXP-N6-LR-D/seed_42/fallback_pipeline.joblib` theo cấu hình N6 chính thức; artifact này chỉ có trên local và bị Git bỏ qua. Các model khác vẫn chờ hoàn tất gate đánh giá.
 
-Hệ thống ứng dụng theo yêu cầu người dùng dự kiến dùng React, FastAPI, Docker và Hugging Face Spaces. Đây là quyết định mới, trái với kiến trúc FastAPI-only trong tài liệu cũ; chưa có phần nào được xác nhận đã triển khai. HF eligibility và deploy vẫn pending.
+The application uses React and FastAPI locally. Adapter implementations can be replaced behind the stable binary API contract. Public Docker/Hugging Face deployment remains pending, and this baseline is not the final production-model selection.
 
 - **D1 Data:** Dataset nhị phân đã được tạo và kiểm tra cơ bản; test không blind. Kiểm tra leakage sâu hơn thuộc N3.
 - **D2 Models:** LR balanced, SVM, BiLSTM random-init/cross-entropy, FastText train-only và Char-CNN; checkpoint theo validation Macro-F1; 3 seeds; không pretrained embeddings, LLM hay backtranslation trong nhóm chính. PhoBERT pretrained fine-tune đã được chấp nhận làm benchmark riêng.

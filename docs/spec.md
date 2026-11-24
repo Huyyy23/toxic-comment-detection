@@ -57,7 +57,7 @@ Chỉ sau khi freeze candidates, threshold và protocol trên validation mới c
 
 Calibration và threshold tuning trên validation có thể làm metric validation lạc quan nếu dùng cùng tập đó để so sánh candidates. Chọn kiến trúc/checkpoint bằng raw predictions và validation Macro-F1 trước. Sau khi chọn candidate, fit calibrator và threshold trên validation chỉ cho artifact inference. Ghi calibration diagnostics validation là in-sample, không dùng để xếp hạng model hoặc tuyên bố so sánh công bằng. Freeze artifact trước test và không fit lại trên test.
 
-Các endpoint dự kiến là `POST /predict`, `GET /health`, `GET /model-info`. `/predict` trả `label_id`, `label_name`, `confidence`, `probabilities` cho CLEAN/TOXIC, `is_calibrated`, `threshold`, `latency_ms`, `model_backend`. Probabilities có tổng xấp xỉ 1; confidence là xác suất nhãn trả về. `/model-info` công bố backend, label mapping, calibration method/status, threshold và artifact version. API chưa triển khai.
+Các endpoint local đã triển khai là `POST /predict`, `GET /health`, `GET /model-info`. `/predict` nhận `{text}` và trả `label_id` (0 CLEAN, 1 TOXIC), `label_name`, `confidence`, `probabilities` (`CLEAN`, `TOXIC`), `is_calibrated`, `threshold`, `latency_ms`, `model_backend`. `/model-info` công bố backend, label mapping, calibration status, threshold và artifact version. FastAPI dùng adapter inference thay thế được; frontend React gọi contract này. Hiện chỉ bật baseline N6-LR-D raw trên local; xác suất chưa hiệu chuẩn (`is_calibrated=false`), threshold mặc định 0.5. Chưa deploy public hoặc chốt production model trước N10.
 
 
 ## 5. Capability Map

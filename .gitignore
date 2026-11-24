@@ -72,3 +72,7 @@ hf_token.txt
 AGENTS.md
 # graphify knowledge graph outputs
 graphify-out/
+
+models/runtime/n11/
+frontend/node_modules/
+frontend/dist/

@@ -76,7 +76,7 @@ Nguồn chi tiết: [spec](../docs/spec.md) · [experiment plan](../docs/plans/m
 - [x] N5: FastText train-only trên N2, 3 seeds; validation Macro-F1 mean 0.622218, population std 0.001276. Config, hashes, models, predictions, metrics và MLflow runs ở `models/baselines/N5-run-4cef5024bbdb437296384e56b471e20b/`.
 - [x] N8: Calibration và chọn threshold trên validation cho các candidate hợp lệ; report ECE trước/sau và artifacts tại `artifacts/N8/n8_calibration_report.md`. N6 raw SVM không có probabilities/model weights nên chỉ dùng candidate SVM đã calibrated.
 - [x] N9: Validation-only ablations and PhoBERT comparison complete; 63-row evidence and protocol/results at `artifacts/N9/README.md` and `artifacts/N9/ablation_val.csv`.
-- [ ] N11: Sau N6 và N8, cập nhật inference/API/frontend cho nhị phân; test API và fallback `.joblib`.
+- [x] N11: Hoàn tất inference React + FastAPI local với adapter baseline N6-LR-D; giữ contract CLEAN/TOXIC, chưa deploy public/chốt production trước N10. Bằng chứng: `docs/todos/TV3.md`.
 - [ ] N12: Sau N10 và N11, Docker + HF Spaces, smoke test.
 
 ### TV4 — TheAnh

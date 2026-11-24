@@ -21,7 +21,7 @@
 | N8 | Calibrate and choose thresholds on validation for all eligible models, including PhoBERT. | N6, N7, N13 | Huy (TV3) |
 | N9 | Run controlled validation ablations, including the PhoBERT comparison. | N7, N8, N13 | Huy (TV3) |
 | N10 | Run the single locked-test comparison after all candidates are frozen. | N9, N14 if applicable | TV1 điều phối; cả nhóm |
-| N11 | Integrate the selected model into the API and frontend. | N6, N8 | Huy (TV3) |
+| N11 | Implement local React/FastAPI inference with a replaceable model adapter; start with the N6 baseline `.joblib`, keep the binary API contract stable, and defer production selection/public deployment until N10 gates pass. | N6, N8 | Huy (TV3) |
 | N12 | Deploy after test and integration gates pass. Consider ONNX only if it offers a measured benefit. | N10, N11 | Huy (TV3) |
 | N13 | Run the accepted pretrained PhoBERT fine-tuning benchmark. | N2, N4 if augmentation is used | TV3 |
 | N14 | Run optional pretrained PhoBERT fine-tuning extras on validation only. | N13, if applicable | Huy |
