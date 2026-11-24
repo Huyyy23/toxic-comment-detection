@@ -44,6 +44,7 @@ class PredictionResponse(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     probabilities: dict[str, float]
     is_calibrated: bool
+    calibration_method: str
     calibration_status: str
     threshold: float = Field(ge=0.0, le=1.0)
     latency_ms: float = Field(ge=0.0)
@@ -156,9 +157,9 @@ def model_card(model_id: str) -> str:
     info = SERVICE.model_info(selected)
     return (
         f"**{info['model_name']}**  \n"
-        f"{info['model_backend']} · Macro-F1 validation {info['validation_macro_f1']:.4f} · "
+        f"{info['model_backend']} · Macro-F1 chọn model (raw) {info['validation_macro_f1']:.4f} · "
         f"F1 TOXIC validation {info['validation_f1_toxic']:.4f}  \n"
-        f"Calibration: **{info['calibration_status']}**.  \n"
+        f"Hiệu chuẩn: **{info['calibration_status']}**.  \n"
         f"{info['provenance']}"
     )
 
@@ -168,9 +169,9 @@ def ui_predict(text: str, model_id: str):
     result = predict_one(request.model_id, request.text)
     probabilities = result["probabilities"]
     detail = (
-        f"**Nhãn:** {result['label_name']} · **Độ tin cậy thô:** {result['confidence']:.1%}  \n"
+        f"**Nhãn:** {result['label_name']} · **Độ tin cậy:** {result['confidence']:.1%}  \n"
         f"**Thời gian suy luận:** {result['latency_ms']:.2f} ms · **Hiệu chuẩn:** {result['calibration_status']}  \n"
-        f"**Mô hình:** {result['model_name']} · **Validation Macro-F1:** {result['validation_macro_f1']:.4f}"
+        f"**Mô hình:** {result['model_name']} · **Macro-F1 chọn model (raw):** {result['validation_macro_f1']:.4f}"
     )
     return probabilities, detail
 
@@ -204,7 +205,7 @@ with gr.Blocks(
         <p>So sánh mô hình truyền thống, deep learning tự huấn luyện và PhoBERT trên cùng đầu vào.</p></header>"""
     )
     gr.Markdown(
-        "**Lưu ý:** Xác suất của cả ba mô hình chưa được calibration. Kết quả phục vụ demo học thuật, không thay thế quyết định kiểm duyệt của con người.",
+        "**Lưu ý:** Trạng thái hiệu chuẩn được hiển thị riêng cho từng mô hình. Tập validation giữ lại đã tham gia chọn mô hình, nên kết quả không phải đánh giá độc lập. Demo học thuật này không thay thế quyết định kiểm duyệt của con người.",
         elem_classes="n12-footnote",
     )
     with gr.Tabs():
@@ -242,7 +243,7 @@ with gr.Blocks(
             )
             compare_button = gr.Button("Chạy cả ba mô hình", variant="primary")
             compare_output = gr.Dataframe(
-                headers=["Mô hình", "Nhãn", "P(CLEAN)", "P(TOXIC)", "ms", "Val Macro-F1", "Calibration"],
+                headers=["Mô hình", "Nhãn", "P(CLEAN)", "P(TOXIC)", "ms", "Macro-F1 chọn model", "Hiệu chuẩn"],
                 datatype=["str", "str", "number", "number", "number", "number", "str"],
                 interactive=False,
                 label="Kết quả đối chiếu",

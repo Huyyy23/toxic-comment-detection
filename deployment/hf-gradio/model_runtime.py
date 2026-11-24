@@ -19,6 +19,10 @@ from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
+if not torch.cuda.is_available():
+    torch.backends.cudnn.enabled = False
+
+from calibration import apply_calibration, load_calibration
 from preprocessing import SequenceVocab, preprocess, preprocess_v2
 
 ModelId = Literal["n6_lr_d", "v3_tri_gated_ft", "v3_phobert_v2"]
@@ -30,9 +34,6 @@ MODEL_INFO: dict[ModelId, dict[str, object]] = {
         "artifact_version": "n6-lr-d-seed42-c5-raw",
         "validation_macro_f1": 0.7900954579623571,
         "validation_f1_toxic": 0.6419336706014614,
-        "is_calibrated": False,
-        "calibration_status": "Raw predict_proba; chưa calibration",
-        "threshold": 0.5,
         "provenance": "N6 official, C=5, validation tie-break seed 42",
         "sha256": "2b693b43eb74ef062ab9e0b278032abd1cfd1a1f101754a1dd379a32729b81be",
     },
@@ -42,9 +43,6 @@ MODEL_INFO: dict[ModelId, dict[str, object]] = {
         "artifact_version": "v3-tri-gated-ft-retrained-2026-11-24-seed43",
         "validation_macro_f1": 0.79304572483586,
         "validation_f1_toxic": 0.6467268623024831,
-        "is_calibrated": False,
-        "calibration_status": "Raw softmax; chưa calibration",
-        "threshold": 0.5,
         "provenance": "V3 missing-weight replacement; validation-only retrained checkpoint",
         "sha256": "97cf7e7393b613a76310d0fc69a2e6f38091d08cb54a99de4e07357cab3376d8",
     },
@@ -54,9 +52,6 @@ MODEL_INFO: dict[ModelId, dict[str, object]] = {
         "artifact_version": "v3-phobert-v2-retrained-2026-11-24-seed44",
         "validation_macro_f1": 0.8194869678484376,
         "validation_f1_toxic": 0.6943396226415094,
-        "is_calibrated": False,
-        "calibration_status": "Raw softmax; chưa calibration",
-        "threshold": 0.5,
         "provenance": "V3 missing-weight replacement; validation-only retrained checkpoint",
         "sha256": "fd8db1d1c030abfae5e00ef0b0b825731dca5a0c99e9d3e504d4670ce6bf3b59",
     },
@@ -289,6 +284,10 @@ class InferenceService:
         self._verify_artifact("n6_lr_d", self.baseline_path)
         self._verify_artifact("v3_tri_gated_ft", self.cnn_path)
         self._verify_artifact("v3_phobert_v2", self.pho_path)
+        self.calibration = load_calibration(
+            models_dir / "calibration.json",
+            {model_id: str(info["sha256"]) for model_id, info in MODEL_INFO.items()},
+        )
         self.baseline = joblib.load(self.baseline_path)
         classes = {int(label) for label in self.baseline.classes_}
         if classes != {0, 1} or not hasattr(self.baseline, "predict_proba"):
@@ -334,11 +333,15 @@ class InferenceService:
         return ModelRuntime(model, cfg, tokenizer=tokenizer)
 
     def model_info(self, model_id: ModelId) -> dict[str, object]:
+        entry = self.calibration[model_id]
         return {
             **MODEL_INFO[model_id],
             "model_id": model_id,
             "label_taxonomy": LABELS,
-            "calibration_method": None,
+            "is_calibrated": entry["applied"],
+            "calibration_status": self._calibration_status(model_id),
+            "calibration_method": entry["method"],
+            "threshold": entry["threshold"],
             "status": "loaded",
         }
 
@@ -346,9 +349,9 @@ class InferenceService:
         started = time.perf_counter()
         probabilities = self.baseline.predict_proba([preprocess(text, "teencode")])[0]
         by_class = {int(label): float(probability) for label, probability in zip(self.baseline.classes_, probabilities)}
-        toxic = by_class[1]
-        label_id = int(toxic >= 0.5)
-        return self._result("n6_lr_d", label_id, by_class[0], toxic, (time.perf_counter() - started) * 1000)
+        return self._result(
+            "n6_lr_d", by_class[0], by_class[1], (time.perf_counter() - started) * 1000
+        )
 
     def predict_neural(self, model_ids: list[ModelId], text: str) -> list[dict[str, object]]:
         if any(model_id not in ("v3_tri_gated_ft", "v3_phobert_v2") for model_id in model_ids):
@@ -366,8 +369,12 @@ class InferenceService:
                             probabilities = self._predict_cnn(runtime, text, device)
                         else:
                             probabilities = self._predict_phobert(runtime, text, device)
-                    label_id = int(probabilities[1] > probabilities[0])
-                    results.append(self._result(model_id, label_id, float(probabilities[0]), float(probabilities[1]), (time.perf_counter() - started) * 1000))
+                    results.append(
+                        self._result(
+                            model_id, float(probabilities[0]), float(probabilities[1]),
+                            (time.perf_counter() - started) * 1000,
+                        )
+                    )
                 finally:
                     runtime.model.to("cpu")
                     if device.type == "cuda":
@@ -410,9 +417,22 @@ class InferenceService:
             logits = runtime.model(inputs, mask)
         return torch.softmax(logits.float(), dim=1)[0].cpu().numpy()
 
-    @staticmethod
-    def _result(model_id: ModelId, label_id: int, clean: float, toxic: float, latency_ms: float) -> dict[str, object]:
+    def _calibration_status(self, model_id: ModelId) -> str:
+        entry = self.calibration[model_id]
+        method = "Platt Scaling" if entry["method"] == "platt" else "Temperature Scaling"
+        if entry["applied"]:
+            return f"{method} đã áp dụng"
+        return f"{method} đã fit nhưng không áp dụng; đang trả xác suất gốc"
+
+    def _result(self, model_id: ModelId, raw_clean: float, raw_toxic: float, latency_ms: float) -> dict[str, object]:
         info = MODEL_INFO[model_id]
+        entry = self.calibration[model_id]
+        if entry["applied"]:
+            toxic = apply_calibration(raw_toxic, str(entry["method"]), entry["params"])
+            clean = 1.0 - toxic
+        else:
+            clean, toxic = raw_clean, raw_toxic
+        label_id = int(toxic >= float(entry["threshold"]))
         return {
             "model_id": model_id,
             "model_name": info["model_name"],
@@ -420,9 +440,10 @@ class InferenceService:
             "label_name": LABELS[label_id],
             "confidence": toxic if label_id else clean,
             "probabilities": {"CLEAN": clean, "TOXIC": toxic},
-            "is_calibrated": False,
-            "calibration_status": info["calibration_status"],
-            "threshold": 0.5,
+            "is_calibrated": entry["applied"],
+            "calibration_status": self._calibration_status(model_id),
+            "calibration_method": entry["method"],
+            "threshold": entry["threshold"],
             "latency_ms": max(0.0, latency_ms),
             "model_backend": info["model_backend"],
             "validation_macro_f1": info["validation_macro_f1"],

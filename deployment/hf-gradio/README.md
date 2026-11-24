@@ -21,9 +21,9 @@ FastAPI giữ các endpoint `/predict`, `/compare`, `/health`, `/model-info`, `/
 
 | Model | Checkpoint | Validation Macro-F1 | F1 TOXIC | Calibration |
 |---|---|---:|---:|---|
-| N6-LR-D | Official C=5, seed 42; seed 42/43/44 tied, chọn seed thấp nhất | 0.7901 | 0.6419 | Raw `predict_proba`, chưa calibration |
-| V3-TRI-GATED-FT | V3 missing-weight replacement, retrained validation-only, seed 43 | 0.7930 | 0.6467 | Raw softmax, chưa calibration |
-| V3-PHOBERT-V2 | V3 missing-weight replacement, retrained validation-only, seed 44 | 0.8195 | 0.6943 | Raw softmax, chưa calibration |
+| N6-LR-D | Official C=5, seed 42; seed 42/43/44 tied, chọn seed thấp nhất | 0.7901 | 0.6419 | Platt đã fit nhưng không áp dụng vì Macro-F1 holdout giảm |
+| V3-TRI-GATED-FT | V3 missing-weight replacement, retrained validation-only, seed 43 | 0.7930 | 0.6467 | Temperature `T=0.871645`, đã áp dụng |
+| V3-PHOBERT-V2 | V3 missing-weight replacement, retrained validation-only, seed 44 | 0.8195 | 0.6943 | Temperature đã fit nhưng không áp dụng vì ECE holdout tăng |
 
 ### Artifact mapping and SHA-256
 
@@ -32,7 +32,20 @@ FastAPI giữ các endpoint `/predict`, `/compare`, `/health`, `/model-info`, `/
 - PhoBERT source: `models/retrained/v3/retrained_20261124/transformers/V3-PHOBERT-V2/seed_44/best.pt`; bundle: `models/phobert_best.pt`; SHA-256: `fd8db1d1c030abfae5e00ef0b0b825731dca5a0c99e9d3e504d4670ce6bf3b59`.
 - `models/tri_vocab.json` is the matching frozen inference vocabulary; startup verifies its SHA-256 against the TRI checkpoint.
 
-Metrics chỉ dùng validation trên cùng split N2. Không có test data hoặc test predictions trong bundle. Hai model V3 là checkpoint thay thế vì checkpoint lịch sử không còn; không ghi nhãn chúng là artifact lịch sử. Mọi xác suất đều chưa calibration.
+Validation diagnostics use the same N2 split as model selection. Of the three candidate calibrators, only TRI passed the predeclared activation gate. The holdout is disjoint from calibration fitting but not independent of model selection.
+
+## Calibration evidence
+
+The fitter used 4,838 validation predictions for calibration and a reserved 1,210-row validation holdout for evaluation. It used seed 42 and stratified by source and label. Metrics use 10-bin ECE, binary Brier Score, and Macro-F1 at threshold 0.5.
+
+| Model | ECE before → after | Brier before → after | Macro-F1 before → after | Runtime |
+|---|---:|---:|---:|---|
+| N6-LR-D | 0.029170 → 0.025675 | 0.071368 → 0.069688 | 0.805684 → 0.792381 | Raw. Platt not applied because Macro-F1 fell. |
+| V3-TRI-GATED-FT | 0.035690 → 0.020551 | 0.071554 → 0.070881 | 0.811471 → 0.811471 | Temperature `T=0.871645` applied. |
+| V3-PHOBERT-V2 | 0.016673 → 0.023613 | 0.063272 → 0.063148 | 0.841012 → 0.841012 | Raw. Temperature not applied because ECE rose. |
+
+No independent evaluation set exists for these exact candidates. The reserved holdout was part of the full validation set used to select checkpoints, so report these metrics as exposed validation diagnostics. The registry stores parameters, hashes, split provenance, and aggregate metrics; it contains no IDs, labels, prediction rows, comments, or datasets. The model-selection Macro-F1 remains based on raw validation predictions.
+
 
 PhoBERT fine-tuned checkpoint chứa backbone weights. Runtime chỉ tải `config` và tokenizer của revision `86cd7fd4c148980922ac11a2cf5e257f2ba639e1`; không tải thêm bộ pretrained weights 540 MB. PhoBERT tokenizer dùng PyVi. N6 dùng teencode; CNN dùng `v3_word_norm` và `v2_char_norm` cùng vocabulary đã đóng băng.
 
@@ -50,7 +63,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-`app.py` starts Uvicorn on port 7860; `app_port` is intentionally absent because that metadata key is Docker-only. Mở `http://127.0.0.1:7860` cho Gradio và `http://127.0.0.1:7860/docs` cho Swagger. Smoke test REST synthetic cho cả ba model và `/compare` đã pass; Swagger UI, luồng chọn model và so sánh ba model đã được mở trong browser local.
+`app.py` starts Uvicorn on port 7860. `app_port` is intentionally absent because that metadata key is Docker-only. Mở `http://127.0.0.1:7860` cho Gradio và `http://127.0.0.1:7860/docs` cho Swagger. `smoke_test.py` passed on a CPU-only profile with GPUs hidden. The browser verified single-model TRI calibration, three-model comparison, and Swagger UI. A GPU-visible local run failed while returning PhoBERT to CPU because memory allocation failed; hosted behavior remains unverified.
 
 ```bash
 python smoke_test.py

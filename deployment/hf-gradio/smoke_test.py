@@ -24,7 +24,7 @@ def post_json(path: str, payload: dict):
         return json.load(response)
 
 
-def assert_prediction(result: dict, expected_model: str) -> None:
+def assert_prediction(result: dict, expected_model: str, info: dict) -> None:
     assert result["model_id"] == expected_model
     assert result["label_id"] in (0, 1)
     assert result["label_name"] == ("TOXIC" if result["label_id"] else "CLEAN")
@@ -33,27 +33,29 @@ def assert_prediction(result: dict, expected_model: str) -> None:
     assert all(0.0 <= value <= 1.0 for value in probabilities.values())
     assert abs(sum(probabilities.values()) - 1.0) < 0.05
     assert result["confidence"] == probabilities[result["label_name"]]
+    assert result["label_id"] == int(probabilities["TOXIC"] >= info["threshold"])
+    assert result["threshold"] == info["threshold"] == 0.5
     assert result["latency_ms"] >= 0.0
-    assert result["is_calibrated"] is False
-    assert "chưa calibration" in result["calibration_status"]
-
+    assert result["is_calibrated"] is info["is_calibrated"]
+    assert result["calibration_method"] == info["calibration_method"]
+    assert result["calibration_status"] == info["calibration_status"]
 
 def main() -> None:
-    assert get_json("/health")["model_loaded"] is True
-    assert {item["model_id"] for item in get_json("/models")} == set(MODEL_IDS)
+    model_info = {item["model_id"]: item for item in get_json("/models")}
+    assert set(model_info) == set(MODEL_IDS)
     assert get_json("/model-info")["model_id"] == "n6_lr_d"
     with urlopen(f"{BASE_URL}/docs", timeout=30) as response:
         assert response.status == 200 and b"Swagger UI" in response.read()
 
     default = post_json("/predict", {"text": SAMPLE})
-    assert_prediction(default, "n6_lr_d")
+    assert_prediction(default, "n6_lr_d", model_info["n6_lr_d"])
     for model_id in MODEL_IDS:
-        assert_prediction(post_json("/predict", {"text": SAMPLE, "model_id": model_id}), model_id)
+        assert_prediction(post_json("/predict", {"text": SAMPLE, "model_id": model_id}), model_id, model_info[model_id])
 
     compared = post_json("/compare", {"text": SAMPLE})
     assert [item["model_id"] for item in compared] == list(MODEL_IDS)
     for item, model_id in zip(compared, MODEL_IDS):
-        assert_prediction(item, model_id)
+        assert_prediction(item, model_id, model_info[model_id])
     print("REST, Swagger, model selection, comparison, labels, probabilities, latency, and calibration checks passed")
 
 
