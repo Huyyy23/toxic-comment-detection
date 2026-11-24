@@ -28,7 +28,7 @@
 
 ## Nhóm 3 — Chọn mô hình và đánh giá cuối
 - [ ] **TV3 lead:** freeze candidate và hyperparameters bằng validation; ghi danh sách trước khi mở test.
-- [ ] **TV1 điều phối, cả nhóm tham gia, TV3 duyệt — EXP-08:** đánh giá locked test đúng một đợt; không tuning/đổi candidate theo kết quả test. Báo cáo rõ test từng có exposure trong artifact cũ.
+- [ ] **TV1 điều phối, cả nhóm tham gia, TV3 duyệt — EXP-08/N10:** trạng thái team-wide bị chặn; chỉ có batch lịch sử TV4 + TV2 reference, không chứng minh đủ TV1–TV4. Không mở lại test; xem `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`. Chỉ đóng khi candidate/protocol được đối soát và có sign-off bằng chứng.
 - [ ] **Cả nhóm:** reproducibility report/notebooks và 4 phần thí nghiệm cá nhân.
 - [ ] **Cả nhóm:** Minimal FastAPI `/predict`, `/health`, `/model-info`; chỉ phục vụ model đã chọn, hosting sau khi kiểm tra eligibility.
 

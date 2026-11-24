@@ -10,6 +10,8 @@ Các mục G0 bên dưới là lịch sử ba lớp; giữ trạng thái đã gh
 - [x] Bàn giao validation predictions và lỗi CNN cho Huy; không gọi raw scores là xác suất calibrated. (`EXPERIMENTALLY VALIDATED` 2026-11-24 — bàn giao `val_predictions.json` với `is_calibrated: false`, báo cáo chẩn đoán Temperature/Platt ECE & 40 mẫu lỗi ẩn danh trong `artifacts/TV4-cnn-analysis/`, `notebooks/EXP-04-cnn-analysis.ipynb` và `docs/TV4_CNN_REPORT.md`).
 - [x] **N10:** Cùng nhóm đánh giá danh sách đã freeze trong một đợt locked test; không tuning theo test. (`EXPERIMENTALLY VALIDATED` 2026-11-24 — đóng băng manifest `artifacts/TV4-locked-test/tv4_n10_freeze_manifest.json` trước khi đọc `test.parquet` (`n = 6,048`, SHA-256 `d200be4a7ff2f2e725ba8e6c2c0ab835afd73612b9a5b2f14b528cb5c577be4e`, công bố rõ `test_blind: false`); mô hình đơn TV4 đạt Test Macro-F1 `0.7855 ± 0.0082` (`HYBRID-RNN-01`), `0.7867 ± 0.0049` (`CNN-01`), `0.7839 ± 0.0071` (`CNN-01-WD`); ensemble nội bộ TV4 đạt `0.7991 ± 0.0028` (`ENS-TV4-INTRA-4 @0.50`) và `0.8029 ± 0.0025` (`ENS-TV4-FROZEN-PLATT`); ensemble liên thành viên TV2+TV4 đạt `0.8029 ± 0.0009` (`ENS-CROSS-DIVERSE-050`, `ECE = 0.0073`) và **`0.8128 ± 0.0019`** (`ENS-CROSS-FROZEN-PLATT`, `F1-TOXIC = 0.6834`, `PR-AUC = 0.7572`), vượt mô hình đơn tốt nhất của cả hai thành viên).
 
+  **Phạm vi đã đối soát:** đây là batch lịch sử TV4 (7 singles, 3 ensemble TV4-only) và một TV2 reference dùng thêm trong 2 cross-member ensembles; không chứng minh đủ coverage/sign-off toàn nhóm. Không suy rộng checkbox này thành N10 team-wide hoàn tất; xem `artifacts/TV4-locked-test/tv4_n10_reconciliation.md`. Không mở lại locked test.
+
 ## Lịch sử G0 trước D1–D4
 
 
