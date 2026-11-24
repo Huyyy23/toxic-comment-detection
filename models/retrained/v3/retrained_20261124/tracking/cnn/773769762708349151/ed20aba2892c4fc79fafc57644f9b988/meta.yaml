@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Project/Detecting_Toxic_Comment/models/retrained/v3/retrained_20261124/tracking/cnn/773769762708349151/ed20aba2892c4fc79fafc57644f9b988/artifacts
+end_time: 1795536945636
+entry_point_name: ''
+experiment_id: '773769762708349151'
+lifecycle_stage: active
+run_id: ed20aba2892c4fc79fafc57644f9b988
+run_name: V3-BIGRU-GATED-MSD-seed42
+run_uuid: ed20aba2892c4fc79fafc57644f9b988
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1795536795936
+status: 3
+tags: []
+user_id: User

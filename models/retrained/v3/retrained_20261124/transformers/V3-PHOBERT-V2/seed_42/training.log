@@ -1,0 +1,12 @@
+COMMAND: .venv/Scripts/python.exe -m src.models.transformer_pipeline --config configs/transformer_v3_config.yaml --variant V3-PHOBERT-V2 --seeds 42 --out-dir models/retrained/v3/retrained_20261124/transformers --tracking-uri models/retrained/v3/retrained_20261124/tracking/transformers
+START_UTC: 2026-11-24T16:37:38Z
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+D:\Project\Detecting_Toxic_Comment\src\models\transformer_pipeline.py:521: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  scheduler.step()
+    [V3-PHOBERT-V2 seed_42 ep 1/3] tr_loss=0.3468 val_f1=0.7927 tox=0.6428 victsd=0.6901 best=0.7927
+    [V3-PHOBERT-V2 seed_42 ep 2/3] tr_loss=0.2509 val_f1=0.8141 tox=0.6885 victsd=0.7373 best=0.8141
+    [V3-PHOBERT-V2 seed_42 ep 3/3] tr_loss=0.1854 val_f1=0.8119 tox=0.6802 victsd=0.7110 best=0.8145
+  -> [V3-PHOBERT-V2 seed_42] val_f1=0.8145 | f1_tox=0.6879 | victsd=0.7315 | pr_auc=0.7617 | ece=0.0408 | vram=3314MB | time=452.2s
+[V3-PHOBERT-V2 (1 seeds)] Macro-F1=0.8145±0.0000 | F1-TOXIC=0.6879±0.0000 | ViCTSD=0.7315±0.0000
+FINISH_EXIT_0_UTC_2026-11-24T16:45:58Z

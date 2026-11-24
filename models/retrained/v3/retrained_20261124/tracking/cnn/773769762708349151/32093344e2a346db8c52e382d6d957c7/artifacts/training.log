@@ -1,0 +1,2 @@
+COMMAND: .venv/Scripts/python.exe -m src.models.cnn_pipeline --config configs/cnn_v3_config.yaml --variant V3-TRI-GATED-FT --seeds 44 --run-group-dir models/retrained/v3/retrained_20261124/cnn --tracking-uri models/retrained/v3/retrained_20261124/tracking/cnn
+START_UTC: 2026-11-24T16:35:36Z

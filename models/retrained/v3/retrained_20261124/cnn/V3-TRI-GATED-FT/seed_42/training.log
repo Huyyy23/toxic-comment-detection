@@ -1,0 +1,6 @@
+COMMAND: .venv/Scripts/python.exe -m src.models.cnn_pipeline --config configs/cnn_v3_config.yaml --variant V3-TRI-GATED-FT --seeds 42 --run-group-dir models/retrained/v3/retrained_20261124/cnn --tracking-uri models/retrained/v3/retrained_20261124/tracking/cnn
+START_UTC: 2026-11-24T16:31:35Z
+  -> [V3-TRI-GATED-FT seed_42] val_macro_f1=0.7880 | f1_toxic=0.6381 | pr_auc=0.6772 | ep=6/9 | time=125.3s
+[V3-TRI-GATED-FT] macro_f1=0.7880±0.0000 | f1_toxic=0.6381±0.0000 | vram=293.6MB | params=1867013
+Summary saved: models\retrained\v3\retrained_20261124\cnn\TV4-CNN-summary.json
+FINISH_EXIT_0_UTC_2026-11-24T16:33:57Z

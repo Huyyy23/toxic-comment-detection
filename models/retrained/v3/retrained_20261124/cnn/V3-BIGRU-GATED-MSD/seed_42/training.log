@@ -1,0 +1,6 @@
+COMMAND: .venv/Scripts/python.exe -m src.models.cnn_pipeline --config configs/cnn_v3_config.yaml --variant V3-BIGRU-GATED-MSD --seeds 42 --run-group-dir models/retrained/v3/retrained_20261124/cnn --tracking-uri models/retrained/v3/retrained_20261124/tracking/cnn
+START_UTC: 2026-11-24T16:13:08Z
+  -> [V3-BIGRU-GATED-MSD seed_42] val_macro_f1=0.7862 | f1_toxic=0.6351 | pr_auc=0.7009 | ep=10/12 | time=148.2s
+[V3-BIGRU-GATED-MSD] macro_f1=0.7862±0.0000 | f1_toxic=0.6351±0.0000 | vram=278.1MB | params=1392770
+Summary saved: models\retrained\v3\retrained_20261124\cnn\TV4-CNN-summary.json
+FINISH_EXIT_0_UTC_2026-11-24T16:15:46Z

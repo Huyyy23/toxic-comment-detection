@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Project/Detecting_Toxic_Comment/models/retrained/v3/retrained_20261124/tracking/transformers/399373674140256807/7de832c3234b41a08f101f52050d4bb1/artifacts
+end_time: 1795540030625
+entry_point_name: ''
+experiment_id: '399373674140256807'
+lifecycle_stage: active
+run_id: 7de832c3234b41a08f101f52050d4bb1
+run_name: V3-XLMR-BASE-seed_42
+run_uuid: 7de832c3234b41a08f101f52050d4bb1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1795539706946
+status: 4
+tags: []
+user_id: User

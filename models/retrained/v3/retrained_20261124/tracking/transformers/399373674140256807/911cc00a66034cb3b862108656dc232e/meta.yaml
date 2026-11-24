@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Project/Detecting_Toxic_Comment/models/retrained/v3/retrained_20261124/tracking/transformers/399373674140256807/911cc00a66034cb3b862108656dc232e/artifacts
+end_time: 1795539674012
+entry_point_name: ''
+experiment_id: '399373674140256807'
+lifecycle_stage: active
+run_id: 911cc00a66034cb3b862108656dc232e
+run_name: V3-PHOBERT-V2-seed_44
+run_uuid: 911cc00a66034cb3b862108656dc232e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1795539240404
+status: 3
+tags: []
+user_id: User

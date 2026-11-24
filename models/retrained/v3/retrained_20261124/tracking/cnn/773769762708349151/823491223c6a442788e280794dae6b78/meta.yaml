@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Project/Detecting_Toxic_Comment/models/retrained/v3/retrained_20261124/tracking/cnn/773769762708349151/823491223c6a442788e280794dae6b78/artifacts
+end_time: 1795538036430
+entry_point_name: ''
+experiment_id: '773769762708349151'
+lifecycle_stage: active
+run_id: 823491223c6a442788e280794dae6b78
+run_name: V3-TRI-GATED-FT-seed42
+run_uuid: 823491223c6a442788e280794dae6b78
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1795537909680
+status: 3
+tags: []
+user_id: User

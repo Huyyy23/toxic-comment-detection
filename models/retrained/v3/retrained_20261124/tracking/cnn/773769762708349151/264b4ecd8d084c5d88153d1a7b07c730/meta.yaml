@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Project/Detecting_Toxic_Comment/models/retrained/v3/retrained_20261124/tracking/cnn/773769762708349151/264b4ecd8d084c5d88153d1a7b07c730/artifacts
+end_time: 1795537527209
+entry_point_name: ''
+experiment_id: '773769762708349151'
+lifecycle_stage: active
+run_id: 264b4ecd8d084c5d88153d1a7b07c730
+run_name: V3-BIGRU-GATED-FT-seed44
+run_uuid: 264b4ecd8d084c5d88153d1a7b07c730
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1795537424519
+status: 3
+tags: []
+user_id: User
