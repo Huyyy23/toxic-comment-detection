@@ -14,8 +14,43 @@ from src.models.checkpoint import load_checkpoint, save_run_checkpoint, seed_eve
 from src.models.recurrent import RecurrentClassifier
 from src.models.training import evaluate, fit
 
+def _copy_fasttext_vectors(embedding: torch.nn.Embedding, tokens: list[str], keyed_vectors) -> int:
+    if keyed_vectors.vector_size != embedding.embedding_dim:
+        raise ValueError("FastText vector size must match embedding_dim")
+    copied = 0
+    if embedding.weight.device.type != "cpu":
+        raise ValueError("FastText embeddings must be initialized on CPU")
+    weights = embedding.weight.detach().numpy()
+    for token_id, token in enumerate(tokens, start=2):
+        if token in keyed_vectors.key_to_index:
+            weights[token_id] = keyed_vectors[token]
+            copied += 1
+    weights[embedding.padding_idx].fill(0)
+    return copied
+
+
+def _initialize_fasttext_embedding(
+    embedding: torch.nn.Embedding, vocabulary: Vocabulary, fasttext_model: Path
+) -> str:
+    from gensim.models import FastText
+
+    fasttext = FastText.load(str(fasttext_model))
+    tokens = sorted(vocabulary._token_to_id, key=vocabulary._token_to_id.__getitem__)
+    _copy_fasttext_vectors(embedding, tokens, fasttext.wv)
+    return (fasttext_model.parent / "run_id.txt").read_text(encoding="utf-8").strip()
+
+
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG = ROOT / "configs" / "recurrent_official.json"
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        while chunk := file.read(1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
 
 
 def _load_dataset(config: dict) -> tuple[list[dict], list[dict], dict]:
@@ -32,22 +67,37 @@ def _load_dataset(config: dict) -> tuple[list[dict], list[dict], dict]:
         "dataset_dir": config["dataset_dir"],
         "train_count": len(train),
         "val_count": len(val),
-        "train_val_sha256": hashlib.sha256(train_val_path.read_bytes()).hexdigest(),
-        "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        "train_val_sha256": _sha256_file(train_val_path),
+        "manifest_sha256": _sha256_file(manifest_path),
     }
     return train, val, data_metadata
 
 
 def _load_parquet_dataset(dataset_dir: Path) -> tuple[list[dict], list[dict], dict, int]:
     import pandas as pd
+    import pyarrow.parquet as pq
 
     dataset_dir = Path(dataset_dir)
     train_path, val_path = dataset_dir / "train.parquet", dataset_dir / "val.parquet"
-    train_table, val_table = pd.read_parquet(train_path), pd.read_parquet(val_path)
-    columns = ["id", "text", "label"]
-    if not set(columns).issubset(train_table.columns) or not set(columns).issubset(val_table.columns):
+    required_columns = ["id", "text", "label"]
+    train_columns = ["id", "text", "label"]
+    if "split" in pq.read_schema(train_path).names:
+        train_columns.append("split")
+    val_columns = ["id", "text", "label"]
+    if "split" in pq.read_schema(val_path).names:
+        val_columns.append("split")
+    train_table = pd.read_parquet(train_path, columns=train_columns)
+    val_table = pd.read_parquet(val_path, columns=val_columns)
+    if (
+        not set(required_columns).issubset(train_table.columns)
+        or not set(required_columns).issubset(val_table.columns)
+    ):
         raise ValueError("train and val Parquet must contain id, text, and label")
     train, val = train_table.to_dict("records"), val_table.to_dict("records")
+    for row in train:
+        row.setdefault("split", "train")
+    for row in val:
+        row.setdefault("split", "val")
     if not train or not val:
         raise ValueError("train/val must be nonempty")
     train_labels = {row["label"] for row in train}
@@ -70,16 +120,27 @@ def _load_parquet_dataset(dataset_dir: Path) -> tuple[list[dict], list[dict], di
         "dataset_dir": str(dataset_dir),
         "train_count": len(train),
         "val_count": len(val),
-        "train_sha256": hashlib.sha256(train_path.read_bytes()).hexdigest(),
-        "val_sha256": hashlib.sha256(val_path.read_bytes()).hexdigest(),
+        "train_sha256": _sha256_file(train_path),
+        "val_sha256": _sha256_file(val_path),
     }
     return train, val, metadata, num_classes
+
+def _resolve_dataset_dir(config: dict, dataset_dir: Path | None) -> Path | None:
+    if dataset_dir is not None:
+        return dataset_dir
+    configured = config.get("parquet_dataset_dir")
+    return ROOT / configured if configured else None
+
 
 
 def run(config_path: Path, architecture: str, smoke: bool, output_dir: Path,
         tracking_uri: str | None, resume: Path | None = None,
-        dataset_dir: Path | None = None) -> dict:
+        dataset_dir: Path | None = None, seed: int | None = None,
+        fasttext_model: Path | None = None) -> dict:
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    if seed is not None:
+        config["seed"] = seed
+    dataset_dir = _resolve_dataset_dir(config, dataset_dir)
     if config.get("status") != "OFFICIAL":
         raise ValueError("config must have status OFFICIAL")
     if architecture not in config["variants"]:
@@ -153,6 +214,12 @@ def run(config_path: Path, architecture: str, smoke: bool, output_dir: Path,
     if num_classes != 3:
         model_config["num_classes"] = num_classes
     model = RecurrentClassifier(**model_config)
+    fasttext_run_id = None
+    if fasttext_model is not None:
+        fasttext_model = Path(fasttext_model)
+        fasttext_run_id = _initialize_fasttext_embedding(
+            model.embedding, vocabulary, fasttext_model
+        )
     device = cfg["device"]
     if device == "auto":
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -170,6 +237,12 @@ def run(config_path: Path, architecture: str, smoke: bool, output_dir: Path,
     val_batches = batches(val)
 
     checkpoint_config = {"model": model_config, "training": cfg, "data": data_metadata}
+    if fasttext_model is not None:
+        checkpoint_config["initialization"] = {
+            "type": "fasttext",
+            "source_path": str(fasttext_model),
+            "source_run_id": fasttext_run_id,
+        }
     state = {"epoch": 0, "best_macro_f1": -1.0, "bad_epochs": 0, "best_epoch": 0}
     if resume is not None:
         expected_config = {
@@ -264,11 +337,19 @@ def main():
                         help="Local output when tracking is disabled; tracked runs use their MLflow artifact directory")
     parser.add_argument("--tracking-uri", default=None)
     parser.add_argument("--resume", type=Path)
+    parser.add_argument("--seed", type=int, help="Optional per-run seed override")
     parser.add_argument("--dataset-dir", type=Path,
                         help="Optional train/val Parquet package; test.parquet is not read")
+    parser.add_argument("--fasttext-model", type=Path,
+                        help="Optional FastText model for learned embedding rows")
     args = parser.parse_args()
+    kwargs = {"resume": args.resume, "dataset_dir": args.dataset_dir}
+    if args.fasttext_model is not None:
+        kwargs["fasttext_model"] = args.fasttext_model
+    if args.seed is not None:
+        kwargs["seed"] = args.seed
     result = run(args.config, args.architecture, args.smoke, args.output_dir,
-                 args.tracking_uri, resume=args.resume, dataset_dir=args.dataset_dir)
+                 args.tracking_uri, **kwargs)
     print(json.dumps({"status": result["status"], "architecture": args.architecture,
                       "device": result["device"], "macro_f1": result["last_validation"]["macro_f1"],
                       "run_id": result.get("run_id"), "artifact_dir": result["artifact_dir"]}))

@@ -1,0 +1,23 @@
+{
+  "status": "OFFICIAL",
+  "name": "recurrent_n9_fasttext_init_v1",
+  "seed": 42,
+  "device": "auto",
+  "parquet_dataset_dir": "data/processed/binary_n4_training_v1",
+  "max_length": 128,
+  "batch_size": 32,
+  "epochs": 30,
+  "patience": 3,
+  "learning_rate": 0.001,
+  "grad_clip": 1.0,
+  "embedding_dim": 100,
+  "hidden_size": 128,
+  "dropout": 0.3,
+  "variants": ["bilstm_attention"],
+  "smoke": {
+    "train_size": 500,
+    "val_size": 100,
+    "epochs": 2,
+    "batch_size": 16
+  }
+}

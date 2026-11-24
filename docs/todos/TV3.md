@@ -4,17 +4,48 @@
 
 Các mục G0 bên dưới là lịch sử ba lớp. `tasks/todo.md` ghi ba official EXP-03 runs đã hoàn thành trên G0 train/validation; các run này cần chạy lại cho split nhị phân, không xóa lịch sử.
 
-- [ ] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
-- [ ] **N2:** Cùng Tam kiểm tra nguồn, permission UIT và mapping; gộp ViHSD/ViCTSD, tạo nhãn CLEAN/TOXIC và `source`, dedupe trong và giữa nguồn, split 70/15/15 stratified theo `(source,label)`. Lưu Parquet, manifest, seed, hash và thống kê split × source.
+- [x] **N1:** Duyệt spec, decisions, plan và checklist cùng nhóm.
+- [x] **N2:** Cùng Tam kiểm tra nguồn, permission UIT và mapping; gộp ViHSD/ViCTSD, tạo nhãn CLEAN/TOXIC và `source`, dedupe trong và giữa nguồn, split 70/15/15 stratified theo `(source,label)`. Lưu Parquet, manifest, seed, hash và thống kê split × source. Tình trạng xác nhận quyền UIT và giới hạn về nhãn được ghi tại `docs/dataset-requirements.md`.
 - [x] **N3:** Đã kiểm tra split N2 và augmentation giả lập. Xem `docs/dataset-requirements.md` về kết quả và giới hạn near-duplicate/thread.
 - [x] **N4:** Tạo augmentation TOXIC train-only theo D3, artifact 5.675 dòng đạt 30,0% TOXIC; leakage tests trên dữ liệu thật pass (10 passed). Xem hash, provenance và giới hạn trong `docs/dataset-requirements.md`.
 - [x] **N5:** Train FastText chỉ trên N2 train; 3 seeds 42/123/2026. Validation Macro-F1 0.622207/0.623787/0.620661, mean 0.622218, population std 0.001276. Model, embedding, config, hash, predictions, metrics và MLflow runs tại `models/baselines/N5-run-4cef5024bbdb437296384e56b471e20b/`; FastText mỗi seed khoảng 10.85 MB.
-- [ ] **N8:** Sau N6, N7 và N13, calibration và chọn threshold trên val cho các mô hình; báo ECE trước/sau.
-- [ ] **N9:** Sau N7, N8 và N13, ablation trên val và so sánh với PhoBERT pretrained fine-tune; lưu `ablation_val.csv`.
+- [x] **N8:** Hoàn tất calibration và threshold validation cho 90 runs (LR/SVM, FastText, recurrent, CNN và PhoBERT); ECE trước/sau, per-run thresholds và calibrated probabilities tại `artifacts/N8/`. Các metric là in-sample validation diagnostics.
+- [x] **N9:** Hoàn tất validation ablations sau N7, N8 và N13; tổng hợp 63 dòng tại `artifacts/N9/ablation_val.csv`, protocol/kết quả tại `artifacts/N9/README.md`. Không dùng locked test.
+  - [x] Controlled BiLSTM+Attention random-init vs N5 FastText-init trên N4, cùng config 100d và ba seed: Macro-F1 mean `0.584855` vs `0.682165`; paired Δ `+0.097309 ± 0.022045`. F1 TOXIC mean `0.438565` vs `0.512659`; paired Δ `+0.074094 ± 0.015478`. Threshold/ECE fit trên cùng validation là in-sample diagnostics.
 - [ ] **N11:** Sau N6 và N8, cập nhật inference, API và frontend cho nhãn nhị phân; kiểm tra API và fallback `.joblib`.
 - [ ] **N12:** Sau N10 và N11, triển khai Docker + HF Spaces và smoke test.
-- [ ] **N7:** Sau N4 và N5, chạy LSTM, BiLSTM, BiLSTM + Attention tự huấn luyện; phối hợp TheAnh với Char-CNN. Dùng ba seed, chọn checkpoint theo val Macro-F1, báo F1 TOXIC và lưu config, checkpoint, metrics, predictions và hash.
-- [ ] **N13:** Fine-tune PhoBERT khởi tạo pretrained làm benchmark riêng trên cùng split; phụ thuộc N2 và N4 nếu dùng augmentation. Dùng `phobert-base`, tách từ có ghi phiên bản, chọn checkpoint theo val Macro-F1, chạy ba seed và lưu config, log, checkpoint, VRAM.
+- [x] **N7 overall:** TV3 recurrent branch and TV4 Char-CNN are complete; see `docs/todos/TV4.md` for Char-CNN evidence.
+  - [x] **TV3 recurrent:** LSTM, BiLSTM, BiLSTM + Attention with random-init embeddings; N4 binary train/validation; three seeds (42, 123, 2026), max 30 epochs with early stopping (`patience=3`), best checkpoint by validation Macro-F1. No test data used.
+
+    | Model | Macro-F1 seeds (42 / 123 / 2026) | Mean ± population SD | Mean F1 CLEAN | Mean F1 TOXIC | MLflow run IDs |
+    |---|---|---:|---:|---:|---|
+    | LSTM | 0.655419 / 0.632095 / 0.678985 | 0.655499 ± 0.019143 | 0.818278 | 0.492721 | `189d4f9e`, `5cb3386d`, `84454486` |
+    | BiLSTM | 0.645421 / 0.633061 / 0.670050 | 0.649511 ± 0.015375 | 0.811610 | 0.487412 | `522ee1d8`, `c9829129`, `535dae51` |
+    | BiLSTM + Attention | 0.625645 / 0.578585 / 0.630971 | 0.611734 ± 0.023540 | 0.767139 | 0.456328 | `1e1a3744`, `27950743`, `319745b3` |
+
+    Artifacts and full MLflow run IDs: `models/recurrent_n7/mlruns/` (experiment `EXP-03-official`). All nine runs used identical N4 train/validation hashes; each has checkpoint, config, metrics, and validation predictions.
+- [x] **TV4 Char-CNN:** completed; validation runs and artifacts are documented in `docs/todos/TV4.md`.
+- [x] **N13:** PhoBERT pretrained binary benchmark hoàn tất; cùng validation qua hai gói N2/N4 và ba seed 42/123/2026; best checkpoint chọn theo validation Macro-F1; locked test chưa mở.
+  - [x] **N2 baseline, không augmentation:** `vinai/phobert-base`, 4 epoch tối đa, patience 2, max length 160, batch 8 × accumulation 2, FP16; PyVi 0.1.1, Transformers 4.57.6, model revision `01daacda68afe13d83023d16ec647239e344a1e6`.
+
+    | Seed | Macro-F1 | F1 CLEAN | F1 TOXIC | Best epoch | Skipped optimizer steps | Peak VRAM (bytes) | MLflow run ID |
+    |---:|---:|---:|---:|---:|---:|---:|---|
+    | 42 | 0.796222 | 0.938577 | 0.653867 | 4 | 7 | 2,946,551,808 | `462781192f5d4c46bd41c7e035203923` |
+    | 123 | 0.804934 | 0.937365 | 0.672503 | 3 | 7 | 2,952,196,096 | `79180ecaf6f94579896419362f0fc8cb` |
+    | 2026 | 0.803251 | 0.941314 | 0.665188 | 3 | 5 | 2,953,908,224 | `eeda02eadf084fb59ceabbf3da0924c4` |
+    | Mean ± population SD | 0.801469 ± 0.003773 | 0.939085 ± 0.001652 | 0.663853 ± 0.007666 | — | — | — | — |
+
+    N2 train SHA256 `097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73`; validation SHA256 `4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a`. Artifacts/config/checkpoints/predictions are in local MLflow `models/N13-phobert/mlruns/`; only train and validation were read.
+  - [x] **N4 augmentation ablation:** cùng PhoBERT revision/config và validation với baseline N2.
+
+    | Seed | Macro-F1 | F1 CLEAN | F1 TOXIC | Best epoch | Skipped optimizer steps | Peak VRAM (bytes) | MLflow run ID |
+    |---:|---:|---:|---:|---:|---:|---:|---|
+    | 42 | 0.786239 | 0.933412 | 0.639066 | 4 | 6 | 2,950,361,088 | `fdb1a801f08947fd81635f891713cd65` |
+    | 123 | 0.793745 | 0.936603 | 0.650888 | 2 | 6 | 2,944,192,512 | `cf1d45b2d7244957a948647b64a1666f` |
+    | 2026 | 0.795027 | 0.934827 | 0.655226 | 4 | 6 | 2,949,136,384 | `87df4ae80b434a37ae266ba5318c045c` |
+    | Mean ± population SD | 0.791670 ± 0.003876 | 0.934947 ± 0.001305 | 0.648393 ± 0.006829 | — | — | — | — |
+
+    N4 train SHA256 `f57fbf0a55de6b08c8cba1cd366c3895bfed495f2817069f892ba27b5786542e`; validation hash matches N2 (`4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a`). Compared with N2, N4 means are lower by 0.009799 Macro-F1, 0.004138 F1 CLEAN and 0.015460 F1 TOXIC on validation; descriptive result only. Initial N4 seed-42 run `8bc3a002797444c491cabf20945f5288` remains tagged `INVALID`; initial N2 runs remain tagged `SUPERSEDED`.
 - [ ] **N14:** Nếu còn thời gian, thử learning rate, epoch và chiến lược fine-tuning trên val; mỗi lần đổi một yếu tố. Lưu `docs/experiments/phobert_extra_val.csv`. Phụ thuộc N13.
 - [ ] **N10:** Duyệt danh sách candidate, seed, threshold và protocol trước khi Tam điều phối một đợt test. Không tuning hay chọn lại theo test.
 - [ ] **N15:** Sau N10, phân tích lỗi hai chiều giữa PhoBERT pretrained fine-tune và các mô hình khác. Ghi ví dụ, số mẫu, lỗi tiếng lóng, teencode, từ bị che, mỉa mai, câu dài, emoji và nhãn nhiễu; cắt lát theo nguồn, độ dài và teencode trong `docs/experiments/error_analysis.md`. Không dùng lỗi test để tuning.

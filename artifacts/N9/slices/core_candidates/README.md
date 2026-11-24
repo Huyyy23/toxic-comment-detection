@@ -1,0 +1,11 @@
+# N9 core candidate context
+
+**Status: PASS.** `candidates.csv` contains 18 official per-seed context rows: three-seed N6 Logistic Regression (EXP-N6-LR-B), calibrated N6 LinearSVC (N6-C), N5 FastText, and N7 LSTM, BiLSTM, and BiLSTM+Attention (three seeds each). Candidate rows are descriptive context, not controlled ablations; `comparison_group=candidate_context` and control/factor/level are blank.
+
+**Sources:** official per-run N8 summaries under `artifacts/N8/baselines/{logistic_regression,linear_svc}/`, `artifacts/N8/fasttext/`, and `artifacts/N8/recurrent/runs/`; source metrics and recurrent validation predictions are listed in each CSV row. N6 LR EXP-N6-LR-B is the best of the official three-seed LR variants by N8 selected-threshold validation Macro-F1. Runs marked excluded/superseded/invalid were not included.
+
+**Metrics/method:** `val_macro_f1` and `val_f1_toxic` are the raw official metrics at threshold 0.50, as recorded in each N8 `n8_summary.json`. `threshold` is N8's validation-selected post-calibration threshold; `calibrated_ece` and `raw_ece` are the N8 post- and pre-calibration ECE values. Platt calibration and threshold selection used canonical validation only (ECE: 10 bins; threshold grid 0.10–0.90, step 0.01); threshold/ECE are optimistic in-sample diagnostics, not generalization estimates. LinearSVC inputs were already train-fold calibrated probabilities; raw ECE does not represent raw decision margins. No metric fields are missing.
+
+**Data contract:** all source runs used validation SHA-256 `4c33430a520818078aef6bcc34b3e2573873445dc7040c5729313e11bb60197a` and sorted validation-ID digest `7f454a9926bf0a616c54426513b98874b944ea06921c927cd336c2203152f01d`. N6 LR, N6 LinearSVC and N5 FastText train SHA-256: `097b32bea731bf1a4771a8485155d339a96027d2819fe8a38aa2c9d2e2f32a73`; N7 recurrent train SHA-256: `f57fbf0a55de6b08c8cba1cd366c3895bfed495f2817069f892ba27b5786542e`.
+
+Read-only extraction from existing official validation artifacts; no training or recalculation was performed. No `test.parquet`, locked-test data or test artifacts were read.
