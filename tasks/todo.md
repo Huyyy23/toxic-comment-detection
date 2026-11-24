@@ -79,7 +79,12 @@ Nguồn chi tiết: [spec](../docs/spec.md) · [experiment plan](../docs/plans/m
 - [x] N8: Calibration và chọn threshold chỉ dùng validation. LinearSVC raw chỉ xuất decision margin, không phải probability; N6 rerun đã bổ sung raw model weights có thể load lại, nhưng khi cần calibrated probability chỉ dùng SVM đã calibration. Bằng chứng rerun: `docs/TV2_N6_REPORT.md` §5.
 - [x] N9: Validation-only ablations and PhoBERT comparison complete; 63-row evidence and protocol/results at `artifacts/N9/README.md` and `artifacts/N9/ablation_val.csv`.
 - [x] N11: Hoàn tất inference React + FastAPI local với adapter baseline N6-LR-D; giữ contract CLEAN/TOXIC, chưa deploy public/chốt production trước N10. Bằng chứng: `docs/todos/TV3.md`.
-- [ ] N12: **Local preparation and smoke verification complete; public deployment remains blocked.** The isolated Gradio + FastAPI bundle contains the three validation-selected models; local UI, REST and Swagger evidence is recorded in `deployment/hf-gradio/README.md`. Before public upload, verify account eligibility, existing N10 acknowledgement evidence, model/tokenizer/data distribution rights, and direct FastAPI GPU allocation on ZeroGPU. Do not use Docker, reopen N10/N15, access test data, or upload unapproved material.
+- [ ] N12: **Local calibration and smoke verification complete; public deployment remains blocked.**
+  The isolated Gradio + FastAPI bundle preserves selected checkpoints and stores only aggregate calibration parameters and metrics.
+  N6 Platt is fitted but not applied. TRI Temperature Scaling is applied. PhoBERT Temperature Scaling is fitted but not applied.
+  CPU-only local smoke passed for all three model IDs, comparison, and Swagger.
+  Before public upload, verify account eligibility, existing N10 acknowledgement evidence, model/tokenizer/data distribution rights, and direct FastAPI GPU allocation on ZeroGPU.
+  Do not use Docker, reopen N10/N15, access test data, or upload unapproved material.
 
 ### TV4 — TheAnh
 - [x] N1: Duyệt tài liệu D1–D4 cùng nhóm.
